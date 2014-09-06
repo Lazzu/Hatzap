@@ -6,10 +6,9 @@ using System.Text;
 
 namespace Hatzap.Shaders
 {
-    public class ShaderCompileErrorException : Exception
+    public class ShaderCompileErrorException : ShaderException
     {
-        public ShaderCompileErrorException(string message)
-            : base(message)
+        public ShaderCompileErrorException(string message) : base(message)
         {
         }
 

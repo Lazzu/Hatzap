@@ -32,7 +32,8 @@ namespace Hatzap.Shaders
         {
             using(StreamReader reader = new StreamReader(stream))
             {
-                GL.ShaderSource(ID, reader.ReadToEnd());
+                string source = reader.ReadToEnd();
+                GL.ShaderSource(ID, source);
                 Compile();
             }
         }

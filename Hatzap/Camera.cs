@@ -13,10 +13,16 @@ namespace Hatzap
         public Vector3 Target { get; set; }
         public Vector3 Up { get; set; }
 
+        public Vector3 Direction = Vector3.UnitZ;
+
         public Matrix4 Projection = Matrix4.Identity;
         public Matrix4 View = Matrix4.Identity;
         public Matrix4 VPMatrix = Matrix4.Identity;
         public Matrix4 MVPMatrix = Matrix4.Identity;
+
+        public Matrix4 InvProjection = Matrix4.Identity;
+        public Matrix4 InvView = Matrix4.Identity;
+        public Matrix4 InvViewRotation = Matrix4.Identity;
 
         public Camera()
         {
@@ -26,7 +32,18 @@ namespace Hatzap
         public virtual void Update(float deltaTime)
         {
             View = Matrix4.LookAt(Position, Target, Up);
+
+            Direction = Position - Target;
+            Direction.Normalize();
+
             VPMatrix = Projection * View;
+
+            InvView = View.Inverted();
+
+            Quaternion cameraRotation = View.ExtractRotation();
+            cameraRotation.Invert();
+
+            InvViewRotation = Matrix4.CreateFromQuaternion(cameraRotation);
         }
 
         public void SetAsCurrent()
