@@ -11,7 +11,7 @@ out vec3 ViewDirection;
 
 void main( void )
 {
-	vec4 device_normal = vec4(vertexPosition_modelspace.xy, 0.0, 1.0);
+	vec4 device_normal = vec4(vertexPosition_modelspace.xyz, 1.0);
     vec4 eye_normal = normalize(InvProjection * device_normal);
     vec4 world_normal = normalize(InvViewRotation * eye_normal);
 

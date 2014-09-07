@@ -13,7 +13,7 @@ namespace Hatzap
         public Vector3 Target { get; set; }
         public Vector3 Up { get; set; }
 
-        public Vector3 Direction = Vector3.UnitZ;
+        public Vector3 Direction = -Vector3.UnitZ;
 
         public Matrix4 Projection = Matrix4.Identity;
         public Matrix4 View = Matrix4.Identity;
@@ -29,6 +29,11 @@ namespace Hatzap
             Up = Vector3.UnitY;
         }
 
+        public void Perspective(float width, float height, float near, float far)
+        {
+            Projection = Matrix4.CreatePerspectiveFieldOfView((float)(Math.PI / 2), width / height, near, far);
+        }
+
         public virtual void Update(float deltaTime)
         {
             View = Matrix4.LookAt(Position, Target, Up);
@@ -36,7 +41,7 @@ namespace Hatzap
             Direction = Position - Target;
             Direction.Normalize();
 
-            VPMatrix = Projection * View;
+            VPMatrix = View * Projection;
 
             InvView = View.Inverted();
 

@@ -14,6 +14,7 @@ namespace Hatzap.Models
         Vector3[] tangents;
         Vector3[] binormals;
         Vector2[] uv;
+        Vector4[] colors;
         int[] indices;
         #endregion
 
@@ -23,6 +24,7 @@ namespace Hatzap.Models
         bool tangentsDirty;
         bool binormalsDirty;
         bool uvDirty;
+        bool colorsDirty;
         bool indicesDirty;
         #endregion
 
@@ -34,7 +36,7 @@ namespace Hatzap.Models
         {
             get
             {
-                return vertsDirty || normsDirty || tangentsDirty || binormalsDirty || uvDirty || indicesDirty;
+                return vertsDirty || normsDirty || tangentsDirty || binormalsDirty || uvDirty || colorsDirty || indicesDirty;
             }
         }
         
@@ -122,7 +124,23 @@ namespace Hatzap.Models
                 uv = value;
             }
         }
-       
+
+        /// <summary>
+        /// Array of mesh vertex colors
+        /// </summary>
+        public Vector4[] Colors
+        {
+            get
+            {
+                return colors;
+            }
+            set
+            {
+                colorsDirty = true;
+                colors = value;
+            }
+        }
+
         /// <summary>
         /// Array of mesh indices.
         /// </summary>
@@ -152,7 +170,7 @@ namespace Hatzap.Models
         #endregion
 
         // GL Names
-        int vao = 0, vertVbo = 0, normVbo = 0, tangentsVbo = 0, binormalsVbo = 0, uvVbo = 0, ebo = 0;
+        int vao = 0, vertVbo = 0, normVbo = 0, tangentsVbo = 0, binormalsVbo = 0, uvVbo = 0, colorsVbo, ebo = 0;
 
         public Mesh()
         {
@@ -216,6 +234,16 @@ namespace Hatzap.Models
                 UploadData(uvVbo, BufferTarget.ArrayBuffer, uv.Length * Vector2.SizeInBytes, uv);
             }
 
+            if (colorsDirty && colors != null)
+            {
+                Debug.WriteLine("Uploading colors");
+                colorsDirty = false;
+
+                if (colorsVbo == 0) GL.GenBuffers(1, out colorsVbo);
+
+                UploadData(colorsVbo, BufferTarget.ArrayBuffer, colors.Length * Vector4.SizeInBytes, colors);
+            }
+
             if (indicesDirty && indices != null)
             {
                 Debug.WriteLine("Uploading indices");
@@ -261,34 +289,31 @@ namespace Hatzap.Models
                 
                 if(mustDescribe)
                 {
-                    int attrib = 0;
-
-                    BindVertexAttribBuffer(attrib, vertVbo, BlittableValueType.StrideOf(verts), 3, VertexAttribPointerType.Float);
-
-                    attrib++;
-
+                    BindVertexAttribBuffer(0, vertVbo, BlittableValueType.StrideOf(verts), 3, VertexAttribPointerType.Float);
+                    
                     if (norms != null)
                     {
-                        BindVertexAttribBuffer(attrib, normVbo, BlittableValueType.StrideOf(norms), 3, VertexAttribPointerType.Float);
-                        attrib++;
+                        BindVertexAttribBuffer(1, normVbo, BlittableValueType.StrideOf(norms), 3, VertexAttribPointerType.Float);
                     }
 
                     if (tangents != null)
                     {
-                        BindVertexAttribBuffer(attrib, tangentsVbo, BlittableValueType.StrideOf(tangents), 3, VertexAttribPointerType.Float);
-                        attrib++;
+                        BindVertexAttribBuffer(2, tangentsVbo, BlittableValueType.StrideOf(tangents), 3, VertexAttribPointerType.Float);
                     }
 
                     if (binormals != null)
                     {
-                        BindVertexAttribBuffer(attrib, binormalsVbo, BlittableValueType.StrideOf(binormals), 3, VertexAttribPointerType.Float);
-                        attrib++;
+                        BindVertexAttribBuffer(3, binormalsVbo, BlittableValueType.StrideOf(binormals), 3, VertexAttribPointerType.Float);
                     }
 
                     if (uv != null)
                     {
-                        BindVertexAttribBuffer(attrib, uvVbo, BlittableValueType.StrideOf(uv), 2, VertexAttribPointerType.Float);
-                        attrib++;
+                        BindVertexAttribBuffer(4, uvVbo, BlittableValueType.StrideOf(uv), 2, VertexAttribPointerType.Float);
+                    }
+
+                    if (colors != null)
+                    {
+                        BindVertexAttribBuffer(5, colorsVbo, BlittableValueType.StrideOf(colors), 4, VertexAttribPointerType.Float);
                     }
 
                     GL.BindBuffer(BufferTarget.ElementArrayBuffer, ebo);
