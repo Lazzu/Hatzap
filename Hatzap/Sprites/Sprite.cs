@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hatzap.Textures
+namespace Hatzap.Sprites
 {
-    public class CubeTexture : Texture
+    public class Sprite
     {
-        
     }
 }

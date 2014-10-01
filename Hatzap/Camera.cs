@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Hatzap.Utilities;
 
 namespace Hatzap
 {
@@ -22,38 +23,86 @@ namespace Hatzap
 
         public Matrix4 InvProjection = Matrix4.Identity;
         public Matrix4 InvView = Matrix4.Identity;
-        public Matrix4 InvViewRotation = Matrix4.Identity;
+        public Matrix4 InvVPMatrix = Matrix4.Identity;
 
-        public Camera()
+        public BoundingFrustum Frustum;
+
+        GameWindow gameWindow;
+
+        public Camera(GameWindow gw)
         {
             Up = Vector3.UnitY;
+
+            gameWindow = gw;
         }
 
-        public void Perspective(float width, float height, float near, float far)
+        public void Perspective(float width, float height, float fov, float near, float far)
         {
-            Projection = Matrix4.CreatePerspectiveFieldOfView((float)(Math.PI / 2), width / height, near, far);
+            float fovy = (float)(Math.PI / 180) * fov;
+            Projection = Matrix4.CreatePerspectiveFieldOfView(fovy, width / height, near, far);
+            InvProjection = Projection.Inverted();
         }
 
         public virtual void Update(float deltaTime)
         {
             View = Matrix4.LookAt(Position, Target, Up);
+            InvView = View.Inverted();
 
             Direction = Position - Target;
             Direction.Normalize();
 
             VPMatrix = View * Projection;
+            InvVPMatrix = VPMatrix.Inverted();
 
-            InvView = View.Inverted();
-
-            Quaternion cameraRotation = View.ExtractRotation();
-            cameraRotation.Invert();
-
-            InvViewRotation = Matrix4.CreateFromQuaternion(cameraRotation);
+            Frustum = new BoundingFrustum(VPMatrix);
         }
 
         public void SetAsCurrent()
         {
             Current = this;
+        }
+
+        /// <summary>
+        /// Returns a world-space ray from a window point.
+        /// </summary>
+        /// <param name="point">The window-space point.</param>
+        /// <returns>A ray in world-space.</returns>
+        public Ray GetRayFromWindowPoint(Vector2 point)
+        {
+            var near = UnProject(WindowPointToScreenPoint(point, 0));
+            var far = UnProject(WindowPointToScreenPoint(point, 1));
+            
+            var d = far - near;
+            d.Normalize();
+
+            return new Ray(near, d);
+        }
+        
+        public Vector3 UnProject(Vector3 p)
+        {
+            var tmp = Vector4.Transform(new Vector4(p, 1), InvVPMatrix);
+            var scalar = 1 / tmp.W;
+            return tmp.Xyz * scalar;
+        }
+
+        /// <summary>
+        /// Convert window coordinates to screen-space coordinates.
+        /// </summary>
+        /// <param name="point">The coordinates in window-space</param>
+        /// <param name="z">Optional z coordinate. Zero by default.</param>
+        /// <returns>A point in screen-space.</returns>
+        public Vector3 WindowPointToScreenPoint(Vector2 point, float z = 0)
+        {
+            return new Vector3(point.X / (float)gameWindow.Width * 2 - 1, -(point.Y / (float)gameWindow.Height * 2 - 1), z);
+        }
+
+        /// <summary>
+        /// Convert the camera to a ray.
+        /// </summary>
+        /// <returns>A ray that goes in the direction the camera looks at from the camera position.</returns>
+        public Ray ToRay()
+        {
+            return new Ray(Position, Direction);
         }
 
         public static Camera Current = null;
