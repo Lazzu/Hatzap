@@ -27,7 +27,7 @@ void main( void )
 	vec3 t = normalize(mN * tangent);
 	vec3 b = normalize(mN * binormal);
 	
-	TBN = mat3(t, b, n);
+	TBN = transpose(mat3(t, b, n));
 
 	vColor = color;
 	//vColor = vec4(((mN * normal) + vec3(1)) * vec3(0.5), 1) * color;

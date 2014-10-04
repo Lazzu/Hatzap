@@ -138,20 +138,30 @@ void main( void )
 	vec2 top = vec2(0);
 	vec2 side = vec2(0);
 
-	vec3 n = ((TBN * texture( textureSampler, vec3(texcoord, 1) ).xyz) + vec3(1)) * vec3(0.5);
+	vec3 specularTexel = texture( textureSampler, vec3(texcoord, 2) ).xyz;
+	
+	vec3 n = normalize(texture( textureSampler, vec3(texcoord, 1) ).xyz * 2 - vec3(1));
 
 	//Material.x=Anisotropy (X)
 	//Material.y=Anisotropy (Y)
-	vec4 material = vec4(500,500,0,0);
+	vec4 material = vec4(100,100,0,0);
 
-	front = ashikhmin_shirley(normalize(vec3(0, 0, -1)), n, EyeDirection, material);
-	//top = ashikhmin_shirley(normalize(vec3(0, -1, 0)), n, EyeDirection, material);
-	//side = ashikhmin_shirley(normalize(vec3(1, 0, 0)), n, EyeDirection, material);
+	vec3 eye = TBN * EyeDirection;
+	
+	vec3 lightTop, lightSide, lightFront;
+	
+	lightFront = TBN * normalize(vec3(0,0,-1));
+	lightTop = TBN * normalize(vec3(0,-1,0));
+	lightSide = TBN * normalize(vec3(1,0,0));
+	
+	front = ashikhmin_shirley(lightFront, n, eye, material);
+	//top = ashikhmin_shirley(lightTop, n, eye, material);
+	//side = ashikhmin_shirley(lightSide, n, eye, material);
 
 	vec2 tmp = clamp(front + top + side, vec2(0), vec2(1));
 
-	vec4 diffuse = vec4(tmp.x, tmp.x, tmp.x, 1);
-	vec4 specular = vec4(tmp.y, tmp.y, tmp.y, 1);
+	vec4 diffuse = vec4(tmp.x, tmp.x, tmp.x, 1) * 0.58; // 0.8 = lightpower
+	vec4 specular = vec4(tmp.y, tmp.y, tmp.y, 1) * vec4(specularTexel, 1);
 
 	vec4 outColor;
 
@@ -161,8 +171,9 @@ void main( void )
 	//outColor = vec4(1);
 	//outColor = vec4(texcoord, 0, 1);
 	//outColor = vec4((n + 1) * 0.5, 1);
-	outColor = vec4(n , 1);
-	//outColor = diffuse + specular;
+	//outColor = vec4(n , 1);
+	outColor = diffuse + specular;
+	//outColor = vec4(specularTexel, 1);
 
 	RGBA = pow(outColor, vec4(g,g,g,1));
 	//RGBA = outColor;

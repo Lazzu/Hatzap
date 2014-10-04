@@ -139,7 +139,7 @@ namespace HatzapTestApplication
 
             Time.Initialize();
             UserInput.Initialize(this, typeof(AccurateMouse), typeof(Keyboard));
-            GLThreadHelper.Initialize(this);
+            //GLThreadHelper.Initialize(this);
             GuiRoot.Initialize(this);
 
             GuiRoot.Root.Texture = new TextureArray();
@@ -332,7 +332,8 @@ namespace HatzapTestApplication
 
             var bitmaps = new[] { 
                 new Bitmap("Assets/Textures/sh3.jpg"), 
-                new Bitmap("Assets/Textures/sh3_n.png") 
+                new Bitmap("Assets/Textures/sh3_n.png"),
+                new Bitmap("Assets/Textures/sh3_s.jpg")
             };
 
             shipTexture = new TextureArray();
