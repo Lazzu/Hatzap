@@ -53,6 +53,9 @@ namespace Hatzap.Gui
         {
             foreach (var widget in rootGroup.Widgets)
             {
+                if (!widget.Visible)
+                    continue;
+
                 var vert = widget.GetVertices();
 
                 if (vert != null)

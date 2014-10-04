@@ -90,6 +90,9 @@ namespace Hatzap.Gui
         {
             foreach (var widget in rootGroup.Widgets)
             {
+                if (!widget.Visible)
+                    continue;
+
                 widget.Update(delta);
 
                 if (widget.CustomRenderLayer != string.Empty)

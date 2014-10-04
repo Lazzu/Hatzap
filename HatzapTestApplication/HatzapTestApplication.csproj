@@ -59,6 +59,9 @@
     <None Include="Assets\Shaders\Model.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Assets\Shaders\ModelColored.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Assets\Shaders\Sky.frag" />
     <None Include="Assets\Shaders\Sky.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

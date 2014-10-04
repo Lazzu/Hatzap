@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FontCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Fonts>
+    <FontInfo FontFamily="OpenSans-Regular" FontDataFile="Assets/Fonts/OpenSans-Regular.ttf_sdf.txt" FontTextureFile="Assets/Fonts/OpenSans-Regular.ttf_sdf.png" />
+  </Fonts>
+</FontCollection>

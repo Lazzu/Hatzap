@@ -67,8 +67,14 @@ namespace HatzapTestApplication
             
             camera.SetAsCurrent();
 
-            camera.Position = new Vector3(0, 0, 1.5f);
+            camera.Position = new Vector3(10, 15, 10);
             camera.Target = new Vector3(0, 0, 0);
+
+            camera.Update(0);
+            camera.DirectionLock = true;
+
+            // Now camera.Position changes whenever Target changes, and the camera angle stays locked.
+            // Camera's distance from it's target can be controlled from camera.Distance property now.
 
             FontCollection fonts = new FontCollection();
             
@@ -91,7 +97,7 @@ namespace HatzapTestApplication
                     Path = "Assets/Shaders/Model.vert",
                     Type = ShaderType.VertexShader
                 },new ShaderInfo() {
-                    Path = "Assets/Shaders/Model.frag",
+                    Path = "Assets/Shaders/ModelColored.frag",
                     Type = ShaderType.FragmentShader
                 }}),
                 Name = "Model"
@@ -360,7 +366,7 @@ namespace HatzapTestApplication
             fpsText.Weight = 1f;
             fpsText.Smooth = 1.5f;
             fpsText.LineHeight = 1.0f;
-            fpsText.Color = new Vector4(1, 0, 0, 1);
+            fpsText.Color = new Vector4(1, 1, 1, 1);
             fpsText.Text = "FPS: Calculating..";
 
 
@@ -410,6 +416,10 @@ namespace HatzapTestApplication
         
         int update = 0;
 
+        double renderInsert = 0, renderQueue = 0, swapBufferTime = 0;
+        Stopwatch sw = new Stopwatch();
+        Stopwatch swFrame = new Stopwatch();
+
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             Time.Update(e.Time);
@@ -418,64 +428,87 @@ namespace HatzapTestApplication
 
             base.OnUpdateFrame(e);
 
+            totalTime += e.Time * 0.25;
+
             camera.Perspective(Width, Height, 45, 1.0f, 1000.0f);
-            
-
-            totalTime+=e.Time * 0.25;
-            //camera.Position = new Vector3((float)(Math.Sin(totalTime * 2) * 2.5f), (float)(Math.Cos(totalTime * 2.25) * 2.5f), (float)(Math.Sin(totalTime) * 2.5f));
-
-            /*if (UserInput.Mouse.IsButtonDown(OpenTK.Input.MouseButton.Left))
-                camera.Position = new Vector3(2, 2, 2);*/
-
             camera.Update((float)e.Time);
 
             update++;
 
-            //largeText.FontSize = 100f * (float)((Math.Sin(totalTime) + 1.15) / 2.0);
+            Random r = new Random();
 
-            //largeText.Weight = (2f - (largeText.FontSize / 100f));
 
-            var data = RenderDataPool.GetInstance();
+            sw.Reset();
+            sw.Start();
 
-            data.RenderObject = spaceShip;
-            var mM = Matrix4.CreateRotationX((float)Math.Sin(totalTime * 1.3f)) * Matrix4.CreateRotationY((float)Math.Cos(totalTime * 1.45f));
-
-            Matrix4 mvp;
-            Matrix3 mN;
-            camera.GetModelViewProjection(ref mM, out mvp);
-            camera.GetNormalMatrix(ref mM, out mN);
-
-            data.UniformData = new List<IUniformData> { 
-                new UniformDataMatrix4()
+            for(int x = -15; x < 15; x++)
+            {
+                for(int y = -15; y < 15; y++)
                 {
-                    Name = "MVP",
-                    Data = mvp
-                },
-                new UniformDataMatrix3()
-                {
-                    Name = "mN",
-                    Data = mN
-                },
-                new UniformDataVector3() 
-                {
-                    Name = "EyeDirection",
-                    Data = camera.Direction
-                },
-            };
+                    var data = RenderDataPool.GetInstance();
 
-            RenderQueue.Insert(data);
+                    data.RenderObject = spaceShip;
+                    var mM = Matrix4.CreateRotationX((float)Math.Sin(totalTime * x * 1.3f) * (float)Math.PI) * Matrix4.CreateRotationY((float)Math.Cos(totalTime * y * 1.45f) * (float)Math.PI) * Matrix4.CreateTranslation(new Vector3(x, 0, y));
+
+                    Matrix4 mvp;
+                    Matrix3 mN;
+                    camera.GetModelViewProjection(ref mM, out mvp);
+                    camera.GetNormalMatrix(ref mM, out mN);
+
+                    data.UniformData = new List<IUniformData> { 
+                        new UniformDataMatrix4()
+                        {
+                            Name = "MVP",
+                            Data = mvp
+                        },
+                        new UniformDataMatrix3()
+                        {
+                            Name = "mN",
+                            Data = mN
+                        },
+                        new UniformDataVector3() 
+                        {
+                            Name = "EyeDirection",
+                            Data = camera.Direction
+                        },
+                        new UniformDataVector4()
+                        {
+                            Name = "Color",
+                            Data = new Vector4(1.0f, 0.0f, 0.0f, 1f)
+                        }
+                    };
+
+                    RenderQueue.Insert(data);
+                }
+            }
+
+            sw.Stop();
+            renderInsert = sw.Elapsed.TotalSeconds;
         }
         
         protected override void OnRenderFrame(FrameEventArgs e)
         {
+            sw.Reset();
+            sw.Start();
+            SwapBuffers();
+            sw.Stop();
+            swapBufferTime = sw.Elapsed.TotalSeconds;
+
             frame++;
 
             frametime += e.Time;
 
+            swFrame.Stop();
+
+            double frameTime = swFrame.Elapsed.TotalSeconds;
+
+            swFrame.Reset();
+            swFrame.Start();
+
             if(frametime > 1.0)
             {
                 frametime = 0;
-                fpsText.Text = string.Format("FPS: {0}, Update: {1}, RenderQueue count: {2}", frame, update, RenderQueue.Count);
+                fpsText.Text = string.Format("FPS: {0}, Update: {1}, Frame time: {6}, RenderQueue count: {2}, RenderInsert: {3}ms, RenderQueue.Render: {4}ms, SwapBuffers(): {5}ms, Unknown: {7}", frame, update, RenderQueue.Count, Math.Round(renderInsert * 1000, 2), Math.Round(renderQueue * 1000, 2), Math.Round(swapBufferTime * 1000, 2), Math.Round(frameTime * 1000, 2), Math.Round((frameTime - swapBufferTime - renderQueue - renderInsert) * 1000, 2));
                 frame = 0;
                 update = 0;
             }
@@ -492,7 +525,15 @@ namespace HatzapTestApplication
 
             GL.ClearColor(0.25f, 0.25f, 0.25f, 1);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
-            
+           
+            base.OnRenderFrame(e);
+
+            sw.Reset();
+            sw.Start();
+            RenderQueue.Render();
+            sw.Stop();
+            renderQueue = sw.Elapsed.TotalSeconds;
+
             GL.Disable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
@@ -510,13 +551,9 @@ namespace HatzapTestApplication
 
             GL.Enable(EnableCap.DepthTest);
 
-            base.OnRenderFrame(e);
-
-            RenderQueue.Render();
             GuiRoot.Root.Render();
 
-            //GL.Flush();
-            SwapBuffers();
+            GL.Flush();
 
             UserInput.FrameEnd();
         }

@@ -28,6 +28,11 @@ namespace Hatzap
 
         public BoundingFrustum Frustum;
 
+        public bool DirectionLock { get; set; }
+
+        public float Distance { get; set; }
+
+
         GameWindow gameWindow;
 
         public Camera(GameWindow gw)
@@ -46,11 +51,19 @@ namespace Hatzap
 
         public virtual void Update(float deltaTime)
         {
+            if(DirectionLock)
+            {
+                Position = Target + Direction * Distance;
+            }
+            else
+            {
+                Direction = Position - Target;
+                Distance = Direction.Length;
+                Direction.Normalize();
+            }
+
             View = Matrix4.LookAt(Position, Target, Up);
             InvView = View.Inverted();
-
-            Direction = Position - Target;
-            Direction.Normalize();
 
             VPMatrix = View * Projection;
             InvVPMatrix = VPMatrix.Inverted();

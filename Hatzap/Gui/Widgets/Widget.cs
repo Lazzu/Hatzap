@@ -30,11 +30,12 @@ namespace Hatzap.Gui.Widgets
         // Should only be accessed by property
         private int z;
         private bool dirty;
+        private bool visible = true;
 
         /// <summary>
         /// The depth-sorting index in the current widget group.
         /// </summary>
-        public int Z { get { return z; } set { z = value; if (WidgetGroup != null) WidgetGroup.SortChildWidgets(); } }
+        public int Z { get { return z; } set { z = value; Dirty = true;  if (WidgetGroup != null) WidgetGroup.SortChildWidgets(); } }
 
         /// <summary>
         /// The widget group this widget belongs to.
@@ -50,6 +51,11 @@ namespace Hatzap.Gui.Widgets
         /// If set to true, this widget requires updating
         /// </summary>
         public bool Dirty { get { return dirty; } set { dirty = value; if (dirty && WidgetGroup != null) WidgetGroup.Dirty = dirty; } }
+
+        /// <summary>
+        /// Gets or sets if the widget is visible.
+        /// </summary>
+        public bool Visible { get { return visible; } set { visible = value; Dirty = true; } }
 
         #region Event functions
 
@@ -76,10 +82,10 @@ namespace Hatzap.Gui.Widgets
         /// <param name="delta">The delta time of the current frame.</param>
         public void Update(double delta) 
         {
-            bool insideRect = UserInput.Mouse.IsInsideRect(Position, Position + Size);
-            bool buttonClicked = UserInput.Mouse.IsButtonClicked();
-            
-            if (insideRect && buttonClicked)
+            if (!Visible)
+                return;
+
+            if (UserInput.Mouse.IsInsideRect(Position, Position + Size) && UserInput.Mouse.IsButtonClicked())
             {
                 var buttons = UserInput.Mouse.GetClickedButtons();
                 foreach (var button in buttons)
@@ -116,5 +122,6 @@ namespace Hatzap.Gui.Widgets
         /// Gets the currently active widget. Used internally for calling user input event functions, but is exposed as public for convenience.
         /// </summary>
         public static Widget CurrentlyActive { get; internal set; }
+
     }
 }

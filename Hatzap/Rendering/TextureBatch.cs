@@ -38,11 +38,14 @@ namespace Hatzap.Rendering
 
                 // Send uniforms to the shader
                 var shader = obj.RenderObject.Shader;
-                foreach (var uniform in obj.UniformData)
+                if(obj.UniformData != null && obj.UniformData.Count > 0)
                 {
-                    uniform.SendData(shader);
+                    for (int u = 0; u < obj.UniformData.Count; u++ )
+                    {
+                        obj.UniformData[u].SendData(shader);
+                    }
                 }
-
+                
                 // Call render
                 obj.RenderObject.Render();
 
