@@ -12,6 +12,8 @@ namespace Hatzap.Rendering
     {
         static Dictionary<ShaderProgram, ShaderBatch> ShaderBatches = new Dictionary<ShaderProgram, ShaderBatch>();
 
+        public static int TrianglesDrawn { get; set; }
+
         public static int Count { get; set; }
 
         public static void Insert(RenderData data)
@@ -28,10 +30,13 @@ namespace Hatzap.Rendering
 
             batch.Insert(data);
             Count++;
+
         }
 
         public static void Render()
         {
+            TrianglesDrawn = 0;
+
             foreach (var shaderBatch in ShaderBatches)
             {
                 var shader = shaderBatch.Key;
@@ -39,7 +44,7 @@ namespace Hatzap.Rendering
 
                 shader.Enable();
 
-                textureBatch.Render();
+                TrianglesDrawn += textureBatch.Render();
 
                 shader.Disable();
             }

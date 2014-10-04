@@ -26,8 +26,10 @@ namespace Hatzap.Rendering
             count++;
         }
 
-        internal void Render()
+        internal int Render()
         {
+            int triangles = 0;
+
             for(int i = 0; i < count; i++)
             {
                 // Take object from the batch queue
@@ -49,10 +51,14 @@ namespace Hatzap.Rendering
                 // Call render
                 obj.RenderObject.Render();
 
+                triangles += obj.RenderObject.Triangles;
+
                 // Release render data back to pool
                 RenderDataPool.Release(obj);
             }
             count = 0;
+
+            return triangles;
         }
     }
 }

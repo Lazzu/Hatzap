@@ -26,8 +26,10 @@ namespace Hatzap.Rendering
             batch.Insert(data);
         }
 
-        internal void Render()
+        internal int Render()
         {
+            int triangles = 0;
+
             foreach (var textureBatch in TextureBatches)
             {
                 var texture = textureBatch.Key;
@@ -35,10 +37,12 @@ namespace Hatzap.Rendering
 
                 texture.Bind();
 
-                batchQueue.Render();
+                triangles += batchQueue.Render();
 
                 texture.UnBind();
             }
+
+            return triangles;
         }
     }
 }

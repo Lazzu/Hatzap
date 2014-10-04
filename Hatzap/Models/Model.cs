@@ -23,5 +23,10 @@ namespace Hatzap.Models
             
             Mesh.Draw();
         }
+
+        public int Triangles
+        {
+            get { return Mesh.Triangles; }
+        }
     }
 }

@@ -13,6 +13,7 @@ namespace Hatzap.Rendering
 
         public static int Count { get { return count; } }
         public static int MaxItems { get; set; }
+        public static int Size { get { return pool.Count; } }
 
         public static void CreateReserve(int n)
         {

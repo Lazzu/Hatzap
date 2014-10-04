@@ -12,7 +12,7 @@ namespace Hatzap.Rendering
     {
         ShaderProgram Shader { get; }
         Texture Texture{ get; }
-
+        int Triangles { get; }
         void Render();
     }
 }

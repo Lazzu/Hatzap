@@ -11,6 +11,8 @@ namespace Hatzap.Models
         // GL Names
         int vao = 0, vertVbo = 0, normVbo = 0, tangentsVbo = 0, binormalsVbo = 0, uvVbo = 0, colorsVbo, ebo = 0;
 
+        public int Triangles { get; protected set; }
+
         #region MeshData
         Vector3[] verts;
         Vector3[] norms;
@@ -91,6 +93,8 @@ namespace Hatzap.Models
 
                 indices = mesh.GetIndices();
                 indicesDirty = true;
+
+                Triangles = mesh.FaceCount;
             }
         }
 

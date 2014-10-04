@@ -173,6 +173,11 @@ namespace Hatzap.Gui
             widgets.AddChildWidget(widget);
         }
 
+        public void RemoveWidget(Widget widget)
+        {
+            widgets.RemoveChildWidget(widget);
+        }
+
         public static GuiRoot Root;
         public static void Initialize(GameWindow gw)
         {

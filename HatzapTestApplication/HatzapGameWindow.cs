@@ -362,10 +362,10 @@ namespace HatzapTestApplication
 
             fpsText = new GuiText();
             fpsText.Font = font;
-            fpsText.FontSize = 10f;
-            fpsText.Weight = 1f;
-            fpsText.Smooth = 1.5f;
-            fpsText.LineHeight = 1.0f;
+            fpsText.FontSize = 8f;
+            fpsText.Weight = 1.2f;
+            fpsText.Smooth = 2.5f;
+            fpsText.LineHeight = 50.0f;
             fpsText.Color = new Vector4(1, 1, 1, 1);
             fpsText.Text = "FPS: Calculating..";
 
@@ -379,6 +379,7 @@ namespace HatzapTestApplication
 
             Debug.WriteLine("OnLoad() ends");
 
+            RenderDataPool.MaxItems = 1000;
         }
 
         Vector2 mousepos;
@@ -508,7 +509,8 @@ namespace HatzapTestApplication
             if(frametime > 1.0)
             {
                 frametime = 0;
-                fpsText.Text = string.Format("FPS: {0}, Update: {1}, Frame time: {6}, RenderQueue count: {2}, RenderInsert: {3}ms, RenderQueue.Render: {4}ms, SwapBuffers(): {5}ms, Unknown: {7}", frame, update, RenderQueue.Count, Math.Round(renderInsert * 1000, 2), Math.Round(renderQueue * 1000, 2), Math.Round(swapBufferTime * 1000, 2), Math.Round(frameTime * 1000, 2), Math.Round((frameTime - swapBufferTime - renderQueue - renderInsert) * 1000, 2));
+                fpsText.Text = string.Format("FPS: {0}, Update: {1}, Frame time: {6}, RenderQueue count: {2}, RenderInsert: {3}ms, RenderQueue.Render: {4}ms, SwapBuffers(): {5}ms, Unknown: {7}\n" + 
+                    "Triangles Drawn: {8}, ObjectPool reserve: {9}, ObjectPool capacity: {10}", frame, update, RenderQueue.Count, Math.Round(renderInsert * 1000, 2), Math.Round(renderQueue * 1000, 2), Math.Round(swapBufferTime * 1000, 2), Math.Round(frameTime * 1000, 2), Math.Round((frameTime - swapBufferTime - renderQueue - renderInsert) * 1000, 2), RenderQueue.TrianglesDrawn, RenderDataPool.Count, RenderDataPool.Size);
                 frame = 0;
                 update = 0;
             }
