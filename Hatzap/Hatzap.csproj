@@ -46,6 +46,8 @@
   <ItemGroup>
     <Compile Include="Camera.cs" />
     <Compile Include="GraphicsException.cs" />
+    <Compile Include="Gui\Elements\GuiElement.cs" />
+    <Compile Include="Gui\Elements\GuiElementCollection.cs" />
     <Compile Include="Gui\Events\MouseEvents.cs" />
     <Compile Include="Gui\Fonts\BMFont.cs" />
     <Compile Include="Gui\Fonts\Font.cs" />
@@ -75,7 +77,15 @@
     <Compile Include="Input\IMouseInputProvider.cs" />
     <Compile Include="Input\Keyboard.cs" />
     <Compile Include="Models\Mesh.cs" />
+    <Compile Include="Models\Model.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rendering\IRenderQueueable.cs" />
+    <Compile Include="Rendering\RenderData.cs" />
+    <Compile Include="Rendering\RenderDataPool.cs" />
+    <Compile Include="Rendering\RenderQueue.cs" />
+    <Compile Include="Rendering\ShaderBatch.cs" />
+    <Compile Include="Rendering\TextureBatch.cs" />
+    <Compile Include="Rendering\UniformData.cs" />
     <Compile Include="Scenes\SceneManager.cs" />
     <Compile Include="Shaders\Shader.cs" />
     <Compile Include="Shaders\ShaderCollection.cs" />

@@ -7,7 +7,7 @@ in vec3 vNormal;
 
 uniform float gamma = 2.0;
 uniform vec3 EyeDirection;
-uniform sampler2D textureSampler;
+uniform sampler2DArray textureSampler;
 
 layout(location = 0) out vec4 RGBA;
 layout(location = 1) out vec3 Normals;
@@ -138,7 +138,7 @@ void main( void )
 	vec2 top = vec2(0);
 	vec2 side = vec2(0);
 
-	vec3 n = vNormal;
+	vec3 n = ((TBN * texture( textureSampler, vec3(texcoord, 1) ).xyz) + vec3(1)) * vec3(0.5);
 
 	//Material.x=Anisotropy (X)
 	//Material.y=Anisotropy (Y)
@@ -155,18 +155,16 @@ void main( void )
 
 	vec4 outColor;
 
-	//outColor = diffuse + specular;
-
-	//outColor = vec4(texcoord, 0, 1);
-	//outColor = vec4((n + 1) * 0.5, 1);
-	//outColor = vec4(n , 1);
-	
-	outColor = texture( textureSampler, texcoord ) * diffuse + specular;
+	outColor = texture( textureSampler, vec3(texcoord,0) ) * diffuse + specular;
 	//outColor = texture( textureSampler, texcoord );
 	//outColor = pow(texture( textureSampler, texcoord ), vec4(g, g, g, 1));
 	//outColor = vec4(1);
-	//Normals = ((TBN * texture( textureSampler, vec3(texcoord, 1.0) ).xyz) + vec3(1)) * vec3(0.5);
+	//outColor = vec4(texcoord, 0, 1);
+	//outColor = vec4((n + 1) * 0.5, 1);
+	outColor = vec4(n , 1);
+	//outColor = diffuse + specular;
 
 	RGBA = pow(outColor, vec4(g,g,g,1));
+	//RGBA = outColor;
 }
 

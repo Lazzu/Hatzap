@@ -22,7 +22,12 @@ void main( void )
 	//mat3 mN = mat3(MVP);
 	
 	texcoord = uv;
-	TBN = mat3(mN * tangent, mN * binormal, mN * normal);
+	
+	vec3 n = normalize(mN * normal);
+	vec3 t = normalize(mN * tangent);
+	vec3 b = normalize(mN * binormal);
+	
+	TBN = mat3(t, b, n);
 
 	vColor = color;
 	//vColor = vec4(((mN * normal) + vec3(1)) * vec3(0.5), 1) * color;

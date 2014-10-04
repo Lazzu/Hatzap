@@ -12,6 +12,7 @@ using Hatzap.Gui.Fonts;
 using Hatzap.Gui.Widgets;
 using Hatzap.Input;
 using Hatzap.Models;
+using Hatzap.Rendering;
 using Hatzap.Shaders;
 using Hatzap.Textures;
 using Hatzap.Utilities;
@@ -32,13 +33,17 @@ namespace HatzapTestApplication
 
         Hatzap.Models.Mesh mesh;
 
-        Texture texture;
+        Texture texture, normalTexture;
+
+        TextureArray shipTexture;
 
         Hatzap.Gui.Fonts.Font font;
         GuiText text;
         GuiText boldText;
         GuiText largeText;
         GuiText fpsText;
+
+        Model spaceShip;
 
         public HatzapGameWindow() : base(1280,720, new GraphicsMode(new ColorFormat(32), 32, 32, 16, new ColorFormat(8, 8, 8, 8), 2, false), "Hatzap Test Application", GameWindowFlags.FixedWindow, 
             DisplayDevice.GetDisplay(DisplayIndex.Default), 3, 3, GraphicsContextFlags.ForwardCompatible)
@@ -317,6 +322,24 @@ namespace HatzapTestApplication
             texture.GenMipMaps();
             texture.TextureSettings(TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear, 32);
 
+            normalTexture = new Texture();
+            normalTexture.PixelInternalFormat = PixelInternalFormat.CompressedRgbS3tcDxt1Ext;
+            normalTexture.Load(new Bitmap("Assets/Textures/sh3_n.png"), PixelFormat.Bgra, PixelType.UnsignedByte);
+            normalTexture.Bind();
+            normalTexture.TextureSettings(TextureMinFilter.Nearest, TextureMagFilter.Nearest, 0);
+            normalTexture.GenMipMaps();
+            normalTexture.TextureSettings(TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear, 32);
+
+            var bitmaps = new[] { 
+                new Bitmap("Assets/Textures/sh3.jpg"), 
+                new Bitmap("Assets/Textures/sh3_n.png") 
+            };
+
+            shipTexture = new TextureArray();
+            shipTexture.PixelInternalFormat = PixelInternalFormat.CompressedRgbS3tcDxt1Ext;
+            shipTexture.Load(bitmaps, PixelInternalFormat.Rgba, PixelFormat.Bgra, PixelType.UnsignedByte);
+            shipTexture.TextureSettings(TextureMinFilter.Linear, TextureMagFilter.Linear, 32);
+
             font = FontManager.Get("OpenSans-Regular");
 
             text = new GuiText();
@@ -354,6 +377,14 @@ namespace HatzapTestApplication
             fpsText.LineHeight = 1.0f;
             fpsText.Color = new Vector4(1, 0, 0, 1);
             fpsText.Text = "FPS: Calculating..";
+
+
+
+
+            spaceShip = new Model();
+            spaceShip.Texture = shipTexture;
+            spaceShip.Shader = modelShader;
+            spaceShip.Mesh = mesh;
 
             Debug.WriteLine("OnLoad() ends");
 
@@ -398,7 +429,7 @@ namespace HatzapTestApplication
         {
             Time.Update(e.Time);
 
-            GuiRoot.Root.Update(e.Time);
+            GuiRoot.Root.UpdateAsync(e.Time);
 
             base.OnUpdateFrame(e);
 
@@ -418,6 +449,36 @@ namespace HatzapTestApplication
             //largeText.FontSize = 100f * (float)((Math.Sin(totalTime) + 1.15) / 2.0);
 
             //largeText.Weight = (2f - (largeText.FontSize / 100f));
+
+            var data = RenderDataPool.GetInstance();
+
+            data.RenderObject = spaceShip;
+            var mM = Matrix4.CreateRotationX((float)Math.Sin(totalTime * 1.3f)) * Matrix4.CreateRotationY((float)Math.Cos(totalTime * 1.45f));
+
+            Matrix4 mvp;
+            Matrix3 mN;
+            camera.GetModelViewProjection(ref mM, out mvp);
+            camera.GetNormalMatrix(ref mM, out mN);
+
+            data.UniformData = new List<IUniformData> { 
+                new UniformDataMatrix4()
+                {
+                    Name = "MVP",
+                    Data = mvp
+                },
+                new UniformDataMatrix3()
+                {
+                    Name = "mN",
+                    Data = mN
+                },
+                new UniformDataVector3() 
+                {
+                    Name = "EyeDirection",
+                    Data = camera.Direction
+                },
+            };
+
+            RenderQueue.Insert(data);
         }
         
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -429,100 +490,48 @@ namespace HatzapTestApplication
             if(frametime > 1.0)
             {
                 frametime = 0;
-                fpsText.Text = string.Format("FPS: {0}, Update: {1}", frame, update);
+                fpsText.Text = string.Format("FPS: {0}, Update: {1}, RenderQueue count: {2}", frame, update, RenderQueue.Count);
                 frame = 0;
                 update = 0;
             }
 
             text.Text = string.Format("Calculated weight: {0}", largeText.CalculatedWeight);
 
+            // Wait for gui update in case it was done in a background thread
             GuiRoot.Root.WaitUpdateFinish();
             
             // It is important that this is right before main render thread starts working on current context.
             Time.Render(e.Time);
 
-            // Wait for context
-            while (!GLThreadHelper.MakeGLContextCurrent()) { }
-
             GL.Viewport(0, 0, Width, Height);
 
             GL.ClearColor(0.25f, 0.25f, 0.25f, 1);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
-            GL.Enable(EnableCap.DepthTest);
-            //GL.Disable(EnableCap.Blend);
-
-            var ray = camera.GetRayFromWindowPoint(UserInput.Mouse.Position);
-
-            //var apina = ray.Position + ray.Direction * 5;
-            var apina = Vector3.Zero;
-
-            boldText.Text = string.Format("Ray p:{0} n:{1}\nObject position: {2}\nCaptured text:{3}", ray.Position, ray.Direction, apina, UserInput.Keyboard.CapturedText);
-
-            var mM = Matrix4.CreateRotationX((float)Math.Sin(totalTime * 1.3f)) * Matrix4.CreateRotationY((float)Math.Cos(totalTime * 1.45f)) * Matrix4.CreateTranslation(apina);
-
-            Matrix4 mvp;
-            Matrix3 mN;
-
-            camera.GetModelViewProjection(ref mM, out mvp);
-            camera.GetNormalMatrix(ref mM, out mN);
-
-            modelShader.Enable();
-            modelShader.SendUniform("MVP", ref mvp);
-            modelShader.SendUniform("mN", ref mN);
-            modelShader.SendUniform("EyeDirection", ref camera.Direction);
-
-            GL.ActiveTexture(TextureUnit.Texture0);
-            texture.Bind();
-
-            mesh.Draw();
-
+            
             GL.Disable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
 
             Matrix4 projection = Matrix4.CreateOrthographicOffCenter(0, Width, Height, 0, -1, 1);
             Matrix4 view = Matrix4.CreateTranslation(10, 30, 0);
-
-            mvp = view * projection;
-
             var textureSize = new Vector2(text.Font.Texture.Width, text.Font.Texture.Height);
-
             textShader.Enable();
+            view = Matrix4.CreateTranslation(0, 10, 0);
+            var mvp = view * projection;
             textShader.SendUniform("MVP", ref mvp);
             textShader.SendUniform("textureSize", ref textureSize);
             GL.ActiveTexture(TextureUnit.Texture0);
-
-            text.Draw(textShader);
-
-            view = Matrix4.CreateTranslation(10, 60, 0);
-            mvp = view * projection;
-
-            textShader.SendUniform("MVP", ref mvp);
-
-            boldText.Draw(textShader);
-
-            view = Matrix4.CreateTranslation(Width / 2.0f, Height / 2.0f, 0);
-            mvp = view * projection;
-
-            textShader.SendUniform("MVP", ref mvp);
-
-            //largeText.Draw(textShader);
-
-            view = Matrix4.CreateTranslation(0, 10, 0);
-            mvp = view * projection;
-
-            textShader.SendUniform("MVP", ref mvp);
-
             fpsText.Draw(textShader);
+
+            GL.Enable(EnableCap.DepthTest);
 
             base.OnRenderFrame(e);
 
+            RenderQueue.Render();
             GuiRoot.Root.Render();
 
             //GL.Flush();
             SwapBuffers();
-
-            GLThreadHelper.Unlock();
 
             UserInput.FrameEnd();
         }

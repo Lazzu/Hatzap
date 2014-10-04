@@ -65,25 +65,27 @@ namespace Hatzap.Gui
             }
         }
 
+        List<GuiVertex> vertices;
+
         public void Build(WidgetGroup rootGroup)
         {
-            var vertices = new List<GuiVertex>();
+            vertices = new List<GuiVertex>();
 
             RecursiveBuild(rootGroup, vertices);
 
             count = vertices.Count;
-
-            //while (!GLThreadHelper.MakeGLContextCurrent()) Thread.Yield();
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(vertices.Count * GuiVertex.SizeInBytes), vertices.ToArray(), BufferUsageHint.DynamicDraw);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            
-            //GLThreadHelper.Unlock();
         }
 
         public void Render()
         {
+            if(vertices != null)
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+                GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(vertices.Count * GuiVertex.SizeInBytes), vertices.ToArray(), BufferUsageHint.DynamicDraw);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                vertices = null;
+            }
+
             GL.BindVertexArray(vao);
             GL.DrawArrays(PrimitiveType.Triangles, 0, count);
             GL.BindVertexArray(0);
