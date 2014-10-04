@@ -172,7 +172,7 @@ void main( void )
 	//outColor = vec4(texcoord, 0, 1);
 	//outColor = vec4((n + 1) * 0.5, 1);
 	//outColor = vec4(n , 1);
-	outColor = diffuse + specular;
+	//outColor = diffuse + specular;
 	//outColor = vec4(specularTexel, 1);
 
 	RGBA = pow(outColor, vec4(g,g,g,1));

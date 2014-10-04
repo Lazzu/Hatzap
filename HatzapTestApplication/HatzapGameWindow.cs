@@ -314,22 +314,6 @@ namespace HatzapTestApplication
 
             Debug.WriteLine("Compressed texture support: " + GPUCapabilities.IsExtensionAvailable("GL_EXT_texture_compression_s3tc"));
 
-            texture = new Texture();
-            texture.PixelInternalFormat = PixelInternalFormat.CompressedRgbS3tcDxt1Ext;
-            texture.Load(new Bitmap("Assets/Textures/sh3.jpg"), PixelFormat.Bgra, PixelType.UnsignedByte);
-            texture.Bind();
-            texture.TextureSettings(TextureMinFilter.Nearest, TextureMagFilter.Nearest, 0);
-            texture.GenMipMaps();
-            texture.TextureSettings(TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear, 32);
-
-            normalTexture = new Texture();
-            normalTexture.PixelInternalFormat = PixelInternalFormat.CompressedRgbS3tcDxt1Ext;
-            normalTexture.Load(new Bitmap("Assets/Textures/sh3_n.png"), PixelFormat.Bgra, PixelType.UnsignedByte);
-            normalTexture.Bind();
-            normalTexture.TextureSettings(TextureMinFilter.Nearest, TextureMagFilter.Nearest, 0);
-            normalTexture.GenMipMaps();
-            normalTexture.TextureSettings(TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear, 32);
-
             var bitmaps = new[] { 
                 new Bitmap("Assets/Textures/sh3.jpg"), 
                 new Bitmap("Assets/Textures/sh3_n.png"),
