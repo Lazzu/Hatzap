@@ -53,7 +53,7 @@ namespace Hatzap
         {
             if(DirectionLock)
             {
-                Position = Target - Direction * Distance;
+                Position = Target + Direction * Distance;
             }
             else
             {
