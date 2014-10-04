@@ -56,6 +56,8 @@ namespace Hatzap.Gui
                 if (!widget.Visible)
                     continue;
 
+                widget.Dirty = false;
+
                 var vert = widget.GetVertices();
 
                 if (vert != null)
