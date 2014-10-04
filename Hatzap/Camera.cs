@@ -74,6 +74,18 @@ namespace Hatzap
             Frustum = new BoundingFrustum(VPMatrix);
         }
 
+        public void Rotate(Vector2 rotation)
+        {
+            Quaternion x = Quaternion.FromAxisAngle(Vector3.UnitX, rotation.X);
+            Quaternion y = Quaternion.FromAxisAngle(Vector3.UnitY, rotation.Y);
+
+            var q = y * x;
+
+            Direction = Vector3.Transform(Direction, Matrix4.CreateFromQuaternion(q));
+            
+            Position = Target + Direction * Distance;
+        }
+
         public void GetModelViewProjection(ref Matrix4 modelMatrix, out Matrix4 mvp)
         {
             Matrix4.Mult(ref modelMatrix, ref VPMatrix, out mvp);

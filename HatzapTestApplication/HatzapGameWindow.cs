@@ -392,6 +392,7 @@ namespace HatzapTestApplication
             //float weight = (float)e.Y / (float)Height * 2;
 
             mousepos = new Vector2(e.X, e.Y);
+
         }
 
         bool bold = false;
@@ -436,15 +437,17 @@ namespace HatzapTestApplication
 
             update++;
 
-            Random r = new Random();
+            camera.Rotate(new Vector2((mousepos.Y / (float)Height - 0.5f) * 0.5f * (float)e.Time, 0));
+            //camera.Rotate(new Vector2(0, (float)e.Time * 0.1f));
 
+            Random r = new Random();
 
             sw.Reset();
             sw.Start();
 
-            for(int x = -15; x < 15; x++)
+            for(int x = -15; x <= 15; x++)
             {
-                for(int y = -15; y < 15; y++)
+                for(int y = -15; y <= 15; y++)
                 {
                     var data = RenderDataPool.GetInstance();
 
