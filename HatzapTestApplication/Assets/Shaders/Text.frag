@@ -18,7 +18,7 @@ void main( void )
 	float border = settings.y;
 	float smoothness = settings.z;
 
-    float sdf = texture2D(textureSampler, texcoord.xy).a;
+    float sdf = texture2D(textureSampler, texcoord.xy).r;
 	
 	sdf = clamp(weight * sdf, 0.0, 1.0);
 

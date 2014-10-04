@@ -11,6 +11,6 @@ namespace Hatzap.Gui
     {
         public Vector2 Offset;
         public Vector2 Size;
-        public int Page;
+        public uint Page;
     }
 }

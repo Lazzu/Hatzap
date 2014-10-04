@@ -20,6 +20,7 @@ namespace Hatzap
         public Matrix4 View = Matrix4.Identity;
         public Matrix4 VPMatrix = Matrix4.Identity;
         public Matrix4 MVPMatrix = Matrix4.Identity;
+        public Matrix3 NormalMatrix = Matrix3.Identity;
 
         public Matrix4 InvProjection = Matrix4.Identity;
         public Matrix4 InvView = Matrix4.Identity;
@@ -54,7 +55,25 @@ namespace Hatzap
             VPMatrix = View * Projection;
             InvVPMatrix = VPMatrix.Inverted();
 
+            var rotation = VPMatrix.ExtractRotation();
+            NormalMatrix = Matrix3.CreateFromQuaternion(rotation);
+
             Frustum = new BoundingFrustum(VPMatrix);
+        }
+
+        public void GetModelViewProjection(ref Matrix4 modelMatrix, out Matrix4 mvp)
+        {
+            Matrix4.Mult(ref modelMatrix, ref VPMatrix, out mvp);
+        }
+
+        // Hold data here, don't allocate every time it's needed.
+        Matrix4 mMV = Matrix4.Identity;
+
+        public void GetNormalMatrix(ref Matrix4 modelMatrix, out Matrix3 mN)
+        {
+            Matrix4.Mult(ref modelMatrix, ref View, out mMV);
+            var rotation = mMV.ExtractRotation(); // How to get rid of this allocation?
+            Matrix3.CreateFromQuaternion(ref rotation, out mN);
         }
 
         public void SetAsCurrent()

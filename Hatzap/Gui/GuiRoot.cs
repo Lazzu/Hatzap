@@ -5,7 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Hatzap.Gui.Widgets;
+using Hatzap.Shaders;
+using Hatzap.Textures;
 using OpenTK;
+using OpenTK.Graphics.OpenGL;
 
 namespace Hatzap.Gui
 {
@@ -20,6 +23,13 @@ namespace Hatzap.Gui
         GuiRenderer renderer;
 
         Task updateTask;
+
+        List<Widget> customRenderingWidgets = new List<Widget>();
+        int customRenderingWidgetCount = 0;
+
+        ShaderProgram shader;
+
+        public TextureArray Texture { get; set; }
 
         internal GuiRoot(GameWindow gw)
         {
@@ -43,6 +53,7 @@ namespace Hatzap.Gui
         void gw_Load(object sender, EventArgs e)
         {
             renderer = new GuiRenderer();
+            shader = ShaderManager.Get("Gui");
         }
 
         void gw_KeyUp(object sender, OpenTK.Input.KeyboardKeyEventArgs e)
@@ -67,9 +78,27 @@ namespace Hatzap.Gui
 
         public void Update(double delta)
         {
+            UpdateGroup(widgets, delta);
+
             if (widgets.Dirty)
             {
                 Rebuild();
+            }
+        }
+
+        void UpdateGroup(WidgetGroup rootGroup, double delta)
+        {
+            foreach (var widget in rootGroup.Widgets)
+            {
+                widget.Update(delta);
+
+                if (widget.CustomRenderLayer != string.Empty)
+                    EnqueueCustomRenderingWidget(widget);
+
+                var group = widget as WidgetGroup;
+
+                if (group != null)
+                    UpdateGroup(group, delta);
             }
         }
 
@@ -80,7 +109,47 @@ namespace Hatzap.Gui
 
         public void Render()
         {
-            renderer.Render();
+            if (Texture != null && shader != null)
+            {
+                GL.Disable(EnableCap.DepthTest);
+
+                shader.Enable();
+
+                var textureSize = new Vector2(Texture.Width, Texture.Height);
+
+                shader.SendUniform("Projection", ref Projection);
+                shader.SendUniform("TextureSize", ref textureSize);
+
+                Texture.Bind();
+                renderer.Render();
+                shader.Disable();
+
+                
+            }
+
+            for (int i = 0; i < customRenderingWidgets.Count; i++)
+            {
+                var item = customRenderingWidgets[i];
+                customRenderingWidgets[i] = null;
+                item.CustomRender();
+            }
+            customRenderingWidgetCount = 0;
+        }
+
+        internal void EnqueueCustomRenderingWidget(Widget widget)
+        {
+            if(customRenderingWidgets.Count == customRenderingWidgetCount)
+            {
+                // No room in queue, add in the end of the queue
+                customRenderingWidgets.Add(widget);
+            }
+            else
+            {
+                // Insert in queue
+                customRenderingWidgets[customRenderingWidgetCount] = widget;
+            }
+            // Increase queue index
+            customRenderingWidgetCount++;
         }
 
         async void Rebuild()
@@ -94,6 +163,11 @@ namespace Hatzap.Gui
             {
                 updateTask.Wait();
             }
+        }
+
+        public void AddWidget(Widget widget)
+        {
+            widgets.AddChildWidget(widget);
         }
 
         public static GuiRoot Root;

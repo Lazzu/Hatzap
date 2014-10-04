@@ -41,6 +41,18 @@
     <None Include="Assets\Models\suzanne.fbx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Assets\Shaders\Gui.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\Shaders\Gui.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\Shaders\GuiImage.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\Shaders\GuiImage.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Assets\Shaders\Model.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

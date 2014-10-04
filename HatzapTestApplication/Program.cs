@@ -13,8 +13,8 @@ namespace HatzapTestApplication
 
             using(HatzapGameWindow gw = new HatzapGameWindow())
             {
-                gw.VSync = OpenTK.VSyncMode.Off;
-                gw.Run(60,60);
+                gw.VSync = OpenTK.VSyncMode.Adaptive;
+                gw.Run();
             }
 
         }

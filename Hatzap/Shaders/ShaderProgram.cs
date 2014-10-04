@@ -38,6 +38,11 @@ namespace Hatzap.Shaders
             GL.UseProgram(ID);
         }
 
+        public void Disable()
+        {
+            GL.UseProgram(0);
+        }
+
         public void Link()
         {
             GL.LinkProgram(ID);
@@ -125,5 +130,7 @@ namespace Hatzap.Shaders
         }
 
         #endregion
+
+        
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -57,6 +58,8 @@ namespace Hatzap.Input
 
         public void Initialize(GameWindow gw)
         {
+            ClickInterval = 0.15f;
+
             gameWindow = gw;
 
             allButtons = (MouseButton[])Enum.GetValues(typeof(MouseButton));
@@ -85,6 +88,8 @@ namespace Hatzap.Input
 
         void gw_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            Debug.WriteLine("MouseDown");
+
             var button = e.Button;
 
             var previous = downButtons[button];
@@ -100,6 +105,8 @@ namespace Hatzap.Input
 
         void gw_MouseUp(object sender, OpenTK.Input.MouseButtonEventArgs e)
         {
+            Debug.WriteLine("MouseUp");
+
             var button = e.Button;
 
             downButtons[button] = false;
@@ -163,6 +170,36 @@ namespace Hatzap.Input
             return clickedButtons[button];
         }
 
-        
+
+
+
+        public bool IsInsideRect(Vector2 min, Vector2 max)
+        {
+            return min.X < X && min.Y < Y && max.X > X && max.Y > Y;
+        }
+
+
+        public bool IsButtonClicked()
+        {
+            foreach (var item in allButtons)
+            {
+                if (IsButtonClicked(item))
+                    return true;
+            }
+            return false;
+        }
+
+        public MouseButton[] GetClickedButtons()
+        {
+            List<MouseButton> clicked = new List<MouseButton>();
+
+            foreach (var item in allButtons)
+            {
+                if (clickedButtons[item])
+                    clicked.Add(item);
+            }
+
+            return clicked.ToArray();
+        }
     }
 }

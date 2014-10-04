@@ -190,5 +190,22 @@ namespace Hatzap.Input
             return clickedButtons[button];
         }
 
+
+
+        public bool IsInsideRect(Vector2 min, Vector2 max)
+        {
+            return min.X < X && min.Y < Y && max.X > X && max.Y > Y;
+        }
+
+
+        public bool IsButtonClicked()
+        {
+            throw new NotImplementedException();
+        }
+
+        public MouseButton[] GetClickedButtons()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

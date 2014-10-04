@@ -10,7 +10,7 @@ layout(location = 4) in vec2 uv;
 layout(location = 5) in vec4 color;
 
 uniform mat4 MVP;
-//uniform mat3 mN;
+uniform mat3 mN;
 
 out vec2 texcoord;
 out mat3 TBN;
@@ -19,14 +19,14 @@ out vec3 vNormal;
 
 void main( void )
 {
-	mat3 mN = mat3(MVP);
+	//mat3 mN = mat3(MVP);
 	
 	texcoord = uv;
 	TBN = mat3(mN * tangent, mN * binormal, mN * normal);
 
 	vColor = color;
 	//vColor = vec4(((mN * normal) + vec3(1)) * vec3(0.5), 1) * color;
-	vNormal = (MVP * vec4(normal, 0)).xyz;
+	vNormal = mN * normal;
 
 	gl_Position = MVP * vec4(vertex, 1);
 }

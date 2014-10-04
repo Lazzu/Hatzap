@@ -52,7 +52,7 @@ namespace Hatzap.Textures
             else UnBind();
         }
 
-        public void Load(Bitmap[] bmps, SizedInternalFormat internalFormat, OpenTK.Graphics.OpenGL.PixelFormat format, PixelType type)
+        public void Load(Bitmap[] bmps, PixelInternalFormat internalFormat, OpenTK.Graphics.OpenGL.PixelFormat format, PixelType type)
         {
             // Get last bound texture
             Texture last = null;
@@ -61,7 +61,10 @@ namespace Hatzap.Textures
             // Bind current texture
             Bind();
 
-            GL.TexStorage3D(TextureTarget3d.Texture2DArray, 1, internalFormat, Width, Height, bmps.Length);
+            Width = bmps[0].Width;
+            Height = bmps[0].Height;
+
+            GL.TexImage3D(TextureTarget, 0, internalFormat, Width, Height, bmps.Length, 0, format, type, IntPtr.Zero);
 
             for (int i = 0; i < bmps.Length; i++)
             {

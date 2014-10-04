@@ -11,6 +11,7 @@ namespace Hatzap.Utilities
     public static class GLThreadHelper
     {
         static GameWindow gameWindow = null;
+        static GameWindow backgroundWindow = null;
 
         /// <summary>
         /// It is very important to lock() this when you are using the GL Context outside main thread.
@@ -38,6 +39,7 @@ namespace Hatzap.Utilities
         {
             gameWindow = gw;
             locked = false;
+            //backgroundWindow = new GameWindow();
         }
 
         /// <summary>

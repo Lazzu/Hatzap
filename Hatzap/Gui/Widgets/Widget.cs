@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Hatzap.Input;
 using OpenTK;
 using OpenTK.Input;
 
@@ -10,22 +12,46 @@ namespace Hatzap.Gui.Widgets
 {
     public abstract class Widget
     {
+        /// <summary>
+        /// Widget position on screen.
+        /// </summary>
         public Vector2 Position;
+
+        /// <summary>
+        /// Widget size on screen.
+        /// </summary>
         public Vector2 Size;
 
+        /// <summary>
+        /// The widget texture region(s). Some widgets require more regions than others. Check documentation for each widget invidually.
+        /// </summary>
         public GuiTextureRegion[] TextureRegion;
         
         // Should only be accessed by property
         private int z;
         private bool dirty;
 
-        public int Z { get { return z; } set { z = value; if (WidgetGroup != null) WidgetGroup.Sort(); } }
+        /// <summary>
+        /// The depth-sorting index in the current widget group.
+        /// </summary>
+        public int Z { get { return z; } set { z = value; if (WidgetGroup != null) WidgetGroup.SortChildWidgets(); } }
+
+        /// <summary>
+        /// The widget group this widget belongs to.
+        /// </summary>
         public WidgetGroup WidgetGroup { get; set; }
+
+        /// <summary>
+        /// Gets if the widget is the currently active one.
+        /// </summary>
+        public bool Active { get { return this == Widget.CurrentlyActive; } }
 
         /// <summary>
         /// If set to true, this widget requires updating
         /// </summary>
-        public bool Dirty { get { return dirty; } set { dirty = value; if (dirty) WidgetGroup.Dirty = dirty; } }
+        public bool Dirty { get { return dirty; } set { dirty = value; if (dirty && WidgetGroup != null) WidgetGroup.Dirty = dirty; } }
+
+        #region Event functions
 
         #region MouseEvents
         public virtual void OnMouseEnter() { }
@@ -42,7 +68,53 @@ namespace Hatzap.Gui.Widgets
         public virtual void OnKeyUp(Key key) { }
         #endregion
 
-        public virtual void Update(double delta) { }
+        #endregion
+
+        /// <summary>
+        /// The update function gets called on every frame update.
+        /// </summary>
+        /// <param name="delta">The delta time of the current frame.</param>
+        public void Update(double delta) 
+        {
+            bool insideRect = UserInput.Mouse.IsInsideRect(Position, Position + Size);
+            bool buttonClicked = UserInput.Mouse.IsButtonClicked();
+            
+            if (insideRect && buttonClicked)
+            {
+                var buttons = UserInput.Mouse.GetClickedButtons();
+                foreach (var button in buttons)
+                {
+                    OnMouseClick(button);
+                }
+            }
+
+            OnUpdate(delta);
+        }
+
+        public virtual void OnUpdate(double delta) { }
+
+        /// <summary>
+        /// Returns all
+        /// </summary>
+        /// <returns></returns>
         public virtual GuiVertex[] GetVertices() { return null; }
+
+        /// <summary>
+        /// This function is used for rendering custom GUI stuff after all other GUI rendering is done.
+        /// Useful for displaying custom objects like textured sprite or text.
+        /// </summary>
+        /// <param name="delta">The delta time of the current frame.</param>
+        public virtual void CustomRender() { }
+
+        /// <summary>
+        /// The layer for ordering the custom rendering calls, to minimize shader bindings and GL calls. 
+        /// If returns string.Empty, it indicates that this object has no need for custom rendering pass.
+        /// </summary>
+        public virtual string CustomRenderLayer { get { return string.Empty; } }
+
+        /// <summary>
+        /// Gets the currently active widget. Used internally for calling user input event functions, but is exposed as public for convenience.
+        /// </summary>
+        public static Widget CurrentlyActive { get; internal set; }
     }
 }

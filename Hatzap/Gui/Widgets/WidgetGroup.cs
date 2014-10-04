@@ -12,7 +12,7 @@ namespace Hatzap.Gui.Widgets
 
         public List<Widget> Widgets { get { return widgets; } }
 
-        public void Sort()
+        public void SortChildWidgets()
         {
             // TODO: Replace bubble sort with something more efficient if needed.
             for (int iterator = 0; iterator < widgets.Count; iterator++)
@@ -28,20 +28,20 @@ namespace Hatzap.Gui.Widgets
                         swap = true;
                     }
                 }
-                if (!swap)
+                if (!swap) // No more swapping was needed, break the loop
                     break;
             }
         }
 
-        public void Add(Widget item)
+        public void AddChildWidget(Widget item)
         {
             widgets.Add(item);
             item.WidgetGroup = this;
-            Sort();
+            SortChildWidgets();
             Dirty = true;
         }
 
-        public void Clear()
+        public void ClearChildWidgets()
         {
             foreach (var item in widgets)
             {
@@ -51,12 +51,12 @@ namespace Hatzap.Gui.Widgets
             Dirty = true;
         }
 
-        public int Count
+        public int ChildWidgetCount
         {
             get { return widgets.Count; }
         }
 
-        public bool Remove(Widget item)
+        public bool RemoveChildWidget(Widget item)
         {
             if (widgets.Remove(item))
             {

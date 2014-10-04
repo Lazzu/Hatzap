@@ -5,7 +5,7 @@ in mat3 TBN;
 in vec4 vColor;
 in vec3 vNormal;
 
-uniform float gamma = 2.2;
+uniform float gamma = 2.0;
 uniform vec3 EyeDirection;
 uniform sampler2D textureSampler;
 
@@ -130,7 +130,9 @@ vec2 ashikhmin_shirley(vec3 LightNormal,vec3 SurfaceNormal,vec3 EyeNormal,vec4 M
 
 void main( void )
 {
+	//float g = 1;
 	float g = 1 / gamma;
+	//float g = gamma;
 
 	vec2 front = vec2(0);
 	vec2 top = vec2(0);
@@ -142,26 +144,29 @@ void main( void )
 	//Material.y=Anisotropy (Y)
 	vec4 material = vec4(500,500,0,0);
 
-	front = ashikhmin_shirley(normalize(vec3(0, 0, -1)), n, -EyeDirection, material);
-	top = ashikhmin_shirley(normalize(vec3(0, -1, 0)), n, -EyeDirection, material);
-	side = ashikhmin_shirley(normalize(vec3(1, 0, 0)), n, -EyeDirection, material);
+	front = ashikhmin_shirley(normalize(vec3(0, 0, -1)), n, EyeDirection, material);
+	//top = ashikhmin_shirley(normalize(vec3(0, -1, 0)), n, EyeDirection, material);
+	//side = ashikhmin_shirley(normalize(vec3(1, 0, 0)), n, EyeDirection, material);
 
 	vec2 tmp = clamp(front + top + side, vec2(0), vec2(1));
 
 	vec4 diffuse = vec4(tmp.x, tmp.x, tmp.x, 1);
 	vec4 specular = vec4(tmp.y, tmp.y, tmp.y, 1);
 
-	RGBA = diffuse + specular;
+	vec4 outColor;
 
-	//RGBA = vec4(texcoord, 0, 1);
-	//RGBA = vec4((n + 1) * 0.5, 1);
-	//RGBA = vec4(n , 1);
+	//outColor = diffuse + specular;
 
-	//RGBA = texture( textureSampler, texcoord ) * diffuse + specular;
-	//RGBA = texture( textureSampler, texcoord );
-	//RGBA = pow(texture( textureSampler, texcoord ), vec4(g, g, g, 1));
-	//RGBA = vec4(1);
+	//outColor = vec4(texcoord, 0, 1);
+	//outColor = vec4((n + 1) * 0.5, 1);
+	//outColor = vec4(n , 1);
+	
+	outColor = texture( textureSampler, texcoord ) * diffuse + specular;
+	//outColor = texture( textureSampler, texcoord );
+	//outColor = pow(texture( textureSampler, texcoord ), vec4(g, g, g, 1));
+	//outColor = vec4(1);
 	//Normals = ((TBN * texture( textureSampler, vec3(texcoord, 1.0) ).xyz) + vec3(1)) * vec3(0.5);
 
+	RGBA = pow(outColor, vec4(g,g,g,1));
 }
 

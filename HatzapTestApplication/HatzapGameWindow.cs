@@ -9,6 +9,7 @@ using Assimp.Configs;
 using Hatzap;
 using Hatzap.Gui;
 using Hatzap.Gui.Fonts;
+using Hatzap.Gui.Widgets;
 using Hatzap.Input;
 using Hatzap.Models;
 using Hatzap.Shaders;
@@ -39,7 +40,7 @@ namespace HatzapTestApplication
         GuiText largeText;
         GuiText fpsText;
 
-        public HatzapGameWindow() : base(1280,720, new GraphicsMode(new ColorFormat(32), 32, 32, 8, new ColorFormat(8, 8, 8, 8), 2, false), "Hatzap Test Application", GameWindowFlags.Default, 
+        public HatzapGameWindow() : base(1280,720, new GraphicsMode(new ColorFormat(32), 32, 32, 16, new ColorFormat(8, 8, 8, 8), 2, false), "Hatzap Test Application", GameWindowFlags.FixedWindow, 
             DisplayDevice.GetDisplay(DisplayIndex.Default), 3, 3, GraphicsContextFlags.ForwardCompatible)
         {
             //WindowState = OpenTK.WindowState.Maximized;
@@ -49,11 +50,9 @@ namespace HatzapTestApplication
         {
             Debug.WriteLine("OnLoad()");
 
-            base.OnLoad(e);
-
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
-            GL.Enable(EnableCap.VertexProgramPointSize);
+            //GL.Enable(EnableCap.VertexProgramPointSize);
             GL.Enable(EnableCap.CullFace);
             //GL.Enable(EnableCap.ScissorTest);
 
@@ -66,10 +65,185 @@ namespace HatzapTestApplication
             camera.Position = new Vector3(0, 0, 1.5f);
             camera.Target = new Vector3(0, 0, 0);
 
+            FontCollection fonts = new FontCollection();
+            
+            fonts.Fonts.Add(new FontInfo()
+            {
+                FontFamily = "OpenSans-Regular",
+                FontDataFile = "Assets/Fonts/OpenSans-Regular.ttf_sdf.txt",
+                FontTextureFile = "Assets/Fonts/OpenSans-Regular.ttf_sdf.png"
+            });
+
+            XML.Write.ToFile(fonts, "Assets/Fonts/collection.xml");
+
+            FontManager.LoadCollection(fonts);
+
+            ShaderCollection collection = new ShaderCollection();
+
+            collection.ShaderPrograms.Add(new ShaderProgramInfo()
+            {
+                Shaders = new List<ShaderInfo>(new[]{ new ShaderInfo() {
+                    Path = "Assets/Shaders/Model.vert",
+                    Type = ShaderType.VertexShader
+                },new ShaderInfo() {
+                    Path = "Assets/Shaders/Model.frag",
+                    Type = ShaderType.FragmentShader
+                }}),
+                Name = "Model"
+            });
+
+            collection.ShaderPrograms.Add(new ShaderProgramInfo()
+            {
+                Shaders = new List<ShaderInfo>(new[]{ new ShaderInfo() {
+                    Path = "Assets/Shaders/Text.vert",
+                    Type = ShaderType.VertexShader
+                },new ShaderInfo() {
+                    Path = "Assets/Shaders/Text.frag",
+                    Type = ShaderType.FragmentShader
+                }}),
+                Name = "Text"
+            });
+
+            collection.ShaderPrograms.Add(new ShaderProgramInfo()
+            {
+                Shaders = new List<ShaderInfo>(new[]{ new ShaderInfo() {
+                    Path = "Assets/Shaders/Gui.vert",
+                    Type = ShaderType.VertexShader
+                },new ShaderInfo() {
+                    Path = "Assets/Shaders/Gui.frag",
+                    Type = ShaderType.FragmentShader
+                }}),
+                Name = "Gui"
+            });
+
+            collection.ShaderPrograms.Add(new ShaderProgramInfo()
+            {
+                Shaders = new List<ShaderInfo>(new[]{ new ShaderInfo() {
+                    Path = "Assets/Shaders/GuiImage.vert",
+                    Type = ShaderType.VertexShader
+                },new ShaderInfo() {
+                    Path = "Assets/Shaders/GuiImage.frag",
+                    Type = ShaderType.FragmentShader
+                }}),
+                Name = "Gui.Image"
+            });
+
+            //XML.Write.ToFile(collection, "Assets/Shaders/collection.xml");
+
+            ShaderManager.LoadCollection(collection);
+
             Time.Initialize();
             UserInput.Initialize(this, typeof(AccurateMouse), typeof(Keyboard));
             GLThreadHelper.Initialize(this);
             GuiRoot.Initialize(this);
+
+            GuiRoot.Root.Texture = new TextureArray();
+
+            GuiRoot.Root.Texture.Load(new[] { new Bitmap("Assets/Textures/gui.png") }, PixelInternalFormat.Rgba, PixelFormat.Bgra, PixelType.UnsignedByte);
+
+            GuiRoot.Root.Texture.TextureSettings(TextureMinFilter.Linear, TextureMagFilter.Linear, 0);
+
+            var buttonRegion = new[] {
+                new GuiTextureRegion() { // Top left
+                    Offset = new Vector2(2,2),
+                    Size = new Vector2(2,2),
+                    Page = 0
+                }, new GuiTextureRegion() { // Top center
+                    Offset = new Vector2(4,2),
+                    Size = new Vector2(62,2),
+                    Page = 0
+                }, new GuiTextureRegion() { // Top Right
+                    Offset = new Vector2(66,2),
+                    Size = new Vector2(2,2),
+                    Page = 0
+                }, new GuiTextureRegion() { // Middle left
+                    Offset = new Vector2(2,4),
+                    Size = new Vector2(2,62),
+                    Page = 0
+                }, new GuiTextureRegion() { // Middle center
+                    Offset = new Vector2(4,4),
+                    Size = new Vector2(62,62),
+                    Page = 0
+                }, new GuiTextureRegion() { // Middle right
+                    Offset = new Vector2(66,4),
+                    Size = new Vector2(2,62),
+                    Page = 0
+                }, new GuiTextureRegion() { // Bottom left
+                    Offset = new Vector2(2,66),
+                    Size = new Vector2(2,2),
+                    Page = 0
+                }, new GuiTextureRegion() { // Bottom center
+                    Offset = new Vector2(4,66),
+                    Size = new Vector2(62,2),
+                    Page = 0
+                }, new GuiTextureRegion() { // Bottom right
+                    Offset = new Vector2(66,66),
+                    Size = new Vector2(2,2),
+                    Page = 0
+                },
+            };
+
+            Button btn = new Button();
+            btn.Text = "Button";
+            btn.OnClick += (m) =>
+            {
+                btn.Text = "Clicked " + m.ToString();
+            };
+            btn.Position = new Vector2(100, 100);
+            btn.Size = new Vector2(150, 50);
+            btn.TextureRegion = buttonRegion;
+
+            Button btn2 = new Button();
+            btn2.Text = "Button";
+            btn2.OnClick += (m) =>
+            {
+                btn2.Text = "Clicked " + m.ToString();
+            };
+            btn2.Position = new Vector2(300, 100);
+            btn2.Size = new Vector2(150, 50);
+            btn2.TextureRegion = buttonRegion;
+
+            Button btn3 = new Button();
+            btn3.Text = "Button";
+            btn3.OnClick += (m) =>
+            {
+                btn3.Text = "Clicked " + m.ToString();
+            };
+            btn3.Position = new Vector2(100, 200);
+            btn3.Size = new Vector2(150, 50);
+            btn3.TextureRegion = buttonRegion;
+
+            Button btn4 = new Button();
+            btn4.Text = "Button";
+            btn4.OnClick += (m) =>
+            {
+                btn4.Text = "Clicked " + m.ToString();
+            };
+            btn4.Position = new Vector2(300, 200);
+            btn4.Size = new Vector2(150, 50);
+            btn4.TextureRegion = buttonRegion;
+
+            var image = new Hatzap.Gui.Widgets.Image();
+            image.Texture = new Texture();
+            image.Texture.Load(new Bitmap("Assets/Textures/Default.png"), PixelFormat.Bgra, PixelType.UnsignedByte);
+            image.Texture.Bind();
+            image.Texture.TextureSettings(TextureMinFilter.Linear, TextureMagFilter.Linear, 32);
+            image.Position = new Vector2(100, 500);
+            image.Size = new Vector2(100, 100);
+
+            var lblText = new Label();
+            lblText.Text = "This is a GUI Label";
+            lblText.Position = new Vector2(800, 100);
+            lblText.GuiText.HorizontalAlignment = HorizontalAlignment.Left;
+
+            GuiRoot.Root.AddWidget(btn);
+            GuiRoot.Root.AddWidget(btn2);
+            GuiRoot.Root.AddWidget(btn3);
+            GuiRoot.Root.AddWidget(btn4);
+            GuiRoot.Root.AddWidget(image);
+            GuiRoot.Root.AddWidget(lblText);
+
+            base.OnLoad(e);
 
             UserInput.Keyboard.CaptureText = true;
 
@@ -92,43 +266,8 @@ namespace HatzapTestApplication
             skyShader.Link();
             skyShader.Enable();*/
 
-            Shader textVertexShader = new Shader(ShaderType.VertexShader);
-            Shader textFragmentShader = new Shader(ShaderType.FragmentShader);
-
-            using (StreamReader r = new StreamReader("Assets/Shaders/Text.vert"))
-            {
-                textVertexShader.ShaderSource(r.ReadToEnd());
-            }
-
-            using (StreamReader r = new StreamReader("Assets/Shaders/Text.frag"))
-            {
-                textFragmentShader.ShaderSource(r.ReadToEnd());
-            }
-
-            textShader = new ShaderProgram("Text");
-            textShader.AttachShader(textVertexShader);
-            textShader.AttachShader(textFragmentShader);
-            textShader.Link();
-            textShader.Enable();
-
-            Shader modelVertexShader = new Shader(ShaderType.VertexShader);
-            Shader modelFragmentShader = new Shader(ShaderType.FragmentShader);
-
-            using (StreamReader r = new StreamReader("Assets/Shaders/Model.vert"))
-            {
-                modelVertexShader.ShaderSource(r.ReadToEnd());
-            }
-
-            using (StreamReader r = new StreamReader("Assets/Shaders/Model.frag"))
-            {
-                modelFragmentShader.ShaderSource(r.ReadToEnd());
-            }
-
-            modelShader = new ShaderProgram("Model");
-            modelShader.AttachShader(modelVertexShader);
-            modelShader.AttachShader(modelFragmentShader);
-            modelShader.Link();
-            modelShader.Enable();
+            modelShader = ShaderManager.Get("Model");
+            textShader = ShaderManager.Get("Text");
 
             //Create a new importer
             AssimpContext importer = new AssimpContext();
@@ -137,17 +276,7 @@ namespace HatzapTestApplication
             //NormalSmoothingAngleConfig config = new NormalSmoothingAngleConfig(66.0f);
             //importer.SetConfig(config);
 
-            //This is how we add a logging callback 
-            /*LogStream logstream = new LogStream(delegate(String msg, String userData)
-            {
-                Debug.WriteLine(msg);
-            });
-            logstream.Attach();*/
-
             var flags = PostProcessPreset.TargetRealTimeMaximumQuality | PostProcessSteps.Triangulate | PostProcessSteps.SortByPrimitiveType | PostProcessSteps.FlipUVs;
-
-            /*if ((flags & PostProcessSteps.Triangulate) == PostProcessSteps.Triangulate)
-                flags ^= PostProcessSteps.Triangulate;*/
 
             //Import the model. All configs are set. The model
             //is imported, loaded into managed memory. Then the unmanaged memory is released, and everything is reset.
@@ -178,22 +307,17 @@ namespace HatzapTestApplication
             //End of example
             importer.Dispose();
 
+            Debug.WriteLine("Compressed texture support: " + GPUCapabilities.IsExtensionAvailable("GL_EXT_texture_compression_s3tc"));
+
             texture = new Texture();
+            texture.PixelInternalFormat = PixelInternalFormat.CompressedRgbS3tcDxt1Ext;
             texture.Load(new Bitmap("Assets/Textures/sh3.jpg"), PixelFormat.Bgra, PixelType.UnsignedByte);
             texture.Bind();
             texture.TextureSettings(TextureMinFilter.Nearest, TextureMagFilter.Nearest, 0);
             texture.GenMipMaps();
             texture.TextureSettings(TextureMinFilter.LinearMipmapLinear, TextureMagFilter.Linear, 32);
 
-            font = new Hatzap.Gui.Fonts.Font();
-            font.LoadBMFont("Assets/Fonts/OpenSans-Regular.ttf_sdf.txt");
-            font.Texture = new Texture();
-            font.Texture.Load(new Bitmap("Assets/Fonts/OpenSans-Regular.ttf_sdf.png"), PixelFormat.Bgra, PixelType.UnsignedByte);
-            font.Texture.Bind();
-            //font.Texture.TextureSettings(TextureMinFilter.Linear, TextureMagFilter.Linear, 32);
-            //font.Texture.GenMipMaps();
-            font.Texture.TextureSettings(TextureMinFilter.Linear, TextureMagFilter.Linear, 0);
-            //font.Texture = texture;
+            font = FontManager.Get("OpenSans-Regular");
 
             text = new GuiText();
             text.Font = font;
@@ -232,6 +356,7 @@ namespace HatzapTestApplication
             fpsText.Text = "FPS: Calculating..";
 
             Debug.WriteLine("OnLoad() ends");
+
         }
 
         Vector2 mousepos;
@@ -266,16 +391,14 @@ namespace HatzapTestApplication
 
         double totalTime = 0;
         double frametime = 0;
-
-        Task guiUpdate = null;
-
+        
         int update = 0;
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             Time.Update(e.Time);
 
-            GuiRoot.Root.UpdateAsync(e.Time);
+            GuiRoot.Root.Update(e.Time);
 
             base.OnUpdateFrame(e);
 
@@ -314,7 +437,7 @@ namespace HatzapTestApplication
             text.Text = string.Format("Calculated weight: {0}", largeText.CalculatedWeight);
 
             GuiRoot.Root.WaitUpdateFinish();
-
+            
             // It is important that this is right before main render thread starts working on current context.
             Time.Render(e.Time);
 
@@ -335,10 +458,17 @@ namespace HatzapTestApplication
 
             boldText.Text = string.Format("Ray p:{0} n:{1}\nObject position: {2}\nCaptured text:{3}", ray.Position, ray.Direction, apina, UserInput.Keyboard.CapturedText);
 
-            Matrix4 model = Matrix4.CreateRotationX((float)Math.Sin(totalTime * 1.3f)) * Matrix4.CreateRotationY((float)Math.Cos(totalTime * 1.45f)) * Matrix4.CreateTranslation(apina) * camera.VPMatrix;
+            var mM = Matrix4.CreateRotationX((float)Math.Sin(totalTime * 1.3f)) * Matrix4.CreateRotationY((float)Math.Cos(totalTime * 1.45f)) * Matrix4.CreateTranslation(apina);
+
+            Matrix4 mvp;
+            Matrix3 mN;
+
+            camera.GetModelViewProjection(ref mM, out mvp);
+            camera.GetNormalMatrix(ref mM, out mN);
 
             modelShader.Enable();
-            modelShader.SendUniform("MVP", ref model);
+            modelShader.SendUniform("MVP", ref mvp);
+            modelShader.SendUniform("mN", ref mN);
             modelShader.SendUniform("EyeDirection", ref camera.Direction);
 
             GL.ActiveTexture(TextureUnit.Texture0);
@@ -353,7 +483,7 @@ namespace HatzapTestApplication
             Matrix4 projection = Matrix4.CreateOrthographicOffCenter(0, Width, Height, 0, -1, 1);
             Matrix4 view = Matrix4.CreateTranslation(10, 30, 0);
 
-            Matrix4 mvp = view * projection;
+            mvp = view * projection;
 
             var textureSize = new Vector2(text.Font.Texture.Width, text.Font.Texture.Height);
 
@@ -387,6 +517,8 @@ namespace HatzapTestApplication
 
             base.OnRenderFrame(e);
 
+            GuiRoot.Root.Render();
+
             //GL.Flush();
             SwapBuffers();
 
@@ -398,4 +530,5 @@ namespace HatzapTestApplication
         int frame;
     }
 }
+
 
