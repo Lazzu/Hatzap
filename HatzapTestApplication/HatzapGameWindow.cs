@@ -432,7 +432,7 @@ namespace HatzapTestApplication
         
         int update = 0;
 
-        double renderInsert = 0, renderQueue = 0, swapBufferTime = 0;
+        double renderInsert = 0, renderQueue = 0, swapBufferTime = 0, guiwait = 0;
         Stopwatch sw = new Stopwatch();
         Stopwatch swFrame = new Stopwatch();
 
@@ -527,16 +527,23 @@ namespace HatzapTestApplication
             if(frametime > 1.0)
             {
                 frametime = 0;
-                fpsText.Text = string.Format("FPS: {0}, Update: {1}, Frame time: {6}, RenderQueue count: {2}, RenderInsert: {3}ms, RenderQueue.Render: {4}ms, SwapBuffers(): {5}ms, Unknown: {7}\n" + 
-                    "Triangles Drawn: {8}, ObjectPool reserve: {9}, ObjectPool capacity: {10}", frame, update, RenderQueue.Count, Math.Round(renderInsert * 1000, 2), Math.Round(renderQueue * 1000, 2), Math.Round(swapBufferTime * 1000, 2), Math.Round(frameTime * 1000, 2), Math.Round((frameTime - swapBufferTime - renderQueue - renderInsert) * 1000, 2), RenderQueue.TrianglesDrawn, RenderDataPool.Count, RenderDataPool.Size);
+                double unknown = frameTime - swapBufferTime - renderQueue - renderInsert - guiwait;
+                fpsText.Text = string.Format("FPS: {0}, Update: {1}, Frame time: {6}, RenderQueue count: {2}, RenderInsert: {3}ms, RenderQueue.Render: {4}ms, SwapBuffers(): {5}ms, Unknown: {7}\n" +
+                    "Triangles Drawn: {8}, ObjectPool reserve: {9}, ObjectPool capacity: {10}, Gui Update: {11}ms, Gui Rebuild: {12}ms, Gui wait: {13}", 
+                    frame, update, RenderQueue.Count, Math.Round(renderInsert * 1000, 2), Math.Round(renderQueue * 1000, 2), Math.Round(swapBufferTime * 1000, 2), Math.Round(frameTime * 1000, 2),
+                    Math.Round((unknown) * 1000, 2), RenderQueue.TrianglesDrawn, RenderDataPool.Count, RenderDataPool.Size, Math.Round(GuiRoot.Root.UpdateElapsedSeconds, 2), Math.Round(GuiRoot.Root.RebuildElapsedSeconds, 2), Math.Round(guiwait, 2));
                 frame = 0;
                 update = 0;
             }
 
             text.Text = string.Format("Calculated weight: {0}", largeText.CalculatedWeight);
 
+            sw.Reset();
+            sw.Start();
             // Wait for gui update in case it was done in a background thread
             GuiRoot.Root.WaitUpdateFinish();
+            sw.Stop();
+            guiwait = sw.Elapsed.TotalSeconds;
             
             // It is important that this is right before main render thread starts working on current context.
             Time.Render(e.Time);

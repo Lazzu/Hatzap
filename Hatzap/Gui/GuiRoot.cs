@@ -80,14 +80,27 @@ namespace Hatzap.Gui
             widgets.size = new Vector2(gw.Width, gw.Height);
         }
 
+        Stopwatch sw = new Stopwatch();
+
+        public double UpdateElapsedSeconds { get; protected set; }
+        public double RebuildElapsedSeconds { get; protected set; }
+
         public void Update(double delta)
         {
+            sw.Reset();
+            sw.Start();
             UpdateGroup(widgets, delta);
+            sw.Stop();
+            UpdateElapsedSeconds = sw.Elapsed.TotalSeconds;
 
+            sw.Reset();
+            sw.Start();
             if (widgets.Dirty)
             {
                 Rebuild();
             }
+            sw.Stop();
+            RebuildElapsedSeconds = sw.Elapsed.TotalSeconds;
         }
 
         void UpdateGroup(WidgetGroup rootGroup, double delta)
