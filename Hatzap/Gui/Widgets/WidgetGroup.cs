@@ -12,6 +12,8 @@ namespace Hatzap.Gui.Widgets
 
         public List<Widget> Widgets { get { return widgets; } }
 
+        public int Capacity { get; set; }
+
         public float LeftAnchorOffset { get; set; }
         public float RightAnchorOffset { get; set; }
         public float TopAnchorOffset { get; set; }
@@ -38,12 +40,17 @@ namespace Hatzap.Gui.Widgets
             }
         }
 
-        public void AddChildWidget(Widget item)
+        public bool AddChildWidget(Widget item)
         {
+            if (Capacity > 0 && widgets.Count >= Capacity)
+                return false;
+
             widgets.Add(item);
             item.WidgetGroup = this;
             SortChildWidgets();
             Dirty = true;
+
+            return true;
         }
 
         public void ClearChildWidgets()

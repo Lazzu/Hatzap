@@ -105,8 +105,10 @@ namespace Hatzap.Gui
 
         void UpdateGroup(WidgetGroup rootGroup, double delta)
         {
-            foreach (var widget in rootGroup.Widgets)
+            for (int i = 0; i < rootGroup.Widgets.Count; i++)
             {
+                var widget = rootGroup.Widgets[i];
+
                 if (!widget.Visible)
                     continue;
 
@@ -145,7 +147,7 @@ namespace Hatzap.Gui
                 shader.Enable();
 
                 var textureSize = new Vector2(Texture.Width, Texture.Height);
-                
+
                 shader.SendUniform("Projection", ref Projection);
                 shader.SendUniform("TextureSize", ref textureSize);
 
