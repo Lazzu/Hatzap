@@ -27,7 +27,7 @@ namespace Hatzap.Gui.Widgets
         public Vector2 Position
         {
             get { return position; }
-            set { if (Anchor == null) position = value; else Anchor.SetCoordinates(ref value, ref size); }
+            set { if (Anchor == null) position = value; else Anchor.SetCoordinates(value, size); }
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace Hatzap.Gui.Widgets
         public Vector2 Size
         {
             get { return size; }
-            set { if (Anchor == null) size = value; else Anchor.SetCoordinates(ref position, ref value); }
+            set { if (Anchor == null) size = value; else Anchor.SetCoordinates(position, value); }
         }
 
         /// <summary>

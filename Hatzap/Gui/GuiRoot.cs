@@ -43,6 +43,8 @@ namespace Hatzap.Gui
             gw.KeyPress += gw_KeyPress;
             gw.KeyUp += gw_KeyUp;
             gw.MouseMove += gw_MouseMove;
+
+            widgets.size = new Vector2(gw.Width, gw.Height);
         }
 
         void gw_MouseMove(object sender, OpenTK.Input.MouseMoveEventArgs e)

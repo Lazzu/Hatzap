@@ -8,6 +8,7 @@ using Assimp;
 using Assimp.Configs;
 using Hatzap;
 using Hatzap.Gui;
+using Hatzap.Gui.Anchors;
 using Hatzap.Gui.Fonts;
 using Hatzap.Gui.Widgets;
 using Hatzap.Input;
@@ -197,14 +198,21 @@ namespace HatzapTestApplication
             };
 
             Button btn = new Button();
+            GuiRoot.Root.AddWidget(btn);
             btn.Text = "Button";
             btn.OnClick += (m) =>
             {
                 btn.Text = "Clicked " + m.ToString();
             };
+            btn.Anchor = new Anchor();
+            btn.Anchor.Directions[AnchorDirection.Left] = AnchorType.Snap;
+            btn.Anchor.Directions[AnchorDirection.Right] = AnchorType.Snap;
+            btn.Anchor.Directions[AnchorDirection.Top] = AnchorType.Snap;
+            btn.Anchor.Directions[AnchorDirection.Bottom] = AnchorType.None;
             btn.Position = new Vector2(100, 100);
             btn.Size = new Vector2(150, 50);
             btn.TextureRegion = buttonRegion;
+            
 
             Button btn2 = new Button();
             btn2.Text = "Button";
@@ -253,7 +261,7 @@ namespace HatzapTestApplication
             lblText.Position = new Vector2(800, 100);
             lblText.GuiText.HorizontalAlignment = HorizontalAlignment.Left;
 
-            GuiRoot.Root.AddWidget(btn);
+            
             GuiRoot.Root.AddWidget(btn2);
             GuiRoot.Root.AddWidget(btn3);
             GuiRoot.Root.AddWidget(btn4);

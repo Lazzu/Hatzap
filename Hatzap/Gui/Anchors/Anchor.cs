@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,9 +11,9 @@ namespace Hatzap.Gui.Anchors
 {
     public class Anchor
     {
-        public Dictionary<AnchorDirection, AnchorType> Directions { get; set; }
+        public Dictionary<AnchorDirection, AnchorType> Directions { get; protected set; }
 
-        public Widget Parent { get; set; }
+        public Widget Parent { get; internal set; }
 
         public Anchor()
         {
@@ -29,81 +30,76 @@ namespace Hatzap.Gui.Anchors
         /// </summary>
         /// <param name="newPos">New desired position</param>
         /// <param name="newSize">New desired size</param>
-        public void SetCoordinates(ref Vector2 newPos, ref Vector2 newSize)
+        public void SetCoordinates(Vector2 newPos, Vector2 newSize)
         {
-            var oldMin = Parent.Position;
-            var oldMax = Parent.Position + Parent.Size;
+            if (Parent == null)
+                return;
 
-            var newMin = newPos;
-            var newMax = newPos + newSize;
-
-            Vector2 calculatedMin = oldMin;
-            Vector2 calculatedMax = oldMax;
-
-            var left = Directions[AnchorDirection.Left];
-            var right = Directions[AnchorDirection.Right];
-            var top = Directions[AnchorDirection.Top];
-            var bottom = Directions[AnchorDirection.Bottom];
-
-            if (left == AnchorType.Relative || right == AnchorType.Relative || top == AnchorType.Relative || bottom == AnchorType.Relative)
-                throw new NotImplementedException("Relative anchoring not yet implemented.");
-            
             bool hasparent = Parent.WidgetGroup != null;
 
-            switch (left)
+            switch (Directions[AnchorDirection.Left])
             {
                 case AnchorType.None:
-                    calculatedMin.X = newMin.X;
+                    Parent.position.X = newPos.X;
                     break;
                 case AnchorType.Snap:
                     if (hasparent)
                     {
-                        calculatedMin.X = Parent.WidgetGroup.Position.X + Parent.WidgetGroup.LeftAnchorOffset;
+                        Parent.position.X = Parent.WidgetGroup.Position.X + Parent.WidgetGroup.LeftAnchorOffset;
                     }
                     break;
+                case AnchorType.Relative:
+                    throw new NotImplementedException("Relative anchoring not yet implemented.");
             }
 
-            switch (right)
+            switch (Directions[AnchorDirection.Right])
             {
                 case AnchorType.None:
-                    calculatedMax.X = newMax.X;
+                    Parent.size.X = newSize.X;
                     break;
                 case AnchorType.Snap:
                     if (hasparent)
                     {
-                        calculatedMax.X = Parent.WidgetGroup.Position.X + Parent.WidgetGroup.Size.X + Parent.WidgetGroup.RightAnchorOffset;
+                        Parent.size.X = Parent.WidgetGroup.Position.X + Parent.WidgetGroup.Size.X + Parent.WidgetGroup.RightAnchorOffset - Parent.position.X;
+
+                        Debug.WriteLine("Parent.WidgetGroup.size: " + Parent.WidgetGroup.size);
+
                     }
                     break;
+                case AnchorType.Relative:
+                    throw new NotImplementedException("Relative anchoring not yet implemented.");
             }
 
-            switch (top)
+            switch (Directions[AnchorDirection.Top])
             {
                 case AnchorType.None:
-                    calculatedMin.Y = newMin.Y;
+                    Parent.position.Y = newPos.Y;
                     break;
                 case AnchorType.Snap:
                     if (hasparent)
                     {
-                        calculatedMin.Y = Parent.WidgetGroup.Position.Y + Parent.WidgetGroup.TopAnchorOffset;
+                        Parent.position.Y = Parent.WidgetGroup.Position.Y + Parent.WidgetGroup.TopAnchorOffset;
                     }
                     break;
+                case AnchorType.Relative:
+                    throw new NotImplementedException("Relative anchoring not yet implemented.");
             }
 
-            switch (bottom)
+            switch (Directions[AnchorDirection.Bottom])
             {
                 case AnchorType.None:
-                    calculatedMin.Y = newMin.Y;
+                    Parent.size.Y = newSize.Y;
                     break;
                 case AnchorType.Snap:
                     if (hasparent)
                     {
-                        calculatedMin.Y = Parent.WidgetGroup.Position.Y + Parent.WidgetGroup.Size.Y + Parent.WidgetGroup.BottomAnchorOffset;
+                        Parent.size.Y = Parent.WidgetGroup.Position.Y + Parent.WidgetGroup.Size.Y + Parent.WidgetGroup.BottomAnchorOffset - Parent.position.Y;
                     }
                     break;
+                case AnchorType.Relative:
+                    throw new NotImplementedException("Relative anchoring not yet implemented.");
             }
 
-            Parent.position = calculatedMin;
-            Parent.size = calculatedMax - calculatedMin;
         }
     }
 }
