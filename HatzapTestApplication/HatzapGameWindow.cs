@@ -268,8 +268,6 @@ namespace HatzapTestApplication
             GuiRoot.Root.AddWidget(image);
             GuiRoot.Root.AddWidget(lblText);
 
-            base.OnLoad(e);
-
             UserInput.Keyboard.CaptureText = true;
 
             /*Shader skyVertex = new Shader(ShaderType.VertexShader);
@@ -394,6 +392,8 @@ namespace HatzapTestApplication
             Debug.WriteLine("OnLoad() ends");
 
             RenderDataPool.MaxItems = 1000;
+
+            base.OnLoad(e);
         }
 
         Vector2 mousepos;
@@ -534,8 +534,8 @@ namespace HatzapTestApplication
             {
                 frametime = 0;
                 double unknown = frameTime - swapBufferTime - renderQueue - renderInsert - guiwait;
-                fpsText.Text = string.Format("FPS: {0}, Update: {1}, Frame time: {6}, RenderQueue count: {2}, RenderInsert: {3}ms, RenderQueue.Render: {4}ms, SwapBuffers(): {5}ms, Unknown: {7}\n" +
-                    "Triangles Drawn: {8}, ObjectPool reserve: {9}, ObjectPool capacity: {10}, Gui Update: {11}ms, Gui Rebuild: {12}ms, Gui wait: {13}ms, GC.Collect(): {14}ms", 
+                fpsText.Text = string.Format("FPS: {0}, Update: {1}\nFrame time: {6}\nRenderQueue count: {2}\nRenderInsert: {3}ms\nRenderQueue.Render: {4}ms\nSwapBuffers(): {5}ms\nUnknown: {7}\n" +
+                    "Triangles Drawn: {8}\nObjectPool reserve: {9}\nObjectPool capacity: {10}\nGui Update: {11}ms\nGui Rebuild: {12}ms\nGui wait: {13}ms\nGC.Collect(): {14}ms", 
                     frame, update, RenderQueue.Count, Math.Round(renderInsert * 1000, 2), Math.Round(renderQueue * 1000, 2), Math.Round(swapBufferTime * 1000, 2), Math.Round(frameTime * 1000, 2),
                     Math.Round((unknown) * 1000, 2), RenderQueue.TrianglesDrawn, RenderDataPool.Count, RenderDataPool.Size, Math.Round(GuiRoot.Root.UpdateElapsedSeconds, 2), Math.Round(GuiRoot.Root.RebuildElapsedSeconds, 2), Math.Round(guiwait, 2), Math.Round(garbage, 2));
                 frame = 0;

@@ -154,7 +154,8 @@ namespace Hatzap.Gui
             {
                 var item = customRenderingWidgets[i];
                 customRenderingWidgets[i] = null;
-                item.CustomRender();
+                
+                if(item != null) item.CustomRender();
             }
             customRenderingWidgetCount = 0;
         }
