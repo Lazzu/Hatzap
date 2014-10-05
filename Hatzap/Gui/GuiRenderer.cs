@@ -62,6 +62,9 @@ namespace Hatzap.Gui
                 if (!widget.Visible)
                     continue;
 
+                if(widget.Anchor != null)
+                    widget.Anchor.SetCoordinates(widget.position, widget.size);
+
                 widget.Dirty = false;
 
                 var vert = widget.GetVertices();

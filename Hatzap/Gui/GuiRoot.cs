@@ -37,6 +37,7 @@ namespace Hatzap.Gui
 
             this.gw = gw;
 
+            gw.Resize += gw_Resize;
             gw.Load += gw_Load;
             gw.Resize += gw_Resize;
             gw.KeyDown += gw_KeyDown;
@@ -76,6 +77,7 @@ namespace Hatzap.Gui
         void gw_Resize(object sender, EventArgs e)
         {
             Projection = Matrix4.CreateOrthographicOffCenter(0, gw.Width, gw.Height, 0, -1, 1);
+            widgets.size = new Vector2(gw.Width, gw.Height);
         }
 
         public void Update(double delta)
