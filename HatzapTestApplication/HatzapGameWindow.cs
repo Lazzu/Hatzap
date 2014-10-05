@@ -556,6 +556,8 @@ namespace HatzapTestApplication
             sw.Stop();
             renderQueue = sw.Elapsed.TotalSeconds;
 
+            GuiRoot.Root.Render();
+
             GL.Disable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
@@ -572,8 +574,6 @@ namespace HatzapTestApplication
             fpsText.Draw(textShader);
 
             GL.Enable(EnableCap.DepthTest);
-
-            GuiRoot.Root.Render();
 
             GL.Flush();
 
