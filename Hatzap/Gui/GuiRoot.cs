@@ -145,9 +145,7 @@ namespace Hatzap.Gui
                 shader.Enable();
 
                 var textureSize = new Vector2(Texture.Width, Texture.Height);
-
-                Console.WriteLine(textureSize);
-
+                
                 shader.SendUniform("Projection", ref Projection);
                 shader.SendUniform("TextureSize", ref textureSize);
 
