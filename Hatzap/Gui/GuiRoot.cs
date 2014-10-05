@@ -134,6 +134,9 @@ namespace Hatzap.Gui
         {
             if (Texture != null && shader != null)
             {
+                if (renderer == null)
+                    throw new Exception("No renderer initialized. Did you call GuiRoot.Initialize AFTER gamewindow.OnLoad's base.OnLoad()?");
+
                 GL.Disable(EnableCap.DepthTest);
 
                 shader.Enable();
