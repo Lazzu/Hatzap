@@ -123,6 +123,9 @@ namespace Hatzap.Gui
                 if (group != null)
                     UpdateGroup(group, delta);
             }
+
+            if (rootGroup.RequiresSorting)
+                rootGroup.SortChildWidgets();
         }
 
         public void UpdateAsync(double delta)
@@ -142,6 +145,8 @@ namespace Hatzap.Gui
                 shader.Enable();
 
                 var textureSize = new Vector2(Texture.Width, Texture.Height);
+
+                Console.WriteLine(textureSize);
 
                 shader.SendUniform("Projection", ref Projection);
                 shader.SendUniform("TextureSize", ref textureSize);
@@ -165,18 +170,21 @@ namespace Hatzap.Gui
 
         internal void EnqueueCustomRenderingWidget(Widget widget)
         {
-            if(customRenderingWidgets.Count == customRenderingWidgetCount)
+            lock(customRenderingWidgets)
             {
-                // No room in queue, add in the end of the queue
-                customRenderingWidgets.Add(widget);
+                if (customRenderingWidgets.Count >= customRenderingWidgetCount)
+                {
+                    // No room in queue, add in the end of the queue
+                    customRenderingWidgets.Add(widget);
+                }
+                else
+                {
+                    // Insert in queue
+                    customRenderingWidgets[customRenderingWidgetCount] = widget;
+                }
+                // Increase queue index
+                customRenderingWidgetCount++;
             }
-            else
-            {
-                // Insert in queue
-                customRenderingWidgets[customRenderingWidgetCount] = widget;
-            }
-            // Increase queue index
-            customRenderingWidgetCount++;
         }
 
         async void Rebuild()

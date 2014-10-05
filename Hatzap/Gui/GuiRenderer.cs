@@ -75,7 +75,7 @@ namespace Hatzap.Gui
                     index += vert.Length;
 
                     vertices.AddRange(vert);
-
+                                        
                     for (int i = 0; i < vert.Length; i++)
                     {
                         colors.Add(widget.Color);
@@ -98,22 +98,28 @@ namespace Hatzap.Gui
             vertices = new List<GuiVertex>();
             colors = new List<Vector4>();
 
-            int index = 0;
+            lock(vertices)
+            {
+                int index = 0;
 
-            RecursiveBuild(rootGroup, vertices, colors, ref index);
+                RecursiveBuild(rootGroup, vertices, colors, ref index);
 
-            colorsUpdated = true;
+                colorsUpdated = true;
 
-            count = vertices.Count;
+                count = vertices.Count;
+            }
         }
 
         public void Render()
         {
             if(vertices != null)
             {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-                GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(vertices.Count * GuiVertex.SizeInBytes), vertices.ToArray(), BufferUsageHint.DynamicDraw);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                lock(vertices)
+                {
+                    GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+                    GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(vertices.Count * GuiVertex.SizeInBytes), vertices.ToArray(), BufferUsageHint.DynamicDraw);
+                    GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                }
                 vertices = null;
             }
 

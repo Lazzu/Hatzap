@@ -74,7 +74,7 @@ namespace Hatzap.Gui.Widgets
         public int Z
         {
             get { return z; }
-            set { z = value; Dirty = true; if (WidgetGroup != null) WidgetGroup.SortChildWidgets(); }
+            set { z = value; Dirty = true; if (WidgetGroup != null) WidgetGroup.RequiresSorting = true; }
         }
 
         /// <summary>

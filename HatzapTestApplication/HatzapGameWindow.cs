@@ -198,7 +198,20 @@ namespace HatzapTestApplication
             };
 
             Button btn = new Button();
+            Button btn2 = new Button();
+            Button btn3 = new Button();
+            Button btn4 = new Button();
+
+            var image = new Hatzap.Gui.Widgets.Image();
+            var lblText = new Label();
+
+            GuiRoot.Root.AddWidget(btn2);
+            GuiRoot.Root.AddWidget(btn3);
+            GuiRoot.Root.AddWidget(btn4);
+            GuiRoot.Root.AddWidget(image);
+            GuiRoot.Root.AddWidget(lblText);
             GuiRoot.Root.AddWidget(btn);
+
             btn.Text = "Button";
             btn.OnClick += (m) =>
             {
@@ -214,7 +227,8 @@ namespace HatzapTestApplication
             btn.TextureRegion = buttonRegion;
             
 
-            Button btn2 = new Button();
+            
+
             btn2.Text = "Button";
             btn2.Color = new Vector4(1, 0, 0, 1);
             btn2.OnClick += (m) =>
@@ -225,30 +239,32 @@ namespace HatzapTestApplication
             btn2.Size = new Vector2(150, 50);
             btn2.TextureRegion = buttonRegion;
 
-            Button btn3 = new Button();
+            
             btn3.Color = new Vector4(1, 0, 0, 1);
             btn3.Text = "Button";
             btn3.OnClick += (m) =>
             {
                 Random r = new Random();
                 btn3.Color = new Vector4((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble(), 1);
+                btn3.Z = btn4.Z + 1;
             };
             btn3.Position = new Vector2(100, 200);
             btn3.Size = new Vector2(150, 50);
             btn3.TextureRegion = buttonRegion;
 
-            Button btn4 = new Button();
+            
             btn4.Color = new Vector4(1, 0, 0, 1);
             btn4.Text = "Button";
             btn4.OnClick += (m) =>
             {
                 btn4.Text = "Clicked " + m.ToString();
+                btn4.Z = btn3.Z + 1;
             };
-            btn4.Position = new Vector2(300, 200);
+            btn4.Position = new Vector2(150, 200);
             btn4.Size = new Vector2(150, 50);
             btn4.TextureRegion = buttonRegion;
 
-            var image = new Hatzap.Gui.Widgets.Image();
+            
             image.Texture = new Texture();
             image.Texture.Load(new Bitmap("Assets/Textures/Default.png"), PixelFormat.Bgra, PixelType.UnsignedByte);
             image.Texture.Bind();
@@ -256,17 +272,13 @@ namespace HatzapTestApplication
             image.Position = new Vector2(100, 500);
             image.Size = new Vector2(100, 100);
             
-            var lblText = new Label();
+            
             lblText.Text = "This is a GUI Label";
             lblText.Position = new Vector2(800, 100);
             lblText.GuiText.HorizontalAlignment = HorizontalAlignment.Left;
 
             
-            GuiRoot.Root.AddWidget(btn2);
-            GuiRoot.Root.AddWidget(btn3);
-            GuiRoot.Root.AddWidget(btn4);
-            GuiRoot.Root.AddWidget(image);
-            GuiRoot.Root.AddWidget(lblText);
+            
 
             UserInput.Keyboard.CaptureText = true;
 
@@ -463,12 +475,14 @@ namespace HatzapTestApplication
 
             Random r = new Random();
 
+            int n = (int)(Math.Sin(totalTime * 4) / 2 + 0.5) * 5;
+
             sw.Reset();
             sw.Start();
 
-            for(int x = -5; x <= 5; x++)
+            for(int x = -n; x <= n; x++)
             {
-                for(int y = -5; y <= 5; y++)
+                for(int y = -n; y <= n; y++)
                 {
                     var data = RenderDataPool.GetInstance();
 
@@ -534,7 +548,7 @@ namespace HatzapTestApplication
             {
                 frametime = 0;
                 double unknown = frameTime - swapBufferTime - renderQueue - renderInsert - guiwait;
-                fpsText.Text = string.Format("FPS: {0}, Update: {1}\nFrame time: {6}\nRenderQueue count: {2}\nRenderInsert: {3}ms\nRenderQueue.Render: {4}ms\nSwapBuffers(): {5}ms\nUnknown: {7}\n" +
+                fpsText.Text = string.Format("FPS: {0}, Update: {1}\nFrame time: {6}\nRenderQueue count: {2}\nRenderInsert: {3}ms\nRenderQueue.Render: {4}ms\nSwapBuffers(): {5}ms\nUnknown: {7}ms\n" +
                     "Triangles Drawn: {8}\nObjectPool reserve: {9}\nObjectPool capacity: {10}\nGui Update: {11}ms\nGui Rebuild: {12}ms\nGui wait: {13}ms\nGC.Collect(): {14}ms", 
                     frame, update, RenderQueue.Count, Math.Round(renderInsert * 1000, 2), Math.Round(renderQueue * 1000, 2), Math.Round(swapBufferTime * 1000, 2), Math.Round(frameTime * 1000, 2),
                     Math.Round((unknown) * 1000, 2), RenderQueue.TrianglesDrawn, RenderDataPool.Count, RenderDataPool.Size, Math.Round(GuiRoot.Root.UpdateElapsedSeconds, 2), Math.Round(GuiRoot.Root.RebuildElapsedSeconds, 2), Math.Round(guiwait, 2), Math.Round(garbage, 2));

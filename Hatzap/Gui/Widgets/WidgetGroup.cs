@@ -72,5 +72,7 @@ namespace Hatzap.Gui.Widgets
 
             return false;
         }
+
+        public bool RequiresSorting { get; set; }
     }
 }
