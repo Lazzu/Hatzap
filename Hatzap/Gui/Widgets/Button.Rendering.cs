@@ -40,7 +40,7 @@ namespace Hatzap.Gui.Widgets
 
         public override GuiVertex[] GetVertices()
         {
-            if (TextureRegion.Length < 9)
+            if (TextureRegion == null || TextureRegion.Length < 9)
                 return null;
 
             var vertices = new GuiVertex[3*2*9];

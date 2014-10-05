@@ -255,7 +255,7 @@ namespace HatzapTestApplication
             image.Texture.TextureSettings(TextureMinFilter.Linear, TextureMagFilter.Linear, 32);
             image.Position = new Vector2(100, 500);
             image.Size = new Vector2(100, 100);
-
+            
             var lblText = new Label();
             lblText.Text = "This is a GUI Label";
             lblText.Position = new Vector2(800, 100);
