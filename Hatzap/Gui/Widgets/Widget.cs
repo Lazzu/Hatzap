@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Hatzap.Gui.Anchors;
 using Hatzap.Input;
 using OpenTK;
 using OpenTK.Input;
@@ -12,18 +13,34 @@ namespace Hatzap.Gui.Widgets
 {
     public abstract class Widget
     {
+        // Should only be accessed by property
+        internal Vector2 position;
+        internal Vector2 size;
+        private int z;
+        private bool dirty, colorDirty;
+        private bool visible = true;
+        private Anchor anchor;
+
         /// <summary>
         /// Widget position on screen.
         /// </summary>
-        public Vector2 Position;
+        public Vector2 Position
+        {
+            get { return position; }
+            set { if (Anchor == null) position = value; else Anchor.SetCoordinates(ref value, ref size); }
+        }
 
         /// <summary>
         /// Widget size on screen.
         /// </summary>
-        public Vector2 Size;
+        public Vector2 Size
+        {
+            get { return size; }
+            set { if (Anchor == null) size = value; else Anchor.SetCoordinates(ref position, ref value); }
+        }
 
         /// <summary>
-        /// NOT YET SUPPORTED. Color tinting of the Widget. result = texture.rgba * widget.Color;
+        /// Color tinting of the Widget. result = texture.rgba * widget.Color;
         /// </summary>
         public Vector4 Color = Vector4.One;
 
@@ -32,11 +49,6 @@ namespace Hatzap.Gui.Widgets
         /// </summary>
         public GuiTextureRegion[] TextureRegion;
         
-        // Should only be accessed by property
-        private int z;
-        private bool dirty, colorDirty;
-        private bool visible = true;
-
         /// <summary>
         /// The first index of vertex array that this widget produced. Should not be touched by the widget itself.
         /// </summary>
@@ -48,9 +60,22 @@ namespace Hatzap.Gui.Widgets
         internal int drawEndIndex;
 
         /// <summary>
+        /// Widget's anchor. If null, no anchoring.
+        /// </summary>
+        public Anchor Anchor
+        {
+            get { return anchor; }
+            set { anchor = value; anchor.Parent = this; }
+        }
+
+        /// <summary>
         /// The depth-sorting index in the current widget group.
         /// </summary>
-        public int Z { get { return z; } set { z = value; Dirty = true;  if (WidgetGroup != null) WidgetGroup.SortChildWidgets(); } }
+        public int Z
+        {
+            get { return z; }
+            set { z = value; Dirty = true; if (WidgetGroup != null) WidgetGroup.SortChildWidgets(); }
+        }
 
         /// <summary>
         /// The widget group this widget belongs to.
@@ -60,12 +85,19 @@ namespace Hatzap.Gui.Widgets
         /// <summary>
         /// Gets if the widget is the currently active one.
         /// </summary>
-        public bool Active { get { return this == Widget.CurrentlyActive; } }
+        public bool Active
+        {
+            get { return this == Widget.CurrentlyActive; }
+        }
 
         /// <summary>
         /// If set to true, this widget requires updating
         /// </summary>
-        public bool Dirty { get { return dirty; } set { dirty = value; if (dirty && WidgetGroup != null) WidgetGroup.Dirty = dirty; } }
+        public bool Dirty
+        {
+            get { return dirty; }
+            set { dirty = value; if (dirty && WidgetGroup != null) WidgetGroup.Dirty = dirty; }
+        }
 
         /// <summary>
         /// Indicates that the color has been changed, and the internal buffer needs updating.
@@ -75,7 +107,11 @@ namespace Hatzap.Gui.Widgets
         /// <summary>
         /// Gets or sets if the widget is visible.
         /// </summary>
-        public bool Visible { get { return visible; } set { visible = value; Dirty = true; } }
+        public bool Visible
+        {
+            get { return visible; }
+            set { visible = value; Dirty = true; }
+        }
 
         #region Event functions
 
@@ -136,12 +172,19 @@ namespace Hatzap.Gui.Widgets
         /// The layer for ordering the custom rendering calls, to minimize shader bindings and GL calls. 
         /// If returns string.Empty, it indicates that this object has no need for custom rendering pass.
         /// </summary>
-        public virtual string CustomRenderLayer { get { return string.Empty; } }
+        public virtual string CustomRenderLayer
+        {
+            get { return string.Empty; }
+        }
 
         /// <summary>
         /// Gets the currently active widget. Used internally for calling user input event functions, but is exposed as public for convenience.
         /// </summary>
-        public static Widget CurrentlyActive { get; internal set; }
+        public static Widget CurrentlyActive
+        {
+            get;
+            internal set;
+        }
 
     }
 }

@@ -12,6 +12,11 @@ namespace Hatzap.Gui.Widgets
 
         public List<Widget> Widgets { get { return widgets; } }
 
+        public float LeftAnchorOffset { get; set; }
+        public float RightAnchorOffset { get; set; }
+        public float TopAnchorOffset { get; set; }
+        public float BottomAnchorOffset { get; set; }
+
         public void SortChildWidgets()
         {
             // TODO: Replace bubble sort with something more efficient if needed.

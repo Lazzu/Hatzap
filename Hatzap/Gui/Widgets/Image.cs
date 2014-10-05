@@ -117,8 +117,8 @@ namespace Hatzap.Gui.Widgets
             }
 
             program.SendUniform("Projection", ref GuiRoot.Root.Projection);
-            program.SendUniform("Position", ref Position);
-            program.SendUniform("Size", ref Size);
+            program.SendUniform("Position", ref position);
+            program.SendUniform("Size", ref size);
 
             GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
 
