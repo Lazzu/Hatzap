@@ -60,7 +60,7 @@ namespace Hatzap
                 Direction = Target - Position;
                 Distance = Direction.Length;
                 Direction.Normalize();
-                rot.X = Vector3.CalculateAngle(Direction, Vector3.UnitX);
+                rot.X = Vector3.CalculateAngle(Direction, Vector3.UnitZ);
                 rot.Y = Vector3.CalculateAngle(Direction, Vector3.UnitY);
             }
 

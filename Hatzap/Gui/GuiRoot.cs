@@ -95,6 +95,9 @@ namespace Hatzap.Gui
 
                 widget.Update(delta);
 
+                if (widget.DirtyColor)
+                    renderer.UpdateColor(widget.drawStartIndex, widget.drawEndIndex, widget.Color);
+
                 if (widget.CustomRenderLayer != string.Empty)
                     EnqueueCustomRenderingWidget(widget);
 

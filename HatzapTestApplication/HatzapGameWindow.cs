@@ -67,11 +67,13 @@ namespace HatzapTestApplication
             
             camera.SetAsCurrent();
 
-            camera.Position = new Vector3(10, 15, 10);
+            camera.Position = new Vector3(10, 10, 10);
             camera.Target = new Vector3(0, 0, 0);
 
             camera.Update(0);
             camera.DirectionLock = true;
+
+            camera.Rotate(new Vector2(-(float)Math.PI / 2.5f, 0));
 
             // Now camera.Position changes whenever Target changes, and the camera angle stays locked.
             // Camera's distance from it's target can be controlled from camera.Distance property now.
@@ -206,6 +208,7 @@ namespace HatzapTestApplication
 
             Button btn2 = new Button();
             btn2.Text = "Button";
+            btn2.Color = new Vector4(1, 0, 0, 1);
             btn2.OnClick += (m) =>
             {
                 btn2.Text = "Clicked " + m.ToString();
@@ -215,16 +218,19 @@ namespace HatzapTestApplication
             btn2.TextureRegion = buttonRegion;
 
             Button btn3 = new Button();
+            btn3.Color = new Vector4(1, 0, 0, 1);
             btn3.Text = "Button";
             btn3.OnClick += (m) =>
             {
-                btn3.Text = "Clicked " + m.ToString();
+                Random r = new Random();
+                btn3.Color = new Vector4((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble(), 1);
             };
             btn3.Position = new Vector2(100, 200);
             btn3.Size = new Vector2(150, 50);
             btn3.TextureRegion = buttonRegion;
 
             Button btn4 = new Button();
+            btn4.Color = new Vector4(1, 0, 0, 1);
             btn4.Text = "Button";
             btn4.OnClick += (m) =>
             {
@@ -437,17 +443,18 @@ namespace HatzapTestApplication
 
             update++;
 
-            camera.Rotate(new Vector2((mousepos.Y / (float)Height - 0.5f) * 0.5f * (float)e.Time, (mousepos.X / (float)Width - 0.5f) * 0.5f * (float)e.Time));
-            //camera.Rotate(new Vector2((float)Math.Sin(totalTime * 10) / 45,(float)e.Time));
+            //camera.Rotate(new Vector2(0, (mousepos.X / (float)Width - 0.5f) * 0.5f * (float)e.Time));
+            camera.Rotate(new Vector2(0,(float)e.Time * 0.1f));
+            camera.Distance = (float)(Math.Sin(totalTime * 0.25f) + 1.2f) * 10;
 
             Random r = new Random();
 
             sw.Reset();
             sw.Start();
 
-            for(int x = -15; x <= 15; x++)
+            for(int x = -5; x <= 5; x++)
             {
-                for(int y = -15; y <= 15; y++)
+                for(int y = -5; y <= 5; y++)
                 {
                     var data = RenderDataPool.GetInstance();
 
@@ -478,7 +485,7 @@ namespace HatzapTestApplication
                         new UniformDataVector4()
                         {
                             Name = "Color",
-                            Data = new Vector4(1.0f, 0.0f, 0.0f, 1f)
+                            Data = new Vector4(1.0f, 1.0f, 1.0f, 1.0f)
                         }
                     };
 
@@ -530,7 +537,9 @@ namespace HatzapTestApplication
 
             GL.ClearColor(0.25f, 0.25f, 0.25f, 1);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
-           
+
+            GL.Enable(EnableCap.DepthTest);
+
             base.OnRenderFrame(e);
 
             sw.Reset();

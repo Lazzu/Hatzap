@@ -14,7 +14,7 @@ namespace Hatzap.Gui.Widgets
     public partial class Button
     {
         public string Text { get { return text.Text; } set { text.Text = value; } }
-        public Vector4 Color { get { return text.Color; } set { text.Color = value; } }
+        public Vector4 TextColor { get { return text.Color; } set { text.Color = value; } }
 
         public int TextBaseline { get; set; }
 

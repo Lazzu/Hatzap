@@ -23,14 +23,29 @@ namespace Hatzap.Gui.Widgets
         public Vector2 Size;
 
         /// <summary>
+        /// NOT YET SUPPORTED. Color tinting of the Widget. result = texture.rgba * widget.Color;
+        /// </summary>
+        public Vector4 Color = Vector4.One;
+
+        /// <summary>
         /// The widget texture region(s). Some widgets require more regions than others. Check documentation for each widget invidually.
         /// </summary>
         public GuiTextureRegion[] TextureRegion;
         
         // Should only be accessed by property
         private int z;
-        private bool dirty;
+        private bool dirty, colorDirty;
         private bool visible = true;
+
+        /// <summary>
+        /// The first index of vertex array that this widget produced. Should not be touched by the widget itself.
+        /// </summary>
+        internal int drawStartIndex;
+
+        /// <summary>
+        /// The last index of vertex array that this widget produced. Should not be touched by the widget itself.
+        /// </summary>
+        internal int drawEndIndex;
 
         /// <summary>
         /// The depth-sorting index in the current widget group.
@@ -51,6 +66,11 @@ namespace Hatzap.Gui.Widgets
         /// If set to true, this widget requires updating
         /// </summary>
         public bool Dirty { get { return dirty; } set { dirty = value; if (dirty && WidgetGroup != null) WidgetGroup.Dirty = dirty; } }
+
+        /// <summary>
+        /// Indicates that the color has been changed, and the internal buffer needs updating.
+        /// </summary>
+        public bool DirtyColor { get; set; }
 
         /// <summary>
         /// Gets or sets if the widget is visible.

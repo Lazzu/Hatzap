@@ -105,21 +105,6 @@ namespace Hatzap.Gui.Widgets
             SetQuad(vertices, 8, ref i, ref offset, ref quadSize);
 
             return vertices;
-            /*return new[]{
-                new GuiVertex(){
-                    Position = new Vector2(0,1),
-                    TextureCoordinates = new Vector2(0.5f,0.5f),
-                    TexturePage = 0
-                }, new GuiVertex(){
-                    Position = new Vector2(-1,-1),
-                    TextureCoordinates = new Vector2(0.5f,0.5f),
-                    TexturePage = 0
-                }, new GuiVertex(){
-                    Position = new Vector2(1,-1),
-                    TextureCoordinates = new Vector2(0.5f,0.5f),
-                    TexturePage = 0
-                }, 
-            };*/
         }
 
         void SetQuad(GuiVertex[] vertices, int tr, ref int i, ref Vector2 offset, ref Vector2 quadSize)
