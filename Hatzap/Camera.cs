@@ -53,13 +53,15 @@ namespace Hatzap
         {
             if(DirectionLock)
             {
-                Position = Target + Direction * Distance;
+                Position = Target - Direction * Distance;
             }
             else
             {
-                Direction = Position - Target;
+                Direction = Target - Position;
                 Distance = Direction.Length;
                 Direction.Normalize();
+                rot.X = Vector3.CalculateAngle(Direction, Vector3.UnitX);
+                rot.Y = Vector3.CalculateAngle(Direction, Vector3.UnitY);
             }
 
             View = Matrix4.LookAt(Position, Target, Up);
@@ -74,16 +76,26 @@ namespace Hatzap
             Frustum = new BoundingFrustum(VPMatrix);
         }
 
+        Vector2 rot = Vector2.Zero;
+
         public void Rotate(Vector2 rotation)
         {
-            Quaternion x = Quaternion.FromAxisAngle(Vector3.UnitX, rotation.X);
-            Quaternion y = Quaternion.FromAxisAngle(Vector3.UnitY, rotation.Y);
+            rot += rotation;
 
-            var q = y * x;
+            float mPi = (float)Math.PI / 2.0f - 0.001f;
 
-            Direction = Vector3.Transform(Direction, Matrix4.CreateFromQuaternion(q));
+            if (rot.X > mPi)
+                rot.X = mPi;
+
+            if (rot.X < -mPi)
+                rot.X = -mPi;
+
+            Quaternion x = Quaternion.FromAxisAngle(Vector3.UnitX, rot.X);
+            Quaternion y = Quaternion.FromAxisAngle(Vector3.UnitY, rot.Y);
+
+            Direction = Vector3.Transform(Vector3.UnitZ, y * x);
             
-            Position = Target + Direction * Distance;
+            Position = Target - Direction * Distance;
         }
 
         public void GetModelViewProjection(ref Matrix4 modelMatrix, out Matrix4 mvp)

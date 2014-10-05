@@ -437,8 +437,8 @@ namespace HatzapTestApplication
 
             update++;
 
-            camera.Rotate(new Vector2((mousepos.Y / (float)Height - 0.5f) * 0.5f * (float)e.Time, 0));
-            //camera.Rotate(new Vector2(0, (float)e.Time * 0.1f));
+            camera.Rotate(new Vector2((mousepos.Y / (float)Height - 0.5f) * 0.5f * (float)e.Time, (mousepos.X / (float)Width - 0.5f) * 0.5f * (float)e.Time));
+            //camera.Rotate(new Vector2((float)Math.Sin(totalTime * 10) / 45,(float)e.Time));
 
             Random r = new Random();
 
