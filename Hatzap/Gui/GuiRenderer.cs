@@ -74,6 +74,9 @@ namespace Hatzap.Gui
                     int start = index;
                     index += vert.Length;
 
+                    widget.drawStartIndex = start;
+                    widget.drawEndIndex = index - 1;
+
                     vertices.AddRange(vert);
                                         
                     for (int i = 0; i < vert.Length; i++)
@@ -91,12 +94,14 @@ namespace Hatzap.Gui
 
         List<GuiVertex> vertices;
         List<Vector4> colors;
-        bool colorsUpdated = false;
+        bool verticesUpdated = false, colorsUpdated = false;
 
         public void Build(WidgetGroup rootGroup)
         {
             vertices = new List<GuiVertex>();
             colors = new List<Vector4>();
+
+            Debug.WriteLine("ReBuilding GUI");
 
             lock(vertices)
             {
@@ -104,47 +109,93 @@ namespace Hatzap.Gui
 
                 RecursiveBuild(rootGroup, vertices, colors, ref index);
 
-                colorsUpdated = true;
+                rootGroup.Dirty = false;
 
                 count = vertices.Count;
+                reupload = true;
             }
         }
 
+        bool reupload = true;
+
         public void Render()
         {
-            if(vertices != null)
-            {
-                lock(vertices)
-                {
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-                    GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(vertices.Count * GuiVertex.SizeInBytes), vertices.ToArray(), BufferUsageHint.DynamicDraw);
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-                }
-                vertices = null;
-            }
+            //Debug.WriteLine("Reupload: " + reupload + " Vertices: " + (vertices != null) + " Colors: " + colorsUpdated);
 
-            if (colorsUpdated)
+            if(reupload && vertices != null)
             {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, colorVbo);
-                GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(colors.Count * Vector4.SizeInBytes), colors.ToArray(), BufferUsageHint.DynamicDraw);
+                GuiVertex[] vert = null;
+                Vector4[] colrs = null;
+
+                lock (vertices)
+                {
+                    vert = vertices.ToArray();
+                }
+
+                lock(colors)
+                {
+                    colrs = colors.ToArray();
+                }
+                
+                GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+                GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(vertices.Count * GuiVertex.SizeInBytes), vert, BufferUsageHint.DynamicDraw);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-                colorsUpdated = false;
+
+
+                GL.BindBuffer(BufferTarget.ArrayBuffer, colorVbo);
+                GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(colors.Count * Vector4.SizeInBytes), colrs, BufferUsageHint.DynamicDraw);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+
+                reupload = false;
             }
+            else
+            {
+                if (colorsUpdated)
+                {
+                    UpdateColorBuffer();
+                    colorsUpdated = false;
+                }
+            }
+            
 
             GL.BindVertexArray(vao);
             GL.DrawArrays(PrimitiveType.Triangles, 0, count);
             GL.BindVertexArray(0);
         }
 
+        int colorStartIndex = int.MaxValue, colorLastIndex = int.MinValue;
+
         internal void UpdateColor(int startIndex, int lastIndex, Vector4 color)
         {
+            if (colors == null)
+                return;
+
             colorsUpdated = true;
+
+            if (colorStartIndex > startIndex)
+                colorStartIndex = startIndex;
+
+            if (colorLastIndex < lastIndex)
+                colorLastIndex = lastIndex;
 
             for(int i = startIndex; i <= lastIndex; i++)
             {
                 colors[i] = color;
             }
+        }
 
+        void UpdateColorBuffer()
+        {
+            int size = colorLastIndex - colorStartIndex;
+            var colors = this.colors.GetRange(colorStartIndex, size).ToArray();
+            
+            GL.BindBuffer(BufferTarget.ArrayBuffer, colorVbo);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, new IntPtr(colorStartIndex * Vector4.SizeInBytes), new IntPtr(size * Vector4.SizeInBytes), colors);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+
+            colorsUpdated = false;
+            colorStartIndex = int.MaxValue;
+            colorLastIndex = int.MinValue;
         }
     }
 }

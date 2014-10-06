@@ -17,9 +17,10 @@ namespace Hatzap.Gui.Widgets
         internal Vector2 position;
         internal Vector2 size;
         private int z;
-        private bool dirty, colorDirty;
+        private bool dirty;
         private bool visible = true;
         private Anchor anchor;
+        private Vector4 color = Vector4.One;
 
         /// <summary>
         /// Widget position on screen.
@@ -27,7 +28,7 @@ namespace Hatzap.Gui.Widgets
         public Vector2 Position
         {
             get { return position; }
-            set { position = value; Dirty = true; }
+            set { position = value; }
         }
 
         /// <summary>
@@ -36,13 +37,17 @@ namespace Hatzap.Gui.Widgets
         public Vector2 Size
         {
             get { return size; }
-            set { size = value; Dirty = true; }
+            set { size = value; }
         }
 
         /// <summary>
         /// Color tinting of the Widget. result = texture.rgba * widget.Color;
         /// </summary>
-        public Vector4 Color = Vector4.One;
+        public Vector4 Color
+        {
+            get { return color; }
+            set { color = value; DirtyColor = true; }
+        }
 
         /// <summary>
         /// The widget texture region(s). Some widgets require more regions than others. Check documentation for each widget invidually.
@@ -96,7 +101,13 @@ namespace Hatzap.Gui.Widgets
         public bool Dirty
         {
             get { return dirty; }
-            set { dirty = value; if (dirty && WidgetGroup != null) WidgetGroup.Dirty = dirty; }
+            set
+            {
+                dirty = value;
+                if (dirty)
+                    if (WidgetGroup != null)
+                        WidgetGroup.Dirty = dirty;
+            }
         }
 
         /// <summary>
@@ -110,7 +121,7 @@ namespace Hatzap.Gui.Widgets
         public bool Visible
         {
             get { return visible; }
-            set { visible = value; Dirty = true; }
+            set { visible = value; }
         }
 
         #region Event functions

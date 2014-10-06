@@ -115,7 +115,12 @@ namespace Hatzap.Gui
                 widget.Update(delta);
 
                 if (widget.DirtyColor)
+                {
                     renderer.UpdateColor(widget.drawStartIndex, widget.drawEndIndex, widget.Color);
+                    widget.DirtyColor = false;
+                    //Debug.WriteLine("DirtyColor = " + widget);
+                }
+                    
 
                 if (widget.CustomRenderLayer != string.Empty)
                     EnqueueCustomRenderingWidget(widget);
@@ -127,7 +132,11 @@ namespace Hatzap.Gui
             }
 
             if (rootGroup.RequiresSorting)
+            {
                 rootGroup.SortChildWidgets();
+                rootGroup.RequiresSorting = false;
+            }
+                
         }
 
         public void UpdateAsync(double delta)
