@@ -66,7 +66,6 @@
     <Compile Include="Gui\GuiSettings.cs" />
     <Compile Include="Gui\GuiText.cs" />
     <Compile Include="Gui\GuiTextureRegion.cs" />
-    <Compile Include="Gui\GuiVertex.cs" />
     <Compile Include="Gui\Widgets\Button.cs" />
     <Compile Include="Gui\Widgets\Button.Rendering.cs">
       <DependentUpon>Button.cs</DependentUpon>

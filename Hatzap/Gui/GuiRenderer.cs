@@ -15,7 +15,7 @@ namespace Hatzap.Gui
 {
     public class GuiRenderer
     {
-        int vao = 0, vbo = 0, colorVbo = 0, ebo = 0;
+        int vao = 0, vbo = 0, uvVbo = 0, colorVbo = 0, ebo = 0;
 
         int count = 0;
 
@@ -25,14 +25,17 @@ namespace Hatzap.Gui
         {
             vao = GL.GenVertexArray();
             vbo = GL.GenBuffer();
+            uvVbo = GL.GenBuffer();
             colorVbo = GL.GenBuffer();
             //ebo = GL.GenBuffer();
 
-            var tmp = new GuiVertex[1];
+            var tmp = new Vector2[1];
             var tmp2 = new Vector4[1];
+            var tmp3 = new Vector3[1];
 
             int stride = BlittableValueType.StrideOf(tmp);
             int stride2 = BlittableValueType.StrideOf(tmp2);
+            int stride3 = BlittableValueType.StrideOf(tmp3);
 
             GL.BindVertexArray(vao);
 
@@ -44,18 +47,16 @@ namespace Hatzap.Gui
             GL.EnableVertexAttribArray(1);
             GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, stride, 0);
 
+            GL.BindBuffer(BufferTarget.ArrayBuffer, uvVbo);
             GL.EnableVertexAttribArray(2);
-            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, stride, Vector2.SizeInBytes);
-
-            GL.EnableVertexAttribArray(3);
-            GL.VertexAttribPointer(3, 1, VertexAttribPointerType.UnsignedInt, false, stride, Vector2.SizeInBytes * 2);
+            GL.VertexAttribPointer(2, 3, VertexAttribPointerType.Float, false, stride3, 0);
 
             //GL.BindBuffer(BufferTarget.ElementArrayBuffer, ebo);
 
             GL.BindVertexArray(0);
         }
 
-        void RecursiveBuild(WidgetGroup rootGroup, List<GuiVertex> vertices, List<Vector4> colors, ref int index)
+        void RecursiveBuild(WidgetGroup rootGroup, List<Vector2> vertices, List<Vector3> uv, List<Vector4> colors, ref int index)
         {
             foreach (var widget in rootGroup.Widgets)
             {
@@ -67,38 +68,36 @@ namespace Hatzap.Gui
 
                 widget.Dirty = false;
 
-                var vert = widget.GetVertices();
+                int start = vertices.Count - 1;
 
-                if (vert != null)
+                widget.GetVertices(vertices, uv, colors);
+
+                int current = vertices.Count - 1;
+
+                index += current - start;
+
+                if (vertices != null && vertices.Count > 0)
                 {
-                    int start = index;
-                    index += vert.Length;
-
                     widget.drawStartIndex = start;
                     widget.drawEndIndex = index - 1;
-
-                    vertices.AddRange(vert);
-                                        
-                    for (int i = 0; i < vert.Length; i++)
-                    {
-                        colors.Add(widget.Color);
-                    }
                 }
 
                 var group = widget as WidgetGroup;
 
                 if (group != null)
-                    RecursiveBuild(group, vertices, colors, ref index);
+                    RecursiveBuild(group, vertices, uv, colors, ref index);
             }
         }
 
-        List<GuiVertex> vertices;
+        List<Vector2> vertices;
+        List<Vector3> uv;
         List<Vector4> colors;
         bool verticesUpdated = false, colorsUpdated = false;
 
         public void Build(WidgetGroup rootGroup)
         {
-            vertices = new List<GuiVertex>();
+            vertices = new List<Vector2>();
+            uv = new List<Vector3>();
             colors = new List<Vector4>();
 
             Debug.WriteLine("ReBuilding GUI");
@@ -107,7 +106,7 @@ namespace Hatzap.Gui
             {
                 int index = 0;
 
-                RecursiveBuild(rootGroup, vertices, colors, ref index);
+                RecursiveBuild(rootGroup, vertices, uv, colors, ref index);
 
                 rootGroup.Dirty = false;
 
@@ -124,7 +123,8 @@ namespace Hatzap.Gui
 
             if(reupload && vertices != null)
             {
-                GuiVertex[] vert = null;
+                Vector2[] vert = null;
+                Vector3[] uvs = null;
                 Vector4[] colrs = null;
 
                 lock (vertices)
@@ -132,15 +132,23 @@ namespace Hatzap.Gui
                     vert = vertices.ToArray();
                 }
 
-                lock(colors)
+                lock (colors)
                 {
                     colrs = colors.ToArray();
                 }
-                
+
+                lock (uv)
+                {
+                    uvs = uv.ToArray();
+                }
+
                 GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-                GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(vertices.Count * GuiVertex.SizeInBytes), vert, BufferUsageHint.DynamicDraw);
+                GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(vertices.Count * Vector2.SizeInBytes), vert, BufferUsageHint.DynamicDraw);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
 
+                GL.BindBuffer(BufferTarget.ArrayBuffer, uvVbo);
+                GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(uv.Count * Vector3.SizeInBytes), uvs, BufferUsageHint.DynamicDraw);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
 
                 GL.BindBuffer(BufferTarget.ArrayBuffer, colorVbo);
                 GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(colors.Count * Vector4.SizeInBytes), colrs, BufferUsageHint.DynamicDraw);

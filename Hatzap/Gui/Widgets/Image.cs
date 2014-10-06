@@ -45,35 +45,39 @@ namespace Hatzap.Gui.Widgets
             RebuildRenderLayer();
         }
 
-        public override GuiVertex[] GetVertices() 
+        public override void GetVertices(List<Vector2> v, List<Vector3> u, List<Vector4> c) 
         {
             if (BorderWidth == 0 || TextureRegion == null || TextureRegion.Length < 1)
-                return null;
+                return;
 
-            GuiVertex[] vertices = new GuiVertex[4];
+            var vertices = new Vector2[4];
+            var uv = new Vector3[4];
+            var colors = new Vector4[4];
 
-            vertices[0].Position = Position + new Vector2(-BorderWidth, -BorderWidth);
-            vertices[1].Position = Position + Size + new Vector2(BorderWidth, BorderWidth);
-            vertices[2].Position = Position + new Vector2(0, Size.Y) + new Vector2(-BorderWidth, BorderWidth);
-            vertices[3].Position = Position + Size + new Vector2(BorderWidth, BorderWidth);
-            vertices[4].Position = Position + new Vector2(-BorderWidth, -BorderWidth);
-            vertices[5].Position = Position + new Vector2(Size.X, 0) + new Vector2(BorderWidth, -BorderWidth);
+            vertices[0] = Position + new Vector2(-BorderWidth, -BorderWidth);
+            vertices[1] = Position + Size + new Vector2(BorderWidth, BorderWidth);
+            vertices[2] = Position + new Vector2(0, Size.Y) + new Vector2(-BorderWidth, BorderWidth);
+            vertices[3] = Position + Size + new Vector2(BorderWidth, BorderWidth);
+            vertices[4] = Position + new Vector2(-BorderWidth, -BorderWidth);
+            vertices[5] = Position + new Vector2(Size.X, 0) + new Vector2(BorderWidth, -BorderWidth);
 
-            vertices[0].TextureCoordinates = TextureRegion[0].Offset;
-            vertices[1].TextureCoordinates = TextureRegion[0].Offset + TextureRegion[0].Size;
-            vertices[2].TextureCoordinates = TextureRegion[0].Offset + new Vector2(0, TextureRegion[0].Size.Y);
-            vertices[3].TextureCoordinates = TextureRegion[0].Offset + TextureRegion[0].Size;
-            vertices[4].TextureCoordinates = TextureRegion[0].Offset + new Vector2(0, 0);
-            vertices[5].TextureCoordinates = TextureRegion[0].Offset + new Vector2(TextureRegion[0].Size.X, 0);
+            uv[0] = new Vector3(TextureRegion[0].Offset.X, TextureRegion[0].Offset.Y, TextureRegion[0].Page);
+            uv[1] = new Vector3(TextureRegion[0].Offset.X + TextureRegion[0].Size.X, TextureRegion[0].Offset.Y + TextureRegion[0].Size.Y, TextureRegion[0].Page);
+            uv[2] = new Vector3(TextureRegion[0].Offset.X, TextureRegion[0].Offset.Y + TextureRegion[0].Size.Y, TextureRegion[0].Page);
+            uv[3] = new Vector3(TextureRegion[0].Offset.X + TextureRegion[0].Size.X, TextureRegion[0].Offset.Y + TextureRegion[0].Size.Y, TextureRegion[0].Page);
+            uv[4] = new Vector3(TextureRegion[0].Offset.X, TextureRegion[0].Offset.Y, TextureRegion[0].Page);
+            uv[5] = new Vector3(TextureRegion[0].Offset.X + TextureRegion[0].Size.X, TextureRegion[0].Offset.Y, TextureRegion[0].Page);
 
-            vertices[0].TexturePage = TextureRegion[0].Page;
-            vertices[1].TexturePage = TextureRegion[0].Page;
-            vertices[2].TexturePage = TextureRegion[0].Page;
-            vertices[3].TexturePage = TextureRegion[0].Page;
-            vertices[4].TexturePage = TextureRegion[0].Page;
-            vertices[5].TexturePage = TextureRegion[0].Page;
+            colors[0] = Color;
+            colors[1] = Color;
+            colors[2] = Color;
+            colors[3] = Color;
+            colors[4] = Color;
+            colors[5] = Color;
 
-            return vertices;
+            v.AddRange(vertices);
+            u.AddRange(uv);
+            c.AddRange(colors);
         }
 
         int vbo = 0, vao = 0;

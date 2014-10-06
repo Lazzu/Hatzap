@@ -121,7 +121,7 @@ namespace Hatzap.Gui.Widgets
         public bool Visible
         {
             get { return visible; }
-            set { visible = value; }
+            set { visible = value; Dirty = true; }
         }
 
         #region Event functions
@@ -170,7 +170,7 @@ namespace Hatzap.Gui.Widgets
         /// Returns all
         /// </summary>
         /// <returns></returns>
-        public virtual GuiVertex[] GetVertices() { return null; }
+        public virtual void GetVertices(List<Vector2> vertices, List<Vector3> uv, List<Vector4> colors) {}
 
         /// <summary>
         /// This function is used for rendering custom GUI stuff after all other GUI rendering is done.

@@ -38,12 +38,14 @@ namespace Hatzap.Gui.Widgets
 
         }
 
-        public override GuiVertex[] GetVertices()
+        public override void GetVertices(List<Vector2> vertices, List<Vector3> uv, List<Vector4> colors)
         {
             if (TextureRegion == null || TextureRegion.Length < 9)
-                return null;
+                return;
 
-            var vertices = new GuiVertex[3*2*9];
+            var v = new Vector2[3 * 2 * 9];
+            var u = new Vector3[3 * 2 * 9];
+            var c = new Vector4[3 * 2 * 9];
 
             int i = 0;
 
@@ -57,82 +59,88 @@ namespace Hatzap.Gui.Widgets
 
             // Top left
             quadSize = TextureRegion[0].Size;
-            SetQuad(vertices, 0, ref i, ref offset, ref quadSize);
+            SetQuad(v, u, c, 0, ref i, ref offset, ref quadSize);
 
             // Top middle
             quadSize.X = Size.X - leftBorder - rightBorder;
             offset.X += TextureRegion[0].Size.X;
-            SetQuad(vertices, 1, ref i, ref offset, ref quadSize);
+            SetQuad(v, u, c, 1, ref i, ref offset, ref quadSize);
 
             // Top right
             quadSize = TextureRegion[2].Size;
             offset.X += Size.X - leftBorder - rightBorder;
-            SetQuad(vertices, 2, ref i, ref offset, ref quadSize);
+            SetQuad(v, u, c, 2, ref i, ref offset, ref quadSize);
 
             // Middle left
             quadSize.X = TextureRegion[3].Size.X;
             quadSize.Y = Size.Y - topBorder - bottomBorder;
             offset.X = 0;
             offset.Y = TextureRegion[0].Size.Y;
-            SetQuad(vertices, 3, ref i, ref offset, ref quadSize);
+            SetQuad(v, u, c, 3, ref i, ref offset, ref quadSize);
 
             // Middle middle
             quadSize.X = Size.X - leftBorder - rightBorder;
             quadSize.Y = Size.Y - topBorder - bottomBorder;
             offset.X += TextureRegion[3].Size.X;
             offset.Y = TextureRegion[1].Size.Y;
-            SetQuad(vertices, 4, ref i, ref offset, ref quadSize);
+            SetQuad(v, u, c, 4, ref i, ref offset, ref quadSize);
 
             // Middle right
             quadSize.X = TextureRegion[5].Size.X;
             quadSize.Y = Size.Y - topBorder - bottomBorder;
             offset.X += Size.X - leftBorder - rightBorder;
             offset.Y = TextureRegion[1].Size.Y;
-            SetQuad(vertices, 5, ref i, ref offset, ref quadSize);
+            SetQuad(v, u, c, 5, ref i, ref offset, ref quadSize);
 
             // Bottom left
             quadSize.X = TextureRegion[6].Size.X;
             quadSize.Y = TextureRegion[6].Size.Y;
             offset.X = 0;
             offset.Y += Size.Y - topBorder - bottomBorder;
-            SetQuad(vertices, 6, ref i, ref offset, ref quadSize);
+            SetQuad(v, u, c, 6, ref i, ref offset, ref quadSize);
 
             // Bottom middle
             quadSize.X = Size.X - leftBorder - rightBorder;
             quadSize.Y = TextureRegion[7].Size.Y;
             offset.X += TextureRegion[6].Size.X;
-            SetQuad(vertices, 7, ref i, ref offset, ref quadSize);
+            SetQuad(v, u, c, 7, ref i, ref offset, ref quadSize);
 
             // Bottom right
-            quadSize.X = TextureRegion[8].Size.X;
-            quadSize.Y = TextureRegion[8].Size.Y;
+            quadSize = TextureRegion[8].Size;
             offset.X += Size.X - leftBorder - rightBorder;
-            SetQuad(vertices, 8, ref i, ref offset, ref quadSize);
+            SetQuad(v, u, c, 8, ref i, ref offset, ref quadSize);
 
-            return vertices;
+            vertices.AddRange(v);
+            uv.AddRange(u);
+            colors.AddRange(c);
         }
 
-        void SetQuad(GuiVertex[] vertices, int tr, ref int i, ref Vector2 offset, ref Vector2 quadSize)
+        void SetQuad(Vector2[] vertices, Vector3[] uv, Vector4[] colors, int tr, ref int i, ref Vector2 offset, ref Vector2 quadSize)
         {
-            vertices[i].TexturePage = TextureRegion[tr].Page;
-            vertices[i].TextureCoordinates = TextureRegion[tr].Offset;
-            vertices[i++].Position = Position + offset;
-            vertices[i].TexturePage = TextureRegion[tr].Page;
-            vertices[i].TextureCoordinates = TextureRegion[tr].Offset + TextureRegion[tr].Size * new Vector2(0, 1);
-            vertices[i++].Position = Position + quadSize * new Vector2(0, 1) + offset;
-            vertices[i].TexturePage = TextureRegion[tr].Page;
-            vertices[i].TextureCoordinates = TextureRegion[tr].Offset + TextureRegion[tr].Size;
-            vertices[i++].Position = Position + quadSize + offset;
+            var txr = TextureRegion[tr];
 
-            vertices[i].TexturePage = TextureRegion[tr].Page;
-            vertices[i].TextureCoordinates = TextureRegion[tr].Offset;
-            vertices[i++].Position = Position + offset;
-            vertices[i].TexturePage = TextureRegion[tr].Page;
-            vertices[i].TextureCoordinates = TextureRegion[tr].Offset + TextureRegion[tr].Size;
-            vertices[i++].Position = Position + quadSize + offset;
-            vertices[i].TexturePage = TextureRegion[tr].Page;
-            vertices[i].TextureCoordinates = TextureRegion[tr].Offset + TextureRegion[tr].Size * new Vector2(1, 0);
-            vertices[i++].Position = Position + quadSize * new Vector2(1, 0) + offset;
+            var page = new Vector3(txr.Offset.X, txr.Offset.Y, txr.Page);
+            var size = new Vector3(txr.Size.X, txr.Size.Y, 0);
+
+            uv[i] = page;
+            colors[i] = Color;
+            vertices[i++]= Position + offset;
+            uv[i] = page + size * new Vector3(0,1,0);
+            colors[i] = Color;
+            vertices[i++] = Position + quadSize * new Vector2(0, 1) + offset;
+            uv[i] = page + size;
+            colors[i] = Color;
+            vertices[i++] = Position + quadSize + offset;
+
+            uv[i] = page;
+            colors[i] = Color;
+            vertices[i++] = Position + offset;
+            uv[i] = page + size;
+            colors[i] = Color;
+            vertices[i++] = Position + quadSize + offset;
+            uv[i] = page + size * new Vector3(1,0,0);
+            colors[i] = Color;
+            vertices[i++] = Position + quadSize * new Vector2(1, 0) + offset;
         }
 
     }
