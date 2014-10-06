@@ -87,6 +87,8 @@ namespace Hatzap.Gui
 
         public void Update(double delta)
         {
+            MouseOverGuiElementLastFrame = MouseOverGuiElement;
+            MouseOverGuiElement = false;
             sw.Reset();
             sw.Start();
             UpdateGroup(widgets, delta);
@@ -227,5 +229,20 @@ namespace Hatzap.Gui
 
             Root = new GuiRoot(gw);
         }
+
+        /// <summary>
+        /// Not realiable when using threaded gui update. If you want to be sure, use MouseOverGuiElementLastFrame in addition to MouseOverGuiElement to get better results.
+        /// </summary>
+        public bool MouseOverGuiElement { get; internal set; }
+
+        /// <summary>
+        /// True if mouse was over gui element on last frame.
+        /// </summary>
+        public bool MouseOverGuiElementLastFrame { get; internal set; }
+
+        /// <summary>
+        /// Short for testing if either MouseOverGuiElement or MouseOverGuiElementLastFrame is true.
+        /// </summary>
+        public bool MouseHoverGui { get { return MouseOverGuiElement || MouseOverGuiElementLastFrame; } }
     }
 }

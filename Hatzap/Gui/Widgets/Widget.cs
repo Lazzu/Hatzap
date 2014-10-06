@@ -152,12 +152,19 @@ namespace Hatzap.Gui.Widgets
             if (!Visible)
                 return;
 
-            if (UserInput.Mouse.IsInsideRect(Position, Position + Size) && UserInput.Mouse.IsButtonClicked())
+            bool inside = UserInput.Mouse.IsInsideRect(Position, Position + Size);
+
+            if (inside)
             {
-                var buttons = UserInput.Mouse.GetClickedButtons();
-                foreach (var button in buttons)
+                GuiRoot.Root.MouseOverGuiElement = true;
+
+                if(UserInput.Mouse.IsButtonClicked())
                 {
-                    OnMouseClick(button);
+                    var buttons = UserInput.Mouse.GetClickedButtons();
+                    foreach (var button in buttons)
+                    {
+                        OnMouseClick(button);
+                    }
                 }
             }
 

@@ -143,6 +143,18 @@ namespace HatzapTestApplication
                 Name = "Gui.Image"
             });
 
+            collection.ShaderPrograms.Add(new ShaderProgramInfo()
+            {
+                Shaders = new List<ShaderInfo>(new[]{ new ShaderInfo() {
+                    Path = "Assets/Shaders/SimpleModel.vert",
+                    Type = ShaderType.VertexShader
+                },new ShaderInfo() {
+                    Path = "Assets/Shaders/SimpleModel.frag",
+                    Type = ShaderType.FragmentShader
+                }}),
+                Name = "SimpleModel"
+            });
+
             //XML.Write.ToFile(collection, "Assets/Shaders/collection.xml");
 
             ShaderManager.LoadCollection(collection);
@@ -566,7 +578,7 @@ namespace HatzapTestApplication
 
             spaceShip = new Model();
             spaceShip.Texture = shipTexture;
-            spaceShip.Shader = modelShader;
+            spaceShip.Shader = ShaderManager.Get("SimpleModel");
             spaceShip.Mesh = mesh;
 
             Debug.WriteLine("OnLoad() ends");
@@ -685,7 +697,7 @@ namespace HatzapTestApplication
                         new UniformDataVector4()
                         {
                             Name = "Color",
-                            Data = new Vector4(1.0f, 1.0f, 1.0f, 1.0f)
+                            Data = new Vector4(0.0f, 1.0f, 1.0f, 1.0f)
                         }
                     };
 

@@ -58,7 +58,7 @@ namespace Hatzap.Input
 
         public void Initialize(GameWindow gw)
         {
-            ClickInterval = 0.15f;
+            ClickInterval = 0.25f;
 
             gameWindow = gw;
 
