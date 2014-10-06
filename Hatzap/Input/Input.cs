@@ -39,6 +39,12 @@ namespace Hatzap.Input
             keyboard.Initialize(gw);
         }
 
+        public static void Update()
+        {
+            mouse.Update();
+            keyboard.Update();
+        }
+
         public static void FrameEnd()
         {
             mouse.FrameEnd();

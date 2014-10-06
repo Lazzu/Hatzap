@@ -20,6 +20,7 @@ using Hatzap.Utilities;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Input;
 
 namespace HatzapTestApplication
 {
@@ -147,7 +148,7 @@ namespace HatzapTestApplication
             ShaderManager.LoadCollection(collection);
 
             Time.Initialize();
-            UserInput.Initialize(this, typeof(AccurateMouse), typeof(Keyboard));
+            UserInput.Initialize(this, typeof(AccurateMouse), typeof(Hatzap.Input.Keyboard));
             //GLThreadHelper.Initialize(this);
             GuiRoot.Initialize(this);
 
@@ -197,72 +198,190 @@ namespace HatzapTestApplication
                 },
             };
 
-            Button btn = new Button();
-            Button btn2 = new Button();
-            Button btn3 = new Button();
-            Button btn4 = new Button();
+            #region GridContainer test
+            GridContainer grid = new GridContainer();
+            grid.Columns = 3;
+            grid.Rows = 2;
+            {
+                Button btn = new Button();
+                Button btn2 = new Button();
+                Button btn3 = new Button();
+                Button btn4 = new Button();
+                
+                grid.AddChildWidget(btn);
+                grid.AddChildWidget(btn2);
+                grid.AddChildWidget(btn3);
+                grid.AddChildWidget(btn4);
+
+                btn.Text = "Button";
+                btn.OnClick += (m) =>
+                {
+                    btn.Text = "Clicked " + m.ToString();
+                };
+                btn.Anchor = new Anchor();
+                btn.Anchor.Directions[AnchorDirection.Left] = AnchorType.Snap;
+                btn.Anchor.Directions[AnchorDirection.Right] = AnchorType.Snap;
+                btn.Anchor.Directions[AnchorDirection.Top] = AnchorType.Snap;
+                btn.Anchor.Directions[AnchorDirection.Bottom] = AnchorType.Snap;
+                btn.Position = new Vector2(100, 100);
+                btn.Size = new Vector2(150, 50);
+                btn.TextureRegion = buttonRegion;
+
+
+
+
+                btn2.Text = "Button";
+                btn2.Color = new Vector4(1, 0, 0, 1);
+                btn2.OnClick += (m) =>
+                {
+                    btn2.Text = "Clicked " + m.ToString();
+                };
+                btn2.Anchor = new Anchor();
+                btn2.Anchor.Directions[AnchorDirection.Left] = AnchorType.Snap;
+                btn2.Anchor.Directions[AnchorDirection.Right] = AnchorType.Snap;
+                btn2.Anchor.Directions[AnchorDirection.Top] = AnchorType.Snap;
+                btn2.Anchor.Directions[AnchorDirection.Bottom] = AnchorType.Snap;
+                btn2.Position = new Vector2(300, 100);
+                btn2.Size = new Vector2(150, 50);
+                btn2.TextureRegion = buttonRegion;
+
+
+                btn3.Color = new Vector4(1, 0, 0, 1);
+                btn3.Text = "Button 3";
+                btn3.OnClick += (m) =>
+                {
+                    Random r = new Random();
+                    btn3.Color = new Vector4((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble(), 1);
+                    //btn3.Z = btn4.Z + 1;
+                };
+                btn3.Anchor = new Anchor();
+                btn3.Anchor.Directions[AnchorDirection.Left] = AnchorType.Snap;
+                btn3.Anchor.Directions[AnchorDirection.Right] = AnchorType.Snap;
+                btn3.Anchor.Directions[AnchorDirection.Top] = AnchorType.Snap;
+                btn3.Anchor.Directions[AnchorDirection.Bottom] = AnchorType.Snap;
+                btn3.Position = new Vector2(100, 200);
+                btn3.Size = new Vector2(150, 50);
+                btn3.TextureRegion = buttonRegion;
+
+
+                btn4.Color = new Vector4(1, 0, 0, 1);
+                btn4.Text = "Button";
+                btn4.OnClick += (m) =>
+                {
+                    btn4.Text = "Clicked " + m.ToString();
+                    //btn4.Z = btn3.Z + 1;
+                };
+                btn4.Anchor = new Anchor();
+                btn4.Anchor.Directions[AnchorDirection.Left] = AnchorType.Snap;
+                btn4.Anchor.Directions[AnchorDirection.Right] = AnchorType.Snap;
+                btn4.Anchor.Directions[AnchorDirection.Top] = AnchorType.Snap;
+                btn4.Anchor.Directions[AnchorDirection.Bottom] = AnchorType.Snap;
+                btn4.Position = new Vector2(150, 200);
+                btn4.Size = new Vector2(150, 50);
+                btn4.TextureRegion = buttonRegion;
+            }
+
+            grid.Position = new Vector2(150, 100);
+            grid.Size = new Vector2(400, 200);
+
+            grid.LeftAnchorOffset = 5;
+            grid.TopAnchorOffset = 5;
+            #endregion
+
+            #region StackContainer test
+            StackContainer stack = new StackContainer();
+            {
+                Button btn = new Button();
+                Button btn2 = new Button();
+                Button btn3 = new Button();
+                Button btn4 = new Button();
+
+                stack.AddChildWidget(btn);
+                stack.AddChildWidget(btn2);
+                stack.AddChildWidget(btn3);
+                stack.AddChildWidget(btn4);
+
+                btn.Text = "Button";
+                btn.OnClick += (m) =>
+                {
+                    btn.Text = "Clicked " + m.ToString();
+                };
+                btn.Anchor = new Anchor();
+                btn.Anchor.Directions[AnchorDirection.Left] = AnchorType.Snap;
+                btn.Anchor.Directions[AnchorDirection.Right] = AnchorType.Snap;
+                btn.Anchor.Directions[AnchorDirection.Top] = AnchorType.Snap;
+                btn.Position = new Vector2(100, 100);
+                btn.Size = new Vector2(150, 50);
+                btn.TextureRegion = buttonRegion;
+
+
+
+
+                btn2.Text = "Button";
+                btn2.Color = new Vector4(1, 0, 0, 1);
+                btn2.OnClick += (m) =>
+                {
+                    btn2.Text = "Clicked " + m.ToString();
+                };
+                btn2.Anchor = new Anchor();
+                btn2.Anchor.Directions[AnchorDirection.Left] = AnchorType.Snap;
+                btn2.Anchor.Directions[AnchorDirection.Right] = AnchorType.Snap;
+                btn2.Anchor.Directions[AnchorDirection.Top] = AnchorType.Snap;
+                btn2.Position = new Vector2(300, 100);
+                btn2.Size = new Vector2(150, 50);
+                btn2.TextureRegion = buttonRegion;
+
+
+                btn3.Color = new Vector4(1, 0, 0, 1);
+                btn3.Text = "Button 3";
+                btn3.OnClick += (m) =>
+                {
+                    Random r = new Random();
+                    btn3.Color = new Vector4((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble(), 1);
+                    //btn3.Z = btn4.Z + 1;
+                };
+                btn3.Anchor = new Anchor();
+                btn3.Anchor.Directions[AnchorDirection.Left] = AnchorType.Snap;
+                btn3.Anchor.Directions[AnchorDirection.Right] = AnchorType.Snap;
+                btn3.Anchor.Directions[AnchorDirection.Top] = AnchorType.Snap;
+                btn3.Position = new Vector2(100, 200);
+                btn3.Size = new Vector2(150, 50);
+                btn3.TextureRegion = buttonRegion;
+
+
+                btn4.Color = new Vector4(1, 0, 0, 1);
+                btn4.Text = "Button";
+                btn4.OnClick += (m) =>
+                {
+                    btn4.Text = "Clicked " + m.ToString();
+                    //btn4.Z = btn3.Z + 1;
+                };
+                btn4.Anchor = new Anchor();
+                btn4.Anchor.Directions[AnchorDirection.Left] = AnchorType.Snap;
+                btn4.Anchor.Directions[AnchorDirection.Right] = AnchorType.Snap;
+                btn4.Anchor.Directions[AnchorDirection.Top] = AnchorType.Snap;
+                btn4.Position = new Vector2(150, 200);
+                btn4.Size = new Vector2(150, 50);
+                btn4.TextureRegion = buttonRegion;
+            }
+
+            stack.Position = new Vector2(600, 100);
+            stack.Size = new Vector2(400, 200);
+
+            stack.LeftAnchorOffset = 5;
+            stack.TopAnchorOffset = 5;
+            #endregion
 
             var image = new Hatzap.Gui.Widgets.Image();
             var lblText = new Label();
 
-            GuiRoot.Root.AddWidget(btn2);
-            GuiRoot.Root.AddWidget(btn3);
-            GuiRoot.Root.AddWidget(btn4);
-            GuiRoot.Root.AddWidget(image);
-            GuiRoot.Root.AddWidget(lblText);
-            GuiRoot.Root.AddWidget(btn);
-
-            btn.Text = "Button";
-            btn.OnClick += (m) =>
-            {
-                btn.Text = "Clicked " + m.ToString();
-            };
-            btn.Anchor = new Anchor();
-            btn.Anchor.Directions[AnchorDirection.Left] = AnchorType.Snap;
-            btn.Anchor.Directions[AnchorDirection.Right] = AnchorType.Snap;
-            btn.Anchor.Directions[AnchorDirection.Top] = AnchorType.Snap;
-            btn.Anchor.Directions[AnchorDirection.Bottom] = AnchorType.None;
-            btn.Position = new Vector2(100, 100);
-            btn.Size = new Vector2(150, 50);
-            btn.TextureRegion = buttonRegion;
+            GuiRoot.Root.AddWidget(grid);
+            GuiRoot.Root.AddWidget(stack);
+            //GuiRoot.Root.AddWidget(image);
+            //GuiRoot.Root.AddWidget(lblText);
             
 
             
-
-            btn2.Text = "Button";
-            btn2.Color = new Vector4(1, 0, 0, 1);
-            btn2.OnClick += (m) =>
-            {
-                btn2.Text = "Clicked " + m.ToString();
-            };
-            btn2.Position = new Vector2(300, 100);
-            btn2.Size = new Vector2(150, 50);
-            btn2.TextureRegion = buttonRegion;
-
-            
-            btn3.Color = new Vector4(1, 0, 0, 1);
-            btn3.Text = "Button";
-            btn3.OnClick += (m) =>
-            {
-                Random r = new Random();
-                btn3.Color = new Vector4((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble(), 1);
-                btn3.Z = btn4.Z + 1;
-            };
-            btn3.Position = new Vector2(100, 200);
-            btn3.Size = new Vector2(150, 50);
-            btn3.TextureRegion = buttonRegion;
-
-            
-            btn4.Color = new Vector4(1, 0, 0, 1);
-            btn4.Text = "Button";
-            btn4.OnClick += (m) =>
-            {
-                btn4.Text = "Clicked " + m.ToString();
-                btn4.Z = btn3.Z + 1;
-            };
-            btn4.Position = new Vector2(150, 200);
-            btn4.Size = new Vector2(150, 50);
-            btn4.TextureRegion = buttonRegion;
 
             
             image.Texture = new Texture();
@@ -274,7 +393,7 @@ namespace HatzapTestApplication
             
             
             lblText.Text = "This is a GUI Label";
-            lblText.Position = new Vector2(800, 100);
+            lblText.Position = new Vector2(800, 50);
             lblText.GuiText.HorizontalAlignment = HorizontalAlignment.Left;
 
             
@@ -423,6 +542,8 @@ namespace HatzapTestApplication
 
         bool bold = false;
 
+        Vector3 moveVector = Vector3.Zero;
+
         protected override void OnKeyPress(KeyPressEventArgs e)
         {
             base.OnKeyPress(e);
@@ -444,12 +565,14 @@ namespace HatzapTestApplication
         
         int update = 0;
 
-        double renderInsert = 0, renderQueue = 0, swapBufferTime = 0, guiwait = 0, garbage = 0;
+        double renderInsert = 0, renderQueue = 0, swapBufferTime = 0, guiwait = 0, garbage = 0, guiRender = 0;
         Stopwatch sw = new Stopwatch();
         Stopwatch swFrame = new Stopwatch();
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
+            UserInput.Update();
+
             sw.Reset();
             sw.Start();
             GC.Collect();
@@ -468,14 +591,14 @@ namespace HatzapTestApplication
             camera.Update((float)e.Time);
 
             update++;
-
+            
             //camera.Rotate(new Vector2(0, (mousepos.X / (float)Width - 0.5f) * 0.5f * (float)e.Time));
             camera.Rotate(new Vector2(0,(float)e.Time * 0.1f));
             camera.Distance = (float)(Math.Sin(totalTime * 0.25f) + 1.2f) * 10;
 
             Random r = new Random();
 
-            int n = (int)(Math.Sin(totalTime * 4) / 2 + 0.5) * 5;
+            int n = (int)((Math.Sin(totalTime * 4) / 2 + 0.5) * 5);
 
             sw.Reset();
             sw.Start();
@@ -549,22 +672,15 @@ namespace HatzapTestApplication
                 frametime = 0;
                 double unknown = frameTime - swapBufferTime - renderQueue - renderInsert - guiwait;
                 fpsText.Text = string.Format("FPS: {0}, Update: {1}\nFrame time: {6}\nRenderQueue count: {2}\nRenderInsert: {3}ms\nRenderQueue.Render: {4}ms\nSwapBuffers(): {5}ms\nUnknown: {7}ms\n" +
-                    "Triangles Drawn: {8}\nObjectPool reserve: {9}\nObjectPool capacity: {10}\nGui Update: {11}ms\nGui Rebuild: {12}ms\nGui wait: {13}ms\nGC.Collect(): {14}ms", 
+                    "Triangles Drawn: {8}\nObjectPool reserve: {9}\nObjectPool capacity: {10}\nGui Update: {11}ms\nGui Rebuild: {12}ms\nGui wait: {13}ms\nGui Render: {15}ms\nGC.Collect(): {14}ms", 
                     frame, update, RenderQueue.Count, Math.Round(renderInsert * 1000, 2), Math.Round(renderQueue * 1000, 2), Math.Round(swapBufferTime * 1000, 2), Math.Round(frameTime * 1000, 2),
-                    Math.Round((unknown) * 1000, 2), RenderQueue.TrianglesDrawn, RenderDataPool.Count, RenderDataPool.Size, Math.Round(GuiRoot.Root.UpdateElapsedSeconds, 2), Math.Round(GuiRoot.Root.RebuildElapsedSeconds, 2), Math.Round(guiwait, 2), Math.Round(garbage, 2));
+                    Math.Round((unknown) * 1000, 2), RenderQueue.TrianglesDrawn, RenderDataPool.Count, RenderDataPool.Size, Math.Round(GuiRoot.Root.UpdateElapsedSeconds, 2), Math.Round(GuiRoot.Root.RebuildElapsedSeconds, 2), Math.Round(guiwait, 2), Math.Round(garbage, 2), Math.Round(guiRender, 2));
                 frame = 0;
                 update = 0;
             }
 
             text.Text = string.Format("Calculated weight: {0}", largeText.CalculatedWeight);
 
-            sw.Reset();
-            sw.Start();
-            // Wait for gui update in case it was done in a background thread
-            GuiRoot.Root.WaitUpdateFinish();
-            sw.Stop();
-            guiwait = sw.Elapsed.TotalSeconds;
-            
             // It is important that this is right before main render thread starts working on current context.
             Time.Render(e.Time);
 
@@ -583,11 +699,24 @@ namespace HatzapTestApplication
             sw.Stop();
             renderQueue = sw.Elapsed.TotalSeconds;
 
-            GuiRoot.Root.Render();
+            sw.Reset();
+            sw.Start();
+            // Wait for gui update in case it was done in a background thread
+            GuiRoot.Root.WaitUpdateFinish();
+            sw.Stop();
+            guiwait = sw.Elapsed.TotalSeconds;
 
             GL.Disable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+
+            sw.Reset();
+            sw.Start();
+            GuiRoot.Root.Render();
+            sw.Stop();
+            guiRender = sw.Elapsed.TotalSeconds;
+
+            
 
             Matrix4 projection = Matrix4.CreateOrthographicOffCenter(0, Width, Height, 0, -1, 1);
             Matrix4 view = Matrix4.CreateTranslation(10, 30, 0);
@@ -599,8 +728,6 @@ namespace HatzapTestApplication
             textShader.SendUniform("textureSize", ref textureSize);
             GL.ActiveTexture(TextureUnit.Texture0);
             fpsText.Draw(textShader);
-
-            GL.Enable(EnableCap.DepthTest);
 
             GL.Flush();
 

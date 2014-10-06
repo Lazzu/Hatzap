@@ -12,12 +12,20 @@ namespace Hatzap.Gui.Widgets
 
         public List<Widget> Widgets { get { return widgets; } }
 
-        public int Capacity { get; set; }
+        public virtual int Capacity { get; set; }
 
         public float LeftAnchorOffset { get; set; }
         public float RightAnchorOffset { get; set; }
         public float TopAnchorOffset { get; set; }
         public float BottomAnchorOffset { get; set; }
+
+        public virtual void GetAnchorPointsForChild(Widget child, out float left, out float right, out float top, out float bottom)
+        {
+            left = LeftAnchorOffset;
+            right = RightAnchorOffset;
+            top = TopAnchorOffset;
+            bottom = BottomAnchorOffset;
+        }
 
         public void SortChildWidgets()
         {

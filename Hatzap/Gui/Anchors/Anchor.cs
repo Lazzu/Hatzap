@@ -37,6 +37,12 @@ namespace Hatzap.Gui.Anchors
 
             bool hasparent = Parent.WidgetGroup != null;
 
+            // Offsets
+            float left = 0, right = 0, top = 0, bottom = 0;
+
+            if (hasparent)
+                Parent.WidgetGroup.GetAnchorPointsForChild(Parent, out left, out right, out top, out bottom);
+
             switch (Directions[AnchorDirection.Left])
             {
                 case AnchorType.None:
@@ -45,7 +51,7 @@ namespace Hatzap.Gui.Anchors
                 case AnchorType.Snap:
                     if (hasparent)
                     {
-                        Parent.position.X = Parent.WidgetGroup.Position.X + Parent.WidgetGroup.LeftAnchorOffset;
+                        Parent.position.X = Parent.WidgetGroup.Position.X + left;
                     }
                     break;
                 case AnchorType.Relative:
@@ -60,10 +66,7 @@ namespace Hatzap.Gui.Anchors
                 case AnchorType.Snap:
                     if (hasparent)
                     {
-                        Parent.size.X = Parent.WidgetGroup.Position.X + Parent.WidgetGroup.Size.X + Parent.WidgetGroup.RightAnchorOffset - Parent.position.X;
-
-                        Debug.WriteLine("Parent.WidgetGroup.size: " + Parent.WidgetGroup.size);
-
+                        Parent.size.X = Parent.WidgetGroup.Position.X + Parent.WidgetGroup.Size.X + right - Parent.position.X;
                     }
                     break;
                 case AnchorType.Relative:
@@ -78,7 +81,7 @@ namespace Hatzap.Gui.Anchors
                 case AnchorType.Snap:
                     if (hasparent)
                     {
-                        Parent.position.Y = Parent.WidgetGroup.Position.Y + Parent.WidgetGroup.TopAnchorOffset;
+                        Parent.position.Y = Parent.WidgetGroup.Position.Y + top;
                     }
                     break;
                 case AnchorType.Relative:
@@ -93,7 +96,7 @@ namespace Hatzap.Gui.Anchors
                 case AnchorType.Snap:
                     if (hasparent)
                     {
-                        Parent.size.Y = Parent.WidgetGroup.Position.Y + Parent.WidgetGroup.Size.Y + Parent.WidgetGroup.BottomAnchorOffset - Parent.position.Y;
+                        Parent.size.Y = Parent.WidgetGroup.Position.Y + Parent.WidgetGroup.Size.Y + bottom - Parent.position.Y;
                     }
                     break;
                 case AnchorType.Relative:

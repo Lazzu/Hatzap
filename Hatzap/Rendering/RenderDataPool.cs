@@ -28,7 +28,7 @@ namespace Hatzap.Rendering
 
         public static RenderData GetInstance()
         {
-            if (pool.Count == 0)
+            if (count == 0)
                 return new RenderData();
 
             int index = count - 1;
