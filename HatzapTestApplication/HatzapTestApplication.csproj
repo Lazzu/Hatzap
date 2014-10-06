@@ -104,6 +104,9 @@
     <Content Include="Assets\Fonts\OpenSans-Regular.ttf_sdf.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\Gui\elements.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Textures\Default.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

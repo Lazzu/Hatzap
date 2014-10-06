@@ -68,18 +68,18 @@ namespace Hatzap.Gui
 
                 widget.Dirty = false;
 
-                int start = vertices.Count - 1;
+                int start = vertices.Count;
 
                 widget.GetVertices(vertices, uv, colors);
 
-                int current = vertices.Count - 1;
+                int current = vertices.Count;
 
-                index += current - start;
-
-                if (vertices != null && vertices.Count > 0)
+                if (vertices != null && vertices.Count > 0 && start < current)
                 {
+                    index += current - start;
+
                     widget.drawStartIndex = start;
-                    widget.drawEndIndex = index - 1;
+                    widget.drawEndIndex = current;
                 }
 
                 var group = widget as WidgetGroup;

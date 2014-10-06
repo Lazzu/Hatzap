@@ -49,6 +49,7 @@
     <Compile Include="Gui\Anchors\Anchor.cs" />
     <Compile Include="Gui\Anchors\AnchorDirection.cs" />
     <Compile Include="Gui\Anchors\AnchorType.cs" />
+    <Compile Include="Gui\ElementCollection.cs" />
     <Compile Include="Gui\Elements\GuiElement.cs" />
     <Compile Include="Gui\Elements\GuiElementCollection.cs" />
     <Compile Include="Gui\Events\MouseEvents.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="Gui\GuiSettings.cs" />
     <Compile Include="Gui\GuiText.cs" />
     <Compile Include="Gui\GuiTextureRegion.cs" />
+    <Compile Include="Gui\WidgetInfo.cs" />
     <Compile Include="Gui\Widgets\Button.cs" />
     <Compile Include="Gui\Widgets\Button.Rendering.cs">
       <DependentUpon>Button.cs</DependentUpon>

@@ -37,8 +37,8 @@ namespace Hatzap.Gui.Widgets
                 left += x * cellWidth + x * left;
                 top += y * cellHeight + y * top;
 
-                right += (Columns - x - 1) * -cellWidth + (Columns - x - 1) * right;
-                bottom += (Rows - y - 1) * -cellHeight + (Rows - y - 1) * bottom;
+                right += (Columns - x - 1) * -cellWidth;
+                bottom += (Rows - y - 1) * -cellHeight;
             }
         }
     }

@@ -158,45 +158,55 @@ namespace HatzapTestApplication
 
             GuiRoot.Root.Texture.TextureSettings(TextureMinFilter.Linear, TextureMagFilter.Linear, 0);
 
-            var buttonRegion = new[] {
-                new GuiTextureRegion() { // Top left
-                    Offset = new Vector2(2,2),
-                    Size = new Vector2(2,2),
-                    Page = 0
-                }, new GuiTextureRegion() { // Top center
-                    Offset = new Vector2(4,2),
-                    Size = new Vector2(62,2),
-                    Page = 0
-                }, new GuiTextureRegion() { // Top Right
-                    Offset = new Vector2(66,2),
-                    Size = new Vector2(2,2),
-                    Page = 0
-                }, new GuiTextureRegion() { // Middle left
-                    Offset = new Vector2(2,4),
-                    Size = new Vector2(2,62),
-                    Page = 0
-                }, new GuiTextureRegion() { // Middle center
-                    Offset = new Vector2(4,4),
-                    Size = new Vector2(62,62),
-                    Page = 0
-                }, new GuiTextureRegion() { // Middle right
-                    Offset = new Vector2(66,4),
-                    Size = new Vector2(2,62),
-                    Page = 0
-                }, new GuiTextureRegion() { // Bottom left
-                    Offset = new Vector2(2,66),
-                    Size = new Vector2(2,2),
-                    Page = 0
-                }, new GuiTextureRegion() { // Bottom center
-                    Offset = new Vector2(4,66),
-                    Size = new Vector2(62,2),
-                    Page = 0
-                }, new GuiTextureRegion() { // Bottom right
-                    Offset = new Vector2(66,66),
-                    Size = new Vector2(2,2),
-                    Page = 0
-                },
+            ElementCollection guiElements = new ElementCollection()
+            {
+                Elements = new List<WidgetInfo> { 
+                    new WidgetInfo(){
+                        WidgetType = typeof(Button).ToString(),
+                        Slices = new List<GuiTextureRegion> {
+                            new GuiTextureRegion() { // Top left
+                                Offset = new Vector2(19,0),
+                                Size = new Vector2(5,5),
+                                Page = 0
+                            }, new GuiTextureRegion() { // Top center
+                                Offset = new Vector2(24,0),
+                                Size = new Vector2(1,5),
+                                Page = 0
+                            }, new GuiTextureRegion() { // Top Right
+                                Offset = new Vector2(25,0),
+                                Size = new Vector2(5,5),
+                                Page = 0
+                            }, new GuiTextureRegion() { // Middle left
+                                Offset = new Vector2(19,5),
+                                Size = new Vector2(5,1),
+                                Page = 0
+                            }, new GuiTextureRegion() { // Middle center
+                                Offset = new Vector2(24,5),
+                                Size = new Vector2(1,1),
+                                Page = 0
+                            }, new GuiTextureRegion() { // Middle right
+                                Offset = new Vector2(25,5),
+                                Size = new Vector2(5,1),
+                                Page = 0
+                            }, new GuiTextureRegion() { // Bottom left
+                                Offset = new Vector2(19,6),
+                                Size = new Vector2(5,9),
+                                Page = 0
+                            }, new GuiTextureRegion() { // Bottom center
+                                Offset = new Vector2(24,6),
+                                Size = new Vector2(1,9),
+                                Page = 0
+                            }, new GuiTextureRegion() { // Bottom right
+                                Offset = new Vector2(25,6),
+                                Size = new Vector2(5,9),
+                                Page = 0
+                            },
+                        },
+                    },
+                }
             };
+
+            XML.Write.ToFile(guiElements, "Assets/Gui/elements.xml");
 
             #region GridContainer test
             GridContainer grid = new GridContainer();
@@ -207,16 +217,21 @@ namespace HatzapTestApplication
                 Button btn2 = new Button();
                 Button btn3 = new Button();
                 Button btn4 = new Button();
+                Button btn5 = new Button();
+                Button btn6 = new Button();
                 
                 grid.AddChildWidget(btn);
                 grid.AddChildWidget(btn2);
                 grid.AddChildWidget(btn3);
                 grid.AddChildWidget(btn4);
+                grid.AddChildWidget(btn5);
+                grid.AddChildWidget(btn6);
 
+                btn.Color = new Vector4(1, 0.5f, 0.5f, 1);
                 btn.Text = "Button";
                 btn.OnClick += (m) =>
                 {
-                    btn.Text = "Clicked " + m.ToString();
+                    //btn.Text = "Clicked " + m.ToString();
                 };
                 btn.Anchor = new Anchor();
                 btn.Anchor.Directions[AnchorDirection.Left] = AnchorType.Snap;
@@ -225,16 +240,17 @@ namespace HatzapTestApplication
                 btn.Anchor.Directions[AnchorDirection.Bottom] = AnchorType.Snap;
                 btn.Position = new Vector2(100, 100);
                 btn.Size = new Vector2(150, 50);
-                btn.TextureRegion = buttonRegion;
+                btn.TextureRegion = guiElements.Elements[0].Slices.ToArray();
 
 
 
 
                 btn2.Text = "Button";
-                btn2.Color = new Vector4(1, 0, 0, 1);
                 btn2.OnClick += (m) =>
                 {
-                    btn2.Text = "Clicked " + m.ToString();
+                    //btn2.Text = "Clicked " + m.ToString();
+                    Random r = new Random();
+                    btn2.Color = new Vector4((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble(), 1);
                 };
                 btn2.Anchor = new Anchor();
                 btn2.Anchor.Directions[AnchorDirection.Left] = AnchorType.Snap;
@@ -243,11 +259,10 @@ namespace HatzapTestApplication
                 btn2.Anchor.Directions[AnchorDirection.Bottom] = AnchorType.Snap;
                 btn2.Position = new Vector2(300, 100);
                 btn2.Size = new Vector2(150, 50);
-                btn2.TextureRegion = buttonRegion;
+                btn2.TextureRegion = guiElements.Elements[0].Slices.ToArray();
 
 
-                btn3.Color = new Vector4(1, 0, 0, 1);
-                btn3.Text = "Button 3";
+                btn3.Text = "Button";
                 btn3.OnClick += (m) =>
                 {
                     Random r = new Random();
@@ -261,14 +276,15 @@ namespace HatzapTestApplication
                 btn3.Anchor.Directions[AnchorDirection.Bottom] = AnchorType.Snap;
                 btn3.Position = new Vector2(100, 200);
                 btn3.Size = new Vector2(150, 50);
-                btn3.TextureRegion = buttonRegion;
+                btn3.TextureRegion = guiElements.Elements[0].Slices.ToArray();
 
 
-                btn4.Color = new Vector4(1, 0, 0, 1);
                 btn4.Text = "Button";
                 btn4.OnClick += (m) =>
                 {
-                    btn4.Text = "Clicked " + m.ToString();
+                    //btn4.Text = "Clicked " + m.ToString();
+                    Random r = new Random();
+                    btn4.Color = new Vector4((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble(), 1);
                     //btn4.Z = btn3.Z + 1;
                 };
                 btn4.Anchor = new Anchor();
@@ -278,7 +294,41 @@ namespace HatzapTestApplication
                 btn4.Anchor.Directions[AnchorDirection.Bottom] = AnchorType.Snap;
                 btn4.Position = new Vector2(150, 200);
                 btn4.Size = new Vector2(150, 50);
-                btn4.TextureRegion = buttonRegion;
+                btn4.TextureRegion = guiElements.Elements[0].Slices.ToArray();
+
+                btn5.Text = "Button";
+                btn5.OnClick += (m) =>
+                {
+                    Random r = new Random();
+                    btn5.Color = new Vector4((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble(), 1);
+                    //btn3.Z = btn4.Z + 1;
+                };
+                btn5.Anchor = new Anchor();
+                btn5.Anchor.Directions[AnchorDirection.Left] = AnchorType.Snap;
+                btn5.Anchor.Directions[AnchorDirection.Right] = AnchorType.Snap;
+                btn5.Anchor.Directions[AnchorDirection.Top] = AnchorType.Snap;
+                btn5.Anchor.Directions[AnchorDirection.Bottom] = AnchorType.Snap;
+                btn5.Position = new Vector2(100, 200);
+                btn5.Size = new Vector2(150, 50);
+                btn5.TextureRegion = guiElements.Elements[0].Slices.ToArray();
+
+
+                btn6.Text = "Button";
+                btn6.OnClick += (m) =>
+                {
+                    //btn4.Text = "Clicked " + m.ToString();
+                    Random r = new Random();
+                    btn6.Color = new Vector4((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble(), 1);
+                    //btn4.Z = btn3.Z + 1;
+                };
+                btn6.Anchor = new Anchor();
+                btn6.Anchor.Directions[AnchorDirection.Left] = AnchorType.Snap;
+                btn6.Anchor.Directions[AnchorDirection.Right] = AnchorType.Snap;
+                btn6.Anchor.Directions[AnchorDirection.Top] = AnchorType.Snap;
+                btn6.Anchor.Directions[AnchorDirection.Bottom] = AnchorType.Snap;
+                btn6.Position = new Vector2(150, 200);
+                btn6.Size = new Vector2(150, 50);
+                btn6.TextureRegion = guiElements.Elements[0].Slices.ToArray();
             }
 
             grid.Position = new Vector2(150, 100);
@@ -301,10 +351,12 @@ namespace HatzapTestApplication
                 stack.AddChildWidget(btn3);
                 stack.AddChildWidget(btn4);
 
-                btn.Text = "Button";
+                btn.Color = new Vector4(1.5f, 1.5f, 1.5f, 1);
+                btn.Text = "Button 1";
+                btn.TextColor = new Vector4(0, 0, 0, 1);
                 btn.OnClick += (m) =>
                 {
-                    btn.Text = "Clicked " + m.ToString();
+                    //btn.Text = "Clicked " + m.ToString();
                 };
                 btn.Anchor = new Anchor();
                 btn.Anchor.Directions[AnchorDirection.Left] = AnchorType.Snap;
@@ -312,16 +364,15 @@ namespace HatzapTestApplication
                 btn.Anchor.Directions[AnchorDirection.Top] = AnchorType.Snap;
                 btn.Position = new Vector2(100, 100);
                 btn.Size = new Vector2(150, 50);
-                btn.TextureRegion = buttonRegion;
+                btn.TextureRegion = guiElements.Elements[0].Slices.ToArray();
 
 
 
-
-                btn2.Text = "Button";
-                btn2.Color = new Vector4(1, 0, 0, 1);
+                btn2.Color = new Vector4(0.2f, 0.2f, 0.2f, 1);
+                btn2.Text = "Button 2";
                 btn2.OnClick += (m) =>
                 {
-                    btn2.Text = "Clicked " + m.ToString();
+                    //btn2.Text = "Clicked " + m.ToString();
                 };
                 btn2.Anchor = new Anchor();
                 btn2.Anchor.Directions[AnchorDirection.Left] = AnchorType.Snap;
@@ -329,10 +380,9 @@ namespace HatzapTestApplication
                 btn2.Anchor.Directions[AnchorDirection.Top] = AnchorType.Snap;
                 btn2.Position = new Vector2(300, 100);
                 btn2.Size = new Vector2(150, 50);
-                btn2.TextureRegion = buttonRegion;
+                btn2.TextureRegion = guiElements.Elements[0].Slices.ToArray();
 
 
-                btn3.Color = new Vector4(1, 0, 0, 1);
                 btn3.Text = "Button 3";
                 btn3.OnClick += (m) =>
                 {
@@ -346,14 +396,13 @@ namespace HatzapTestApplication
                 btn3.Anchor.Directions[AnchorDirection.Top] = AnchorType.Snap;
                 btn3.Position = new Vector2(100, 200);
                 btn3.Size = new Vector2(150, 50);
-                btn3.TextureRegion = buttonRegion;
+                btn3.TextureRegion = guiElements.Elements[0].Slices.ToArray();
 
-
-                btn4.Color = new Vector4(1, 0, 0, 1);
-                btn4.Text = "Button";
+                btn4.Color = new Vector4(1, 1, 1, 0.5f);
+                btn4.Text = "Button 4";
                 btn4.OnClick += (m) =>
                 {
-                    btn4.Text = "Clicked " + m.ToString();
+                    //btn4.Text = "Clicked " + m.ToString();
                     //btn4.Z = btn3.Z + 1;
                 };
                 btn4.Anchor = new Anchor();
@@ -362,7 +411,7 @@ namespace HatzapTestApplication
                 btn4.Anchor.Directions[AnchorDirection.Top] = AnchorType.Snap;
                 btn4.Position = new Vector2(150, 200);
                 btn4.Size = new Vector2(150, 50);
-                btn4.TextureRegion = buttonRegion;
+                btn4.TextureRegion = guiElements.Elements[0].Slices.ToArray();
             }
 
             stack.Position = new Vector2(600, 100);
