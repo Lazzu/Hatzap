@@ -130,8 +130,8 @@ namespace Hatzap.Gui.Widgets
         public virtual void OnMouseEnter() { }
         public virtual void OnMouseLeave() { }
         public virtual void OnMouseHover() { }
-        public virtual void OnMouseClick(MouseButton button) { }
         public virtual void OnMouseDown(MouseButton button) { }
+        public virtual void OnMouseClick(MouseButton button) { }
         public virtual void OnMouseUp(MouseButton button) { }
         #endregion
 
@@ -141,7 +141,11 @@ namespace Hatzap.Gui.Widgets
         public virtual void OnKeyUp(Key key) { }
         #endregion
 
+        private bool mouseInsideLastFrame = false;
+
         #endregion
+
+        HashSet<MouseButton> mouseDownButtonState = new HashSet<MouseButton>();
 
         /// <summary>
         /// The update function gets called on every frame update.
@@ -149,26 +153,52 @@ namespace Hatzap.Gui.Widgets
         /// <param name="delta">The delta time of the current frame.</param>
         public void Update(double delta) 
         {
+            // Return if widget is not visible
             if (!Visible)
                 return;
 
+            // Is the mouse over this widget?
             bool inside = UserInput.Mouse.IsInsideRect(Position, Position + Size);
 
             if (inside)
             {
+                if (!mouseInsideLastFrame)
+                {
+                    OnMouseEnter();
+                }
+
+                OnMouseHover();
+
                 GuiRoot.Root.MouseOverGuiElement = true;
 
-                if(UserInput.Mouse.IsButtonClicked())
+                var thisframe = new HashSet<MouseButton>();
+
+                foreach (var button in UserInput.Mouse.GetDownButtons())
                 {
-                    var buttons = UserInput.Mouse.GetClickedButtons();
-                    foreach (var button in buttons)
-                    {
-                        OnMouseClick(button);
-                    }
+                    OnMouseDown(button);
+                    thisframe.Add(button);
                 }
+
+                foreach (var button in mouseDownButtonState)
+                {
+                    if (!thisframe.Contains(button)) OnMouseUp(button);
+                }
+
+                mouseDownButtonState = thisframe;
+
+                foreach (var button in UserInput.Mouse.GetClickedButtons())
+                {
+                    OnMouseClick(button);
+                }
+            }
+            else if(mouseInsideLastFrame)
+            {
+                OnMouseLeave();
             }
 
             OnUpdate(delta);
+
+            mouseInsideLastFrame = inside;
         }
 
         public virtual void OnUpdate(double delta) { }

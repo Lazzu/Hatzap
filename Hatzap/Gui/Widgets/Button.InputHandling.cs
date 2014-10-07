@@ -8,6 +8,8 @@ using OpenTK.Input;
 namespace Hatzap.Gui.Widgets
 {
 	public delegate void OnMouseClick(MouseButton button);
+    public delegate void OnMouseDown(MouseButton button);
+    public delegate void OnMouseUp(MouseButton button);
     public delegate void OnMouseDoubleClick(MouseButton button);
     public delegate void OnMouseEnter();
     public delegate void OnMouseHover();
@@ -17,6 +19,8 @@ namespace Hatzap.Gui.Widgets
     public partial class Button
     {
         public OnMouseClick OnClick;
+        public OnMouseDown OnDown;
+        public OnMouseUp OnUp;
         public OnMouseDoubleClick OnDoubleClick;
         public OnMouseEnter OnEnter;
         public OnMouseHover OnHover;
@@ -40,6 +44,16 @@ namespace Hatzap.Gui.Widgets
         public override void OnMouseLeave()
         {
             if (OnLeave != null) OnLeave();
+        }
+
+        public override void OnMouseDown(MouseButton button)
+        {
+            if (OnDown != null) OnDown(button);
+        }
+
+        public override void OnMouseUp(MouseButton button)
+        {
+            if (OnUp != null) OnUp(button);
         }
     }
 }

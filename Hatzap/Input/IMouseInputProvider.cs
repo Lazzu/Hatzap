@@ -41,11 +41,18 @@ namespace Hatzap.Input
         /// <returns>True if any mouse buttons were clicked on this frame.</returns>
         bool IsButtonClicked();
 
+
         /// <summary>
         /// Returns all buttons that were clicked on this frame.
         /// </summary>
-        /// <returns>Array of buttons.</returns>
-        MouseButton[] GetClickedButtons();
+        /// <returns>Clicked buttons.</returns>
+        IEnumerable<MouseButton> GetClickedButtons();
+
+        /// <summary>
+        /// Returns all buttons that were down on this frame.
+        /// </summary>
+        /// <returns>Clicked buttons.</returns>
+        IEnumerable<MouseButton> GetDownButtons();
 
         /// <summary>
         /// Returns if the mouse cursor is inside the rectangle AABB

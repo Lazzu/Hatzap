@@ -207,5 +207,16 @@ namespace Hatzap.Input
         {
             throw new NotImplementedException();
         }
+
+
+        IEnumerable<MouseButton> IMouseInputProvider.GetClickedButtons()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<MouseButton> GetDownButtons()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

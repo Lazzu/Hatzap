@@ -189,17 +189,22 @@ namespace Hatzap.Input
             return false;
         }
 
-        public MouseButton[] GetClickedButtons()
+        public IEnumerable<MouseButton> GetClickedButtons()
         {
-            List<MouseButton> clicked = new List<MouseButton>();
-
             foreach (var item in allButtons)
             {
                 if (clickedButtons[item])
-                    clicked.Add(item);
+                    yield return item;
             }
+        }
 
-            return clicked.ToArray();
+        public IEnumerable<MouseButton> GetDownButtons()
+        {
+            foreach (var item in allButtons)
+            {
+                if (clickedButtons[item])
+                    yield return item;
+            }
         }
     }
 }

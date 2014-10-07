@@ -240,10 +240,13 @@ namespace HatzapTestApplication
                 grid.AddChildWidget(btn6);
 
                 btn.Color = new Vector4(1, 0.5f, 0.5f, 1);
-                btn.Text = "Button";
+                btn.Text = "Click\nEvent";
+                btn.GuiText.LineHeight = 60;
                 btn.OnClick += (m) =>
                 {
                     //btn.Text = "Clicked " + m.ToString();
+                    Random r = new Random();
+                    btn.Color = new Vector4((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble(), 1);
                 };
                 btn.Anchor = new Anchor();
                 btn.Anchor.Directions[AnchorDirection.Left] = AnchorType.Snap;
@@ -255,10 +258,9 @@ namespace HatzapTestApplication
                 btn.TextureRegion = guiElements.Elements[0].Slices.ToArray();
 
 
-
-
-                btn2.Text = "Button";
-                btn2.OnClick += (m) =>
+                btn2.Text = "Down\nEvent";
+                btn2.GuiText.LineHeight = 60;
+                btn2.OnDown += (m) =>
                 {
                     //btn2.Text = "Clicked " + m.ToString();
                     Random r = new Random();
@@ -274,8 +276,9 @@ namespace HatzapTestApplication
                 btn2.TextureRegion = guiElements.Elements[0].Slices.ToArray();
 
 
-                btn3.Text = "Button";
-                btn3.OnClick += (m) =>
+                btn3.Text = "Up\nEvent";
+                btn3.GuiText.LineHeight = 60;
+                btn3.OnUp += (m) =>
                 {
                     Random r = new Random();
                     btn3.Color = new Vector4((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble(), 1);
@@ -291,13 +294,19 @@ namespace HatzapTestApplication
                 btn3.TextureRegion = guiElements.Elements[0].Slices.ToArray();
 
 
-                btn4.Text = "Button";
+                btn4.Text = "Leave\nEvent";
+                btn4.GuiText.LineHeight = 60;
                 btn4.OnClick += (m) =>
                 {
                     //btn4.Text = "Clicked " + m.ToString();
                     Random r = new Random();
                     btn4.Color = new Vector4((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble(), 1);
                     //btn4.Z = btn3.Z + 1;
+                };
+                btn4.OnLeave += () =>
+                {
+                    Random r = new Random();
+                    btn4.Color = new Vector4((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble(), 1);
                 };
                 btn4.Anchor = new Anchor();
                 btn4.Anchor.Directions[AnchorDirection.Left] = AnchorType.Snap;
@@ -308,12 +317,18 @@ namespace HatzapTestApplication
                 btn4.Size = new Vector2(150, 50);
                 btn4.TextureRegion = guiElements.Elements[0].Slices.ToArray();
 
-                btn5.Text = "Button";
+                btn5.Text = "Enter\nEvent";
+                btn5.GuiText.LineHeight = 60;
                 btn5.OnClick += (m) =>
                 {
                     Random r = new Random();
                     btn5.Color = new Vector4((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble(), 1);
                     //btn3.Z = btn4.Z + 1;
+                };
+                btn5.OnEnter += () => 
+                {
+                    Random r = new Random();
+                    btn5.Color = new Vector4((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble(), 1);
                 };
                 btn5.Anchor = new Anchor();
                 btn5.Anchor.Directions[AnchorDirection.Left] = AnchorType.Snap;
@@ -325,13 +340,19 @@ namespace HatzapTestApplication
                 btn5.TextureRegion = guiElements.Elements[0].Slices.ToArray();
 
 
-                btn6.Text = "Button";
+                btn6.Text = "Hover\nEvent";
+                btn6.GuiText.LineHeight = 60;
                 btn6.OnClick += (m) =>
                 {
                     //btn4.Text = "Clicked " + m.ToString();
                     Random r = new Random();
                     btn6.Color = new Vector4((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble(), 1);
                     //btn4.Z = btn3.Z + 1;
+                };
+                btn6.OnHover += () =>
+                {
+                    Random r = new Random();
+                    btn6.Color = new Vector4((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble(), 1);
                 };
                 btn6.Anchor = new Anchor();
                 btn6.Anchor.Directions[AnchorDirection.Left] = AnchorType.Snap;
