@@ -9,6 +9,18 @@ namespace Hatzap.Utilities
 {
     public static class MathHelper
     {
+        public static void CalculateColorMultiplier(ref Vector4 targetColor, ref Vector4 originalColor, out Vector4 outColor)
+        {
+            outColor = new Vector4(targetColor.X / originalColor.X, targetColor.Y / originalColor.Y, targetColor.Z / originalColor.Z, targetColor.W / originalColor.W);
+        }
+
+        public static Vector4 CalculateColorMultiplier(Vector4 targetColor, Vector4 originalColor)
+        {
+            Vector4 outColor;
+            CalculateColorMultiplier(ref targetColor, ref originalColor, out outColor);
+            return outColor;
+        }
+
         public static double Lerp(double a, double b, double t)
         {
             return (1.0 - t) * a + t * b;

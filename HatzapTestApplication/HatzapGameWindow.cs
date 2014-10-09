@@ -168,7 +168,7 @@ namespace HatzapTestApplication
 
             GuiRoot.Root.Texture.Load(new[] { new Bitmap("Assets/Textures/gui.png") }, PixelInternalFormat.Rgba, PixelFormat.Bgra, PixelType.UnsignedByte);
 
-            GuiRoot.Root.Texture.TextureSettings(TextureMinFilter.Linear, TextureMagFilter.Linear, 0);
+            GuiRoot.Root.Texture.TextureSettings(TextureMinFilter.Nearest, TextureMagFilter.Nearest, 0);
 
             ElementCollection guiElements = new ElementCollection()
             {
@@ -211,6 +211,60 @@ namespace HatzapTestApplication
                             }, new GuiTextureRegion() { // Bottom right
                                 Offset = new Vector2(25,6),
                                 Size = new Vector2(5,9),
+                                Page = 0
+                            },
+                        },
+                    },
+                    new WidgetInfo(){
+                        WidgetType = typeof(Window).ToString(),
+                        Slices = new List<GuiTextureRegion> {
+                            new GuiTextureRegion() { // Top left
+                                Offset = new Vector2(0,0),
+                                Size = new Vector2(9,9),
+                                Page = 0
+                            }, new GuiTextureRegion() { // Top center
+                                Offset = new Vector2(9,0),
+                                Size = new Vector2(1,9),
+                                Page = 0
+                            }, new GuiTextureRegion() { // Top Right
+                                Offset = new Vector2(10,0),
+                                Size = new Vector2(9,9),
+                                Page = 0
+                            }, new GuiTextureRegion() { // Middle left
+                                Offset = new Vector2(0,9),
+                                Size = new Vector2(9,1),
+                                Page = 0
+                            }, new GuiTextureRegion() { // Middle center
+                                Offset = new Vector2(9,9),
+                                Size = new Vector2(1,1),
+                                Page = 0
+                            }, new GuiTextureRegion() { // Middle right
+                                Offset = new Vector2(10,9),
+                                Size = new Vector2(9,1),
+                                Page = 0
+                            }, new GuiTextureRegion() { // Bottom left
+                                Offset = new Vector2(0,10),
+                                Size = new Vector2(9,2),
+                                Page = 0
+                            }, new GuiTextureRegion() { // Bottom center
+                                Offset = new Vector2(9,10),
+                                Size = new Vector2(1,1),
+                                Page = 0
+                            }, new GuiTextureRegion() { // Bottom right
+                                Offset = new Vector2(10,10),
+                                Size = new Vector2(9,1),
+                                Page = 0
+                            }, new GuiTextureRegion() { // Bottom left
+                                Offset = new Vector2(0,11),
+                                Size = new Vector2(9,14),
+                                Page = 0
+                            }, new GuiTextureRegion() { // Bottom center
+                                Offset = new Vector2(9,11),
+                                Size = new Vector2(1,14),
+                                Page = 0
+                            }, new GuiTextureRegion() { // Bottom right
+                                Offset = new Vector2(10,11),
+                                Size = new Vector2(9,14),
                                 Page = 0
                             },
                         },
@@ -444,7 +498,7 @@ namespace HatzapTestApplication
                 btn4.Anchor.Directions[AnchorDirection.Top] = AnchorType.Snap;
                 btn4.Position = new Vector2(150, 200);
                 btn4.Size = new Vector2(150, 50);
-                btn4.TextureRegion = guiElements.Elements[0].Slices.ToArray();
+                btn4.TextureRegion = guiElements.GetInfo(btn4).Slices.ToArray();
             }
 
             stack.Position = new Vector2(600, 100);
@@ -457,8 +511,17 @@ namespace HatzapTestApplication
             var image = new Hatzap.Gui.Widgets.Image();
             var lblText = new Label();
 
+            Window window = new Window();
+            window.TextureRegion = guiElements.GetInfo(window).Slices.ToArray();
+            window.Position = new Vector2(200, 200);
+            window.Size = new Vector2(300, 400);
+            window.TitleHeight = 20;
+            window.TitleColor = new Vector4(79f / 255f / 0.5f, 193f / 255f / 0.5f, 233f / 255f / 0.5f, 1f);
+            window.Color = new Vector4(1f / (210f / 255f), 1f / (210f / 255f), 1f / (210f / 255f), 1f);
+
             GuiRoot.Root.AddWidget(grid);
             GuiRoot.Root.AddWidget(stack);
+            GuiRoot.Root.AddWidget(window);
             //GuiRoot.Root.AddWidget(image);
             //GuiRoot.Root.AddWidget(lblText);
             
@@ -756,7 +819,7 @@ namespace HatzapTestApplication
                 fpsText.Text = string.Format("FPS: {0}, Update: {1}\nFrame time: {6}\nRenderQueue count: {2}\nRenderInsert: {3}ms\nRenderQueue.Render: {4}ms\nSwapBuffers(): {5}ms\nUnknown: {7}ms\n" +
                     "Triangles Drawn: {8}\nObjectPool reserve: {9}\nObjectPool capacity: {10}\nGui Update: {11}ms\nGui Rebuild: {12}ms\nGui wait: {13}ms\nGui Render: {15}ms\nGC.Collect(): {14}ms", 
                     frame, update, RenderQueue.Count, Math.Round(renderInsert * 1000, 2), Math.Round(renderQueue * 1000, 2), Math.Round(swapBufferTime * 1000, 2), Math.Round(frameTime * 1000, 2),
-                    Math.Round((unknown) * 1000, 2), RenderQueue.TrianglesDrawn, RenderDataPool.Count, RenderDataPool.Size, Math.Round(GuiRoot.Root.UpdateElapsedSeconds, 2), Math.Round(GuiRoot.Root.RebuildElapsedSeconds, 2), Math.Round(guiwait, 2), Math.Round(garbage, 2), Math.Round(guiRender, 2));
+                    Math.Round((unknown) * 1000, 2), RenderQueue.TrianglesDrawn, RenderDataPool.Count, RenderDataPool.Size, Math.Round(GuiRoot.Root.UpdateElapsedSeconds * 1000, 2), Math.Round(GuiRoot.Root.RebuildElapsedSeconds * 1000, 2), Math.Round(guiwait * 1000, 2), Math.Round(garbage * 1000, 2), Math.Round(guiRender * 1000, 2));
                 frame = 0;
                 update = 0;
             }
@@ -791,6 +854,8 @@ namespace HatzapTestApplication
             GL.Disable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+
+            
 
             sw.Reset();
             sw.Start();

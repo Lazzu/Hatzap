@@ -78,6 +78,7 @@
     <Compile Include="Gui\Widgets\StackContainer.cs" />
     <Compile Include="Gui\Widgets\Widget.cs" />
     <Compile Include="Gui\Widgets\WidgetGroup.cs" />
+    <Compile Include="Gui\Widgets\Window.cs" />
     <Compile Include="Input\AccurateMouse.cs" />
     <Compile Include="Input\IKeyboardInputProvider.cs" />
     <Compile Include="Input\IMouseInputProvider.cs" />
