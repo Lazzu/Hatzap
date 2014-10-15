@@ -5,7 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Hatzap.Gui.Anchors;
+using Hatzap.Gui.Events;
 using Hatzap.Input;
+using Hatzap.Utilities;
 using OpenTK;
 using OpenTK.Input;
 
@@ -21,6 +23,7 @@ namespace Hatzap.Gui.Widgets
         private bool visible = true;
         private Anchor anchor;
         private Vector4 color = Vector4.One;
+
 
         /// <summary>
         /// Widget position on screen.
@@ -157,6 +160,8 @@ namespace Hatzap.Gui.Widgets
             if (!Visible)
                 return;
 
+            Time.StartTimer("Widget.Update()", "Gui");
+
             // Is the mouse over this widget?
             bool inside = UserInput.Mouse.IsInsideRect(Position, Position + Size);
 
@@ -164,41 +169,46 @@ namespace Hatzap.Gui.Widgets
             {
                 if (!mouseInsideLastFrame)
                 {
-                    OnMouseEnter();
+                    GuiEventManager.Current.RaiseEvent(GuiEvent.MouseEnter, this);
                 }
 
-                OnMouseHover();
+                GuiEventManager.Current.RaiseEvent(GuiEvent.MouseHover, this);
 
+                Widget.CurrentlyActive = this;
                 GuiRoot.Root.MouseOverGuiElement = true;
 
                 var thisframe = new HashSet<MouseButton>();
 
                 foreach (var button in UserInput.Mouse.GetDownButtons())
                 {
-                    OnMouseDown(button);
+                    GuiEventManager.Current.RaiseEvent(GuiEvent.MouseDown, this, (object)button);
+                    
+                    // Hold all the button states on this frame
                     thisframe.Add(button);
                 }
 
                 foreach (var button in mouseDownButtonState)
                 {
-                    if (!thisframe.Contains(button)) OnMouseUp(button);
+                    if (!thisframe.Contains(button)) GuiEventManager.Current.RaiseEvent(GuiEvent.MouseUp, this, (object)button);
                 }
 
                 mouseDownButtonState = thisframe;
 
                 foreach (var button in UserInput.Mouse.GetClickedButtons())
                 {
-                    OnMouseClick(button);
+                    GuiEventManager.Current.RaiseEvent(GuiEvent.MouseClick, this, (object)button);
                 }
             }
             else if(mouseInsideLastFrame)
             {
-                OnMouseLeave();
+                GuiEventManager.Current.RaiseEvent(GuiEvent.MouseLeave, this);
             }
 
             OnUpdate(delta);
 
             mouseInsideLastFrame = inside;
+
+            Time.StopTimer("Widget.Update()");
         }
 
         public virtual void OnUpdate(double delta) { }

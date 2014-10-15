@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Hatzap.Utilities;
 using OpenTK;
 
 namespace Hatzap.Input
@@ -41,14 +42,18 @@ namespace Hatzap.Input
 
         public static void Update()
         {
+            Time.StartTimer("UserInput.Update()", "Update");
             mouse.Update();
             keyboard.Update();
+            Time.StopTimer("UserInput.Update()");
         }
 
         public static void FrameEnd()
         {
+            Time.StartTimer("UserInput.FrameEnd()", "Render");
             mouse.FrameEnd();
             keyboard.FrameEnd();
+            Time.StopTimer("UserInput.FrameEnd()");
         }
     }
 }

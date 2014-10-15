@@ -1,63 +1,104 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Hatzap.Models;
+using Hatzap.Textures;
+using Hatzap.Utilities;
 using OpenTK;
 
 namespace Hatzap.Rendering
 {
     public class TextureBatch
     {
-        public List<RenderData> BatchQueue = new List<RenderData>();
+        public Texture Texture { get; set; }
+        public List<Renderable> BatchQueue;
+        public Dictionary<Mesh, InstancedBatch> Instanced;
 
         int count = 0;
 
-        internal void Insert(RenderData data)
+        public void Insert(Renderable data)
         {
-            if(BatchQueue.Count > count)
+            
+
+            if(Instanced == null && BatchQueue == null)
             {
-                BatchQueue[count] = data;
+                if (GPUCapabilities.Instancing && data is Model)
+                {
+                    Instanced = new Dictionary<Mesh,InstancedBatch>();
+                    Debug.WriteLine("Instantiated InstacedBatch");
+                }
+                else
+                {
+                    BatchQueue = new List<Renderable>();
+                    Debug.WriteLine("Instantiated BatchQueue");
+                }
+            }
+            
+            if(Instanced != null)
+            {
+                var model = data as Model;
+                var mesh = model.Mesh;
+
+                InstancedBatch batch;
+                if(!Instanced.TryGetValue(mesh, out batch))
+                {
+                    batch = new InstancedBatch(model);
+                    Instanced.Add(mesh, batch);
+                }
+
+                batch.Insert(model);
             }
             else
             {
-                BatchQueue.Add(data);
+                if (BatchQueue.Count > count)
+                {
+                    BatchQueue[count] = data;
+                }
+                else
+                {
+                    BatchQueue.Add(data);
+                }
+                count++;
             }
-            count++;
+
+            Texture = data.Texture;
         }
 
         internal int Render()
         {
             int triangles = 0;
 
-            for(int i = 0; i < count; i++)
+            Texture.Bind();
+
+            if(Instanced != null)
             {
-                // Take object from the batch queue
-                var obj = BatchQueue[i];
-
-                // Put a null back
-                BatchQueue[i] = null;
-
-                // Send uniforms to the shader
-                var shader = obj.RenderObject.Shader;
-                if(obj.UniformData != null && obj.UniformData.Count > 0)
+                // Draw each instanced mesh
+                foreach (var item in Instanced)
                 {
-                    for (int u = 0; u < obj.UniformData.Count; u++ )
-                    {
-                        obj.UniformData[u].SendData(shader);
-                    }
+                    triangles += item.Value.Draw();
                 }
-                
-                // Call render
-                obj.RenderObject.Render();
-
-                triangles += obj.RenderObject.Triangles;
-
-                // Release render data back to pool
-                RenderDataPool.Release(obj);
             }
-            count = 0;
+            else
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    // Take object from the batch queue
+                    var obj = BatchQueue[i];
 
+                    // Put a null back
+                    BatchQueue[i] = null;
+
+                    // Call render
+                    obj.Render();
+
+                    triangles += obj.Triangles;
+                }
+                count = 0;
+            }
+            
             return triangles;
         }
     }

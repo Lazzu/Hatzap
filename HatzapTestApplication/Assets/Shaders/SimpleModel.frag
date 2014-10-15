@@ -8,7 +8,7 @@ in vec3 pos;
 uniform float gamma = 2.0;
 uniform vec3 EyeDirection;
 uniform sampler2DArray textureSampler;
-uniform vec4 Color = vec4(0.2, 0.8, 0.8, 1);
+uniform vec4 Color = vec4(1.0, 0.0, 0.0, 1);
 
 layout(location = 0) out vec4 RGBA;
 layout(location = 1) out vec3 Normals;
@@ -22,23 +22,19 @@ void main( void )
 	float g = 1 / gamma;
 	//float g = gamma;
 	
+	vec3 texel = texture(textureSampler, vec3(texcoord, 0)).xyz;
+	
 	vec3 lightDir = normalize(vec3(1,1,1));
 	
-	vec3 half = normalize(EyeDirection + lightDir);
+	//vec3 half = normalize(EyeDirection + lightDir);
 	
 	float nDotL = dot(normalize(vNormal), normalize(lightDir));
-	float nDotH = dot(normalize(vNormal), normalize(half));
-	
-	float specular = 0;
-	
-	if(nDotL > 0)
-		specular = pow(clamp(0.0, 1.0, nDotH), 1);
-	
+		
 	float diffuse = clamp(0.0, 1.0, nDotL);
 		
-	vec4 outColor = Color * diffuse + specular;
+	vec3 outColor = Color.rgb * texel * diffuse;
 
-	RGBA = outColor;
+	RGBA = vec4(outColor, Color.a);
 	//RGBA = outColor;
 }
 

@@ -13,6 +13,9 @@ namespace Hatzap.Utilities
 
         static HashSet<string> extensions = new HashSet<string>();
 
+        public static string Version { get; private set; }
+        public static string GLSL { get; private set; }
+
         public static void Initialize()
         {
             if (initialized)
@@ -20,14 +23,35 @@ namespace Hatzap.Utilities
 
             initialized = true;
 
-            var ext = GL.GetString(StringName.Extensions);
+            Version = GL.GetString(StringName.Version);
+            GLSL = GL.GetString(StringName.ShadingLanguageVersion);
 
-            var exts = ext.Split(' ');
+            int NumberOfExtensions;
+
+            GL.GetInteger(GetPName.NumExtensions, out NumberOfExtensions);
+
+            for(int i = 0; i < NumberOfExtensions; i++)
+            {
+                var ext = GL.GetString(StringNameIndexed.Extensions, i);
+                extensions.Add(ext);
+            }
+
+            /*var exts = ext.Split(' ');
 
             foreach (var item in exts)
 	        {
                 extensions.Add(item);
-	        }
+	        }*/
+
+            TextureCompression = IsExtensionAvailable("GL_EXT_texture_compression_s3tc");
+            Instancing = IsExtensionAvailable("GL_ARB_instanced_arrays");
+
+            int n;
+
+            GL.GetInteger(GetPName.MaxVaryingFloats, out n);
+            MaxVaryingFloats = n;
+            GL.GetInteger(GetPName.MaxVaryingVectors, out n);
+            MaxVaryingVectors = n;
         }
         
         public static bool IsExtensionAvailable(string extension)
@@ -35,5 +59,12 @@ namespace Hatzap.Utilities
             Initialize();
             return extensions.Contains(extension);
         }
+
+        public static bool TextureCompression { get; private set; }
+
+        public static bool Instancing { get; private set; }
+
+        public static int MaxVaryingFloats { get; private set; }
+        public static int MaxVaryingVectors { get; private set; }
     }
 }

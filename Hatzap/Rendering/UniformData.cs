@@ -43,6 +43,14 @@ namespace Hatzap.Rendering
         }
     }
 
+    public class UniformDataUInt : UniformData<uint>
+    {
+        public override void SendData(ShaderProgram program)
+        {
+            program.SendUniform(Name, Data);
+        }
+    }
+
     public class UniformDataVector2 : UniformData<Vector2>
     {
         public override void SendData(ShaderProgram program)

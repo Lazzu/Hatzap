@@ -10,10 +10,9 @@ namespace HatzapTestApplication
     {
         static void Main(string[] args)
         {
-
             using(HatzapGameWindow gw = new HatzapGameWindow())
             {
-                gw.VSync = OpenTK.VSyncMode.Adaptive;
+                gw.VSync = OpenTK.VSyncMode.On;
                 gw.Run();
             }
 

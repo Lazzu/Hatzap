@@ -88,7 +88,7 @@ namespace Hatzap.Input
 
         void gw_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            Debug.WriteLine("MouseDown");
+            //Debug.WriteLine("MouseDown");
 
             var button = e.Button;
 
@@ -105,7 +105,7 @@ namespace Hatzap.Input
 
         void gw_MouseUp(object sender, OpenTK.Input.MouseButtonEventArgs e)
         {
-            Debug.WriteLine("MouseUp");
+            //Debug.WriteLine("MouseUp");
 
             var button = e.Button;
 
@@ -202,7 +202,7 @@ namespace Hatzap.Input
         {
             foreach (var item in allButtons)
             {
-                if (clickedButtons[item])
+                if (downButtons[item])
                     yield return item;
             }
         }

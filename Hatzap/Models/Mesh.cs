@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Hatzap.Utilities;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
@@ -20,7 +21,7 @@ namespace Hatzap.Models
         Vector3[] binormals;
         Vector3[] uv;
         Vector4[] colors;
-        int[] indices;
+        uint[] indices;
         #endregion
 
         #region Dirtyness
@@ -34,6 +35,13 @@ namespace Hatzap.Models
         #endregion
 
         #region Properties
+
+        public int VertexAttribLocation { get; set; }
+        public int NormalAttribLocation { get; set; }
+        public int TangentAttribLocation { get; set; }
+        public int BinormalAttribLocation { get; set; }
+        public int UVAttribLocation { get; set; }
+        public int ColorAttribLocation { get; set; }
 
         public Assimp.Mesh AssimpMesh
         {
@@ -91,7 +99,15 @@ namespace Hatzap.Models
                 if (uv != null) uvDirty = true;
                 if (colors != null) colorsDirty = true;
 
-                indices = mesh.GetIndices();
+                var tmp = mesh.GetIndices();
+
+                indices = new uint[tmp.Length];
+
+                for(int i = 0; i < tmp.Length; i++)
+                {
+                    indices[i] = (uint)tmp[i];
+                }
+
                 indicesDirty = true;
 
                 Triangles = mesh.FaceCount;
@@ -213,7 +229,7 @@ namespace Hatzap.Models
         /// <summary>
         /// Array of mesh indices.
         /// </summary>
-        public int[] Indices
+        public uint[] Indices
         {
             get
             {
@@ -244,6 +260,12 @@ namespace Hatzap.Models
             BufferUsageHint = OpenTK.Graphics.OpenGL.BufferUsageHint.StaticDraw;
             Type = PrimitiveType.Triangles;
             AutomaticUploading = true;
+            VertexAttribLocation = -1;
+            NormalAttribLocation = -1;
+            TangentAttribLocation = -1;
+            BinormalAttribLocation = -1;
+            UVAttribLocation = -1;
+            ColorAttribLocation = -1;
         }
 
         /// <summary>
@@ -251,7 +273,7 @@ namespace Hatzap.Models
         /// </summary>
         public void Upload()
         {
-            if(vertsDirty && verts != null)
+            if(vertsDirty && verts != null && VertexAttribLocation > -1)
             {
                 vertsDirty = false;
 
@@ -260,7 +282,7 @@ namespace Hatzap.Models
                 UploadData(vertVbo, BufferTarget.ArrayBuffer, verts.Length * Vector3.SizeInBytes, verts);
             }
 
-            if (normsDirty && norms != null)
+            if (normsDirty && norms != null && NormalAttribLocation > -1)
             {
                 normsDirty = false;
 
@@ -269,7 +291,7 @@ namespace Hatzap.Models
                 UploadData(normVbo, BufferTarget.ArrayBuffer, norms.Length * Vector3.SizeInBytes, norms);
             }
 
-            if (tangentsDirty && tangents != null)
+            if (tangentsDirty && tangents != null && TangentAttribLocation > -1)
             {
                 tangentsDirty = false;
 
@@ -278,7 +300,7 @@ namespace Hatzap.Models
                 UploadData(tangentsVbo, BufferTarget.ArrayBuffer, tangents.Length * Vector3.SizeInBytes, tangents);
             }
 
-            if (binormalsDirty && binormals != null)
+            if (binormalsDirty && binormals != null && BinormalAttribLocation > -1)
             {
                 binormalsDirty = false;
 
@@ -287,7 +309,7 @@ namespace Hatzap.Models
                 UploadData(binormalsVbo, BufferTarget.ArrayBuffer, binormals.Length * Vector3.SizeInBytes, binormals);
             }
 
-            if (uvDirty && uv != null)
+            if (uvDirty && uv != null && UVAttribLocation > -1)
             {
                 uvDirty = false;
 
@@ -296,7 +318,7 @@ namespace Hatzap.Models
                 UploadData(uvVbo, BufferTarget.ArrayBuffer, uv.Length * Vector3.SizeInBytes, uv);
             }
 
-            if (colorsDirty && colors != null)
+            if (colorsDirty && colors != null && ColorAttribLocation > -1)
             {
                 colorsDirty = false;
 
@@ -327,57 +349,16 @@ namespace Hatzap.Models
         /// </summary>
         public void Draw()
         {
+            Time.StartTimer("Mesh.Draw()", "Render");
             if (verts == null)
             {
                 Debug.WriteLine("Mesh being drawn has no vertices.");
                 return;
             }   
 
-            if (AutomaticUploading && IsDirty)
-                Upload();
-
             if(indices != null)
             {
-                bool mustDescribe = false;
-                if(vao == 0)
-                {
-                    GL.GenVertexArrays(1, out vao);
-                    mustDescribe = true;
-                }
-                
-                GL.BindVertexArray(vao);
-                
-                if(mustDescribe)
-                {
-                    BindVertexAttribBuffer(0, vertVbo, BlittableValueType.StrideOf(verts), 3, VertexAttribPointerType.Float);
-                    
-                    if (norms != null)
-                    {
-                        BindVertexAttribBuffer(1, normVbo, BlittableValueType.StrideOf(norms), 3, VertexAttribPointerType.Float);
-                    }
-
-                    if (tangents != null)
-                    {
-                        BindVertexAttribBuffer(2, tangentsVbo, BlittableValueType.StrideOf(tangents), 3, VertexAttribPointerType.Float);
-                    }
-
-                    if (binormals != null)
-                    {
-                        BindVertexAttribBuffer(3, binormalsVbo, BlittableValueType.StrideOf(binormals), 3, VertexAttribPointerType.Float);
-                    }
-
-                    if (uv != null)
-                    {
-                        BindVertexAttribBuffer(4, uvVbo, BlittableValueType.StrideOf(uv), 3, VertexAttribPointerType.Float);
-                    }
-
-                    if (colors != null)
-                    {
-                        BindVertexAttribBuffer(5, colorsVbo, BlittableValueType.StrideOf(colors), 4, VertexAttribPointerType.Float);
-                    }
-
-                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, ebo);
-                }
+                Bind();
                 
                 GL.DrawElements(Type, indices.Length, DrawElementsType.UnsignedInt, IntPtr.Zero);
 
@@ -387,6 +368,74 @@ namespace Hatzap.Models
             {
                 throw new NotSupportedException("Drawing non-indexed meshes not yet supported.");
             }
+            Time.StopTimer("Mesh.Draw()");
+        }
+
+        public void DrawInstanced(int count)
+        {
+            Time.StartTimer("Mesh.DrawInstanced()", "Render");
+            GL.DrawElementsInstancedBaseVertex(Type, indices.Length, DrawElementsType.UnsignedInt, IntPtr.Zero, count, 0);
+            Time.StopTimer("Mesh.DrawInstanced()");
+        }
+
+        /// <summary>
+        /// When drawing instanced, you need to call this before the draw call
+        /// </summary>
+        public void Bind()
+        {
+            if (AutomaticUploading && IsDirty)
+                Upload();
+
+            bool mustDescribe = false;
+
+            if (vao == 0)
+            {
+                GL.GenVertexArrays(1, out vao);
+                mustDescribe = true;
+            }
+
+            GL.BindVertexArray(vao);
+
+            if (mustDescribe)
+            {
+                if (VertexAttribLocation < 0)
+                    throw new Exception("Invalid VertexAttribLocation");
+
+                BindVertexAttribBuffer(VertexAttribLocation, vertVbo, BlittableValueType.StrideOf(verts), 3, VertexAttribPointerType.Float);
+
+                if (norms != null && NormalAttribLocation > -1)
+                {
+                    BindVertexAttribBuffer(NormalAttribLocation, normVbo, BlittableValueType.StrideOf(norms), 3, VertexAttribPointerType.Float);
+                }
+
+                if (tangents != null && TangentAttribLocation > -1)
+                {
+                    BindVertexAttribBuffer(TangentAttribLocation, tangentsVbo, BlittableValueType.StrideOf(tangents), 3, VertexAttribPointerType.Float);
+                }
+
+                if (binormals != null && BinormalAttribLocation > -1)
+                {
+                    BindVertexAttribBuffer(BinormalAttribLocation, binormalsVbo, BlittableValueType.StrideOf(binormals), 3, VertexAttribPointerType.Float);
+                }
+
+                if (uv != null && UVAttribLocation > -1)
+                {
+                    BindVertexAttribBuffer(UVAttribLocation, uvVbo, BlittableValueType.StrideOf(uv), 3, VertexAttribPointerType.Float);
+                }
+
+                if (colors != null && ColorAttribLocation > -1)
+                {
+                    BindVertexAttribBuffer(ColorAttribLocation, colorsVbo, BlittableValueType.StrideOf(colors), 4, VertexAttribPointerType.Float);
+                }
+
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, ebo);
+            }
+
+        }
+
+        public void UnBind()
+        {
+            GL.BindVertexArray(0);
         }
 
         void BindVertexAttribBuffer(int attrib, int vbo, int stride, int elements, VertexAttribPointerType type)

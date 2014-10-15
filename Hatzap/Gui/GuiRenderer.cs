@@ -96,11 +96,11 @@ namespace Hatzap.Gui
 
         public void Build(WidgetGroup rootGroup)
         {
+            Time.StartTimer("GuiRenderer.Rebuild()", "Update");
+
             vertices = new List<Vector2>();
             uv = new List<Vector3>();
             colors = new List<Vector4>();
-
-            Debug.WriteLine("ReBuilding GUI");
 
             lock(vertices)
             {
@@ -113,6 +113,8 @@ namespace Hatzap.Gui
                 count = vertices.Count;
                 reupload = true;
             }
+
+            Time.StopTimer("GuiRenderer.Rebuild()");
         }
 
         bool reupload = true;

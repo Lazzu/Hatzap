@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Hatzap.Shaders;
+using Hatzap.Utilities;
 using OpenTK;
 
 namespace Hatzap.Rendering
@@ -16,9 +17,14 @@ namespace Hatzap.Rendering
 
         public static int Count { get; set; }
 
-        public static void Insert(RenderData data)
+        public static void Insert(Renderable data)
         {
-            var shader = data.RenderObject.Shader;
+            Time.StartTimer("RenderQueue.Insert()", "Render");
+
+            if (data.Shader == null) throw new ArgumentNullException("data.Shader", "Renderable's shader must not be null!");
+            if (data.Texture == null) throw new ArgumentNullException("data.Texture", "Renderable's texture must not be null!");
+
+            var shader = data.Shader;
 
             ShaderBatch batch = null;
 
@@ -31,10 +37,13 @@ namespace Hatzap.Rendering
             batch.Insert(data);
             Count++;
 
+            Time.StopTimer("RenderQueue.Insert()");
         }
 
         public static void Render()
         {
+            Time.StartTimer("RenderQueue.Render()", "Render");
+
             TrianglesDrawn = 0;
 
             foreach (var shaderBatch in ShaderBatches)
@@ -42,13 +51,11 @@ namespace Hatzap.Rendering
                 var shader = shaderBatch.Key;
                 var textureBatch = shaderBatch.Value;
 
-                shader.Enable();
-
                 TrianglesDrawn += textureBatch.Render();
-
-                shader.Disable();
             }
             Count = 0;
+
+            Time.StopTimer("RenderQueue.Render()");
         }
     }
 }

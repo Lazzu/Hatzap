@@ -131,6 +131,18 @@ namespace Hatzap.Shaders
 
         #endregion
 
-        
+
+        Dictionary<string, int> attrLocations = new Dictionary<string, int>();
+
+        internal int GetAttribLocation(string attribName)
+        {
+            int location = -1;
+            if (!attrLocations.TryGetValue(attribName, out location))
+            {
+                location = GL.GetAttribLocation(ID, attribName);
+                attrLocations.Add(attribName, location);
+            }
+            return location;
+        }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Assimp;
 using Assimp.Configs;
@@ -14,6 +15,7 @@ using Hatzap.Gui.Widgets;
 using Hatzap.Input;
 using Hatzap.Models;
 using Hatzap.Rendering;
+using Hatzap.Scenes;
 using Hatzap.Shaders;
 using Hatzap.Textures;
 using Hatzap.Utilities;
@@ -21,6 +23,8 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
+
+using Quaternion = OpenTK.Quaternion;
 
 namespace HatzapTestApplication
 {
@@ -45,10 +49,12 @@ namespace HatzapTestApplication
         GuiText largeText;
         GuiText fpsText;
 
-        Model spaceShip;
+        Model[] spaceShips;
 
-        public HatzapGameWindow() : base(1280,720, new GraphicsMode(new ColorFormat(32), 32, 32, 16, new ColorFormat(8, 8, 8, 8), 2, false), "Hatzap Test Application", GameWindowFlags.Default, 
-            DisplayDevice.GetDisplay(DisplayIndex.Default), 3, 3, GraphicsContextFlags.ForwardCompatible)
+        Scene scene = new Scene();
+
+        public HatzapGameWindow() : base(1280,720, new GraphicsMode(new ColorFormat(32), 24, 8, 32, 0, 2, false), "Hatzap Test Application", GameWindowFlags.Default, 
+            DisplayDevice.GetDisplay(DisplayIndex.Default), 3, 3, GraphicsContextFlags.Default)
         {
             //WindowState = OpenTK.WindowState.Maximized;
         }
@@ -57,11 +63,20 @@ namespace HatzapTestApplication
         {
             Debug.WriteLine("OnLoad()");
 
-            GL.Enable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.Blend);
-            //GL.Enable(EnableCap.VertexProgramPointSize);
-            GL.Enable(EnableCap.CullFace);
-            //GL.Enable(EnableCap.ScissorTest);
+            GPUCapabilities.Initialize();
+
+            Debug.WriteLine("GPUCapabilities.Version=" + GPUCapabilities.Version);
+            Debug.WriteLine("GPUCapabilities.GLSL=" + GPUCapabilities.GLSL);
+            Debug.WriteLine("GPUCapabilities.Instancing=" + GPUCapabilities.Instancing);
+            Debug.WriteLine("GPUCapabilities.MaxVaryingFloats=" + GPUCapabilities.MaxVaryingFloats);
+            Debug.WriteLine("GPUCapabilities.MaxVaryingVectors=" + GPUCapabilities.MaxVaryingVectors);
+
+            GLState.DepthTest = true;
+            GLState.AlphaBleding = true;
+            GLState.CullFace = true;
+
+            SceneManager.Initialize(500, 10, 10, Vector3.Zero);
+            SceneManager.CullByObject = false;
 
             viewPort = new Vector2(Width, Height);
 
@@ -69,7 +84,7 @@ namespace HatzapTestApplication
             
             camera.SetAsCurrent();
 
-            camera.Position = new Vector3(10, 10, 10);
+            camera.Position = new Vector3(1, 1, 1);
             camera.Target = new Vector3(0, 0, 0);
 
             camera.Update(0);
@@ -161,7 +176,7 @@ namespace HatzapTestApplication
 
             Time.Initialize();
             UserInput.Initialize(this, typeof(AccurateMouse), typeof(Hatzap.Input.Keyboard));
-            //GLThreadHelper.Initialize(this);
+            UserInput.Mouse.ClickInterval = 0.5f;
             GuiRoot.Initialize(this);
 
             GuiRoot.Root.Texture = new TextureArray();
@@ -459,7 +474,7 @@ namespace HatzapTestApplication
                 btn2.Text = "Button 2";
                 btn2.OnClick += (m) =>
                 {
-                    //btn2.Text = "Clicked " + m.ToString();
+                    btn2.Text = "Clicked " + m.ToString();
                 };
                 btn2.Anchor = new Anchor();
                 btn2.Anchor.Directions[AnchorDirection.Left] = AnchorType.Snap;
@@ -513,21 +528,17 @@ namespace HatzapTestApplication
 
             Window window = new Window();
             window.TextureRegion = guiElements.GetInfo(window).Slices.ToArray();
-            window.Position = new Vector2(200, 200);
-            window.Size = new Vector2(300, 400);
+            window.Position = new Vector2(1200, 600);
+            window.Size = new Vector2(300, 200);
             window.TitleHeight = 20;
             window.TitleColor = new Vector4(79f / 255f / 0.5f, 193f / 255f / 0.5f, 233f / 255f / 0.5f, 1f);
             window.Color = new Vector4(1f / (210f / 255f), 1f / (210f / 255f), 1f / (210f / 255f), 1f);
 
-            GuiRoot.Root.AddWidget(grid);
-            GuiRoot.Root.AddWidget(stack);
-            GuiRoot.Root.AddWidget(window);
+            //GuiRoot.Root.AddWidget(grid);
+            //GuiRoot.Root.AddWidget(stack);
+            //GuiRoot.Root.AddWidget(window);
             //GuiRoot.Root.AddWidget(image);
             //GuiRoot.Root.AddWidget(lblText);
-            
-
-            
-
             
             image.Texture = new Texture();
             image.Texture.Load(new Bitmap("Assets/Textures/Default.png"), PixelFormat.Bgra, PixelType.UnsignedByte);
@@ -545,25 +556,6 @@ namespace HatzapTestApplication
             
 
             UserInput.Keyboard.CaptureText = true;
-
-            /*Shader skyVertex = new Shader(ShaderType.VertexShader);
-            Shader skyFragment = new Shader(ShaderType.FragmentShader);
-
-            using (StreamReader r = new StreamReader("Assets/Shaders/Sky.vert"))
-            {
-                skyVertex.ShaderSource(r.ReadToEnd());
-            }
-
-            using (StreamReader r = new StreamReader("Assets/Shaders/Sky.frag"))
-            {
-                skyFragment.ShaderSource(r.ReadToEnd());
-            }
-
-            skyShader = new ShaderProgram("Sky");
-            skyShader.AttachShader(skyVertex);
-            skyShader.AttachShader(skyFragment);
-            skyShader.Link();
-            skyShader.Enable();*/
 
             modelShader = ShaderManager.Get("Model");
             textShader = ShaderManager.Get("Text");
@@ -606,7 +598,7 @@ namespace HatzapTestApplication
             //End of example
             importer.Dispose();
 
-            Debug.WriteLine("Compressed texture support: " + GPUCapabilities.IsExtensionAvailable("GL_EXT_texture_compression_s3tc"));
+            Debug.WriteLine("Compressed texture support: " + GPUCapabilities.TextureCompression);
 
             var bitmaps = new[] { 
                 new Bitmap("Assets/Textures/sh3.jpg"), 
@@ -629,25 +621,6 @@ namespace HatzapTestApplication
             text.Border = 0;
             text.Text = "\"The quick brown fox jumps over the lazy dog\" is an English-language pangram—a phrase that contains all of the letters of the alphabet.";
 
-            boldText = new GuiText();
-            boldText.Font = font;
-            boldText.FontSize = 10f;
-            boldText.Weight = 1.0f;
-            boldText.Smooth = 0.5f;
-            boldText.LineHeight = 50f;
-            boldText.Text = "\"The quick brown fox jumps over the lazy dog\" is an English-language pangram—a phrase that contains all of the letters of the alphabet.";
-
-            largeText = new GuiText();
-            largeText.Font = font;
-            largeText.FontSize = 30f;
-            largeText.Weight = 1f;
-            largeText.Smooth = 0.25f;
-            largeText.Border = 0.5f;
-            largeText.LineHeight = 50f;
-            largeText.HorizontalAlignment = HorizontalAlignment.Centered;
-            largeText.VerticalAlignment = VerticalAlignment.Middle;
-            largeText.Text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.\nAliquam posuere sapien nibh, vel sodales sapien accumsan id.\nEtiam eleifend suscipit mauris quis dignissim.\nCras in convallis velit, non dignissim nisi.\nNullam sed tortor rhoncus, tempus magna nec, semper mauris.\nProin consequat urna in tristique sollicitudin.\nNunc tempus nibh sed felis dapibus, ut imperdiet turpis gravida.\nPhasellus quis eros eget ipsum ultricies tempus in porttitor eros.\nÄäkköskääpiö sanoo öitä, ja örisee äänekkäästi.";
-
             fpsText = new GuiText();
             fpsText.Font = font;
             fpsText.FontSize = 8f;
@@ -657,18 +630,38 @@ namespace HatzapTestApplication
             fpsText.Color = new Vector4(1, 1, 1, 1);
             fpsText.Text = "FPS: Calculating..";
 
+            int n = 10;
+            int s = 5;
 
+            Hatzap.Models.Material spaceShipMaterial = new Hatzap.Models.Material();
 
+            spaceShipMaterial.UniformData = new List<IUniformData> { 
+                        new UniformDataVector4()
+                        {
+                            Name = "Color",
+                            Data = new Vector4(1.0f, 1.0f, 1.0f, 1.0f)
+                        }
+                    };
 
-            spaceShip = new Model();
-            spaceShip.Texture = shipTexture;
-            spaceShip.Shader = ShaderManager.Get("SimpleModel");
-            spaceShip.Mesh = mesh;
+            for (int x = -n; x <= n; x++)
+            for (int y = -n; y <= n; y++)
+            for (int z = -n; z <= n; z++)
+            {
+                var spaceShip = new Model();
+                spaceShip.Texture = shipTexture;
+                spaceShip.Shader = ShaderManager.Get("SimpleModel");
+                spaceShip.Mesh = mesh;
+                spaceShip.Transform.Static = true;
+                spaceShip.Transform.Position = new Vector3(x * s, y * s, z * s);
+                spaceShip.Transform.Rotation = Quaternion.FromEulerAngles(x * 360.0f / n / (float)Math.PI, y * 360.0f / n / (float)Math.PI, z * 360.0f / n / (float)Math.PI);
+
+                spaceShip.Material = spaceShipMaterial;
+
+                SceneManager.Insert(spaceShip);
+            }
 
             Debug.WriteLine("OnLoad() ends");
-
-            RenderDataPool.MaxItems = 1000;
-
+            
             base.OnLoad(e);
         }
 
@@ -707,32 +700,31 @@ namespace HatzapTestApplication
 
         double totalTime = 0;
         double frametime = 0;
+        double measureTime = 0;
         
         int update = 0;
-
-        double renderInsert = 0, renderQueue = 0, swapBufferTime = 0, guiwait = 0, garbage = 0, guiRender = 0;
-        Stopwatch sw = new Stopwatch();
-        Stopwatch swFrame = new Stopwatch();
-
+        
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            UserInput.Update();
-
-            sw.Reset();
-            sw.Start();
-            GC.Collect();
-            sw.Stop();
-            garbage = sw.Elapsed.TotalSeconds;
+            Time.StartTimer("UpdateFrame()", "Loop");
 
             Time.Update(e.Time);
 
+            // Must be the first thing called after Time.Update();
+            UserInput.Update();
+
+            // Must be called as early as possible, but after input update.
             GuiRoot.Root.UpdateAsync(e.Time);
 
+            
             base.OnUpdateFrame(e);
+
+            SceneManager.Update();
+            SceneManager.QueueForRendering(Hatzap.Camera.Current);
 
             totalTime += e.Time * 0.25;
 
-            camera.Perspective(Width, Height, 45, 1.0f, 1000.0f);
+            camera.Perspective(Width, Height, 60, 1.0f, 100.0f);
             camera.Update((float)e.Time);
 
             update++;
@@ -741,130 +733,86 @@ namespace HatzapTestApplication
             camera.Rotate(new Vector2(0,(float)e.Time * 0.1f));
             camera.Distance = (float)(Math.Sin(totalTime * 0.25f) + 1.2f) * 10;
 
-            Random r = new Random();
-
-            int n = (int)((Math.Sin(totalTime * 4) / 2 + 0.5) * 5);
-
-            sw.Reset();
-            sw.Start();
-
-            for(int x = -n; x <= n; x++)
-            {
-                for(int y = -n; y <= n; y++)
-                {
-                    var data = RenderDataPool.GetInstance();
-
-                    data.RenderObject = spaceShip;
-                    var mM = Matrix4.CreateRotationX((float)Math.Sin(totalTime * x * 1.3f) * (float)Math.PI) * Matrix4.CreateRotationY((float)Math.Cos(totalTime * y * 1.45f) * (float)Math.PI) * Matrix4.CreateTranslation(new Vector3(x, 0, y));
-
-                    Matrix4 mvp;
-                    Matrix3 mN;
-                    camera.GetModelViewProjection(ref mM, out mvp);
-                    camera.GetNormalMatrix(ref mM, out mN);
-
-                    data.UniformData = new List<IUniformData> { 
-                        new UniformDataMatrix4()
-                        {
-                            Name = "MVP",
-                            Data = mvp
-                        },
-                        new UniformDataMatrix3()
-                        {
-                            Name = "mN",
-                            Data = mN
-                        },
-                        new UniformDataVector3() 
-                        {
-                            Name = "EyeDirection",
-                            Data = camera.Direction
-                        },
-                        new UniformDataVector4()
-                        {
-                            Name = "Color",
-                            Data = new Vector4(0.0f, 1.0f, 1.0f, 1.0f)
-                        }
-                    };
-
-                    RenderQueue.Insert(data);
-                }
-            }
-
-            sw.Stop();
-            renderInsert = sw.Elapsed.TotalSeconds;
+            Time.StopTimer("UpdateFrame()");
         }
         
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            sw.Reset();
-            sw.Start();
+            Time.StartTimer("RenderFrame();", "Loop");
+
+            Time.StartTimer("SwapBuffers();", "Render");
             SwapBuffers();
-            sw.Stop();
-            swapBufferTime = sw.Elapsed.TotalSeconds;
+            Time.StopTimer("SwapBuffers();");
 
             frame++;
 
             frametime += e.Time;
-
-            swFrame.Stop();
-
-            double frameTime = swFrame.Elapsed.TotalSeconds;
-
-            swFrame.Reset();
-            swFrame.Start();
+            measureTime += e.Time;
 
             if(frametime > 1.0)
             {
                 frametime = 0;
-                double unknown = frameTime - swapBufferTime - renderQueue - renderInsert - guiwait;
-                fpsText.Text = string.Format("FPS: {0}, Update: {1}\nFrame time: {6}\nRenderQueue count: {2}\nRenderInsert: {3}ms\nRenderQueue.Render: {4}ms\nSwapBuffers(): {5}ms\nUnknown: {7}ms\n" +
-                    "Triangles Drawn: {8}\nObjectPool reserve: {9}\nObjectPool capacity: {10}\nGui Update: {11}ms\nGui Rebuild: {12}ms\nGui wait: {13}ms\nGui Render: {15}ms\nGC.Collect(): {14}ms", 
-                    frame, update, RenderQueue.Count, Math.Round(renderInsert * 1000, 2), Math.Round(renderQueue * 1000, 2), Math.Round(swapBufferTime * 1000, 2), Math.Round(frameTime * 1000, 2),
-                    Math.Round((unknown) * 1000, 2), RenderQueue.TrianglesDrawn, RenderDataPool.Count, RenderDataPool.Size, Math.Round(GuiRoot.Root.UpdateElapsedSeconds * 1000, 2), Math.Round(GuiRoot.Root.RebuildElapsedSeconds * 1000, 2), Math.Round(guiwait * 1000, 2), Math.Round(garbage * 1000, 2), Math.Round(guiRender * 1000, 2));
+
+                fps = frame;
+
+                Title = fps.ToString();
+
                 frame = 0;
                 update = 0;
             }
 
-            text.Text = string.Format("Calculated weight: {0}", largeText.CalculatedWeight);
+            if(measureTime > 0.1)
+            {
+                GenerateFpsText();
+                measureTime = 0;
+            }
+            
+
+            //text.Text = string.Format("Calculated weight: {0}", largeText.CalculatedWeight);
 
             // It is important that this is right before main render thread starts working on current context.
             Time.Render(e.Time);
 
+            Time.StartTimer("Overhead", "Overhead");
+            GLState.DepthTest = true;
             GL.Viewport(0, 0, Width, Height);
-
             GL.ClearColor(0.25f, 0.25f, 0.25f, 1);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
+            Time.StopTimer("Overhead");
 
-            GL.Enable(EnableCap.DepthTest);
+            Time.StartTimer("glClear()", "Overhead");
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
+            Time.StopTimer("glClear()");
+            
 
             base.OnRenderFrame(e);
 
-            sw.Reset();
-            sw.Start();
             RenderQueue.Render();
-            sw.Stop();
-            renderQueue = sw.Elapsed.TotalSeconds;
 
-            sw.Reset();
-            sw.Start();
             // Wait for gui update in case it was done in a background thread
             GuiRoot.Root.WaitUpdateFinish();
-            sw.Stop();
-            guiwait = sw.Elapsed.TotalSeconds;
 
-            GL.Disable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+            Time.StartTimer("Overhead", "Overhead");
+            GLState.DepthTest = false;
+            GLState.AlphaBleding = true;
+            GLState.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+            Time.StopTimer("Overhead");
 
-            
-
-            sw.Reset();
-            sw.Start();
             GuiRoot.Root.Render();
-            sw.Stop();
-            guiRender = sw.Elapsed.TotalSeconds;
 
-            
+            DrawFpsText();
 
+            Time.StartTimer("glFlush()", "Render");
+            GL.Flush();
+            Time.StopTimer("glFlush()");
+
+            UserInput.FrameEnd();
+            Time.StopTimer("RenderFrame();");
+        }
+
+        [Conditional("DEBUG")]
+        private void DrawFpsText()
+        {
+            Time.StartTimer("DrawMeasurementsText()", "Render");
             Matrix4 projection = Matrix4.CreateOrthographicOffCenter(0, Width, Height, 0, -1, 1);
             Matrix4 view = Matrix4.CreateTranslation(10, 30, 0);
             var textureSize = new Vector2(text.Font.Texture.Width, text.Font.Texture.Height);
@@ -875,13 +823,56 @@ namespace HatzapTestApplication
             textShader.SendUniform("textureSize", ref textureSize);
             GL.ActiveTexture(TextureUnit.Texture0);
             fpsText.Draw(textShader);
-
-            GL.Flush();
-
-            UserInput.FrameEnd();
+            Time.StopTimer("DrawMeasurementsText()");
         }
 
-        int frame;
+        StringBuilder sb = new StringBuilder();
+
+        [Conditional("DEBUG")]
+        private void GenerateFpsText()
+        {
+            Time.StartTimer("GenerateFpsText()", "Update");
+
+            sb.Clear();
+
+            sb.Append("FPS: ").Append(fps).Append("\n");
+            sb.Append("RenderQueue count: ").Append(RenderQueue.Count).Append("\n");
+            sb.Append("RenderQueue triangles: ").Append(RenderQueue.TrianglesDrawn).Append("\n");
+            sb.Append("Scenemanager object count: ").Append(SceneManager.ObjectCount).Append("\n");
+            sb.Append("\nTimers:\n");
+
+
+            foreach (var item in Time.History)
+            {
+                double average = 0, total = 0;
+                int n = 0;
+                int count = 0;
+                foreach (var measures in item.Value)
+                {
+                    total = 0;
+                    count = 0;
+                    foreach (var time in measures)
+                    {
+                        average += time;
+                        total += time;
+                        count++;
+                    }
+                    n++;
+                }
+                //if (count > 0)
+                {
+                    average = Math.Round(average / n, 4);
+                    total = Math.Round(total / count, 4);
+                    sb.Append(item.Key).Append(": ").Append(total).Append(" ms, count: ").Append(count).Append(", total average: ").Append(average).Append(" ms").Append("\n");
+                }
+            }
+
+            fpsText.Text = sb.ToString();
+
+            Time.StopTimer("GenerateFpsText()");
+        }
+
+        int frame, fps;
     }
 }
 

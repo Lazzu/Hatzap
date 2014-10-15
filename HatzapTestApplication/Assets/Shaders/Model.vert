@@ -31,7 +31,8 @@ void main( void )
 
 	vColor = color;
 	//vColor = vec4(((mN * normal) + vec3(1)) * vec3(0.5), 1) * color;
-	vNormal = mN * normal;
+	//vNormal = mN * normal;
+	vNormal = normal;
 
 	gl_Position = MVP * vec4(vertex, 1);
 }

@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AssimpNet">
@@ -52,6 +54,8 @@
     <Compile Include="Gui\ElementCollection.cs" />
     <Compile Include="Gui\Elements\GuiElement.cs" />
     <Compile Include="Gui\Elements\GuiElementCollection.cs" />
+    <Compile Include="Gui\Events\GuiEvent.cs" />
+    <Compile Include="Gui\Events\GuiEventManager.cs" />
     <Compile Include="Gui\Events\MouseEvents.cs" />
     <Compile Include="Gui\Fonts\BMFont.cs" />
     <Compile Include="Gui\Fonts\Font.cs" />
@@ -83,10 +87,16 @@
     <Compile Include="Input\IKeyboardInputProvider.cs" />
     <Compile Include="Input\IMouseInputProvider.cs" />
     <Compile Include="Input\Keyboard.cs" />
+    <Compile Include="Models\ITransformable.cs" />
+    <Compile Include="Models\Material.cs" />
     <Compile Include="Models\Mesh.cs" />
     <Compile Include="Models\Model.cs" />
+    <Compile Include="Models\Transform.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rendering\IRenderQueueable.cs" />
+    <Compile Include="Rendering\Framebuffer.cs" />
+    <Compile Include="Rendering\InstancedBatch.cs" />
+    <Compile Include="Rendering\IRenderable.cs" />
+    <Compile Include="Rendering\Renderable.cs" />
     <Compile Include="Rendering\RenderData.cs" />
     <Compile Include="Rendering\RenderDataPool.cs" />
     <Compile Include="Rendering\RenderQueue.cs" />
@@ -117,10 +127,12 @@
     <Compile Include="Utilities\BufferObject.cs" />
     <Compile Include="Utilities\ContainmentType.cs" />
     <Compile Include="Utilities\FrameBuffer.cs" />
+    <Compile Include="Utilities\GLState.cs" />
     <Compile Include="Utilities\GLThreadHelper.cs" />
     <Compile Include="Utilities\GPUCapabilities.cs" />
     <Compile Include="Utilities\IBounder.cs" />
     <Compile Include="Utilities\MathHelper.cs" />
+    <Compile Include="Utilities\OctTree.cs" />
     <Compile Include="Utilities\Plane.cs" />
     <Compile Include="Utilities\PlaneIntersectionType.cs" />
     <Compile Include="Utilities\Ray.cs" />
@@ -135,9 +147,6 @@
       <Project>{a37a7e14-0000-0000-0000-000000000000}</Project>
       <Name>OpenTK</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Utilities\Metrics\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Gui\Widgets\Button.InputHandling.cs">

@@ -1,32 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Hatzap.Rendering;
+using Hatzap.Shaders;
+using Hatzap.Textures;
 using OpenTK;
 
 namespace Hatzap.Models
 {
-    public class Model : IRenderQueueable
+    public class Model : Renderable
     {
-        public Shaders.ShaderProgram Shader { get; set; }
+        public override ShaderProgram Shader { get; set; }
 
-        public Textures.Texture Texture { get; set; }
+        public override Texture Texture { get; set; }
+
+        public override Material Material { get; set; }
 
         public Mesh Mesh { get; set; }
 
-        public void Render()
+        public Model()
+        {
+            Material = new Material();
+        }
+
+        public override void Render()
         {
             if (Mesh == null)
                 return;
-            
+
+            Shader.SendUniform("mModel", ref Transform.Matrix);
+
+            foreach (var item in Material)
+            {
+                item.SendData(Shader);
+            }
+
             Mesh.Draw();
         }
 
-        public int Triangles
+        public override int Triangles
         {
             get { return Mesh.Triangles; }
         }
+
+
     }
 }

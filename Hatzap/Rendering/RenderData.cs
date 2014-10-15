@@ -9,8 +9,7 @@ namespace Hatzap.Rendering
 {
     public class RenderData
     {
-        public IRenderQueueable RenderObject { get; set; }
-        public Matrix4 ModelMatrix;
+        public IRenderable RenderObject { get; set; }
         public List<IUniformData> UniformData { get; set; }
 
     }

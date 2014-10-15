@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Diagnostics;
+using Hatzap.Utilities;
 
 namespace Hatzap.Textures
 {
@@ -40,17 +41,27 @@ namespace Hatzap.Textures
 
         public void Bind()
         {
+            Time.StartTimer("Overhead", "Overhead");
+
             // Check if this texture is already bound
             Texture tmp = null;
             if (Bound.TryGetValue(TextureTarget, out tmp) && tmp == this)
+            {
+                Time.StopTimer("Texture.Bind()");
                 return;
-            
+            }
+
+            Time.StopTimer("Overhead");
+            Time.StartTimer("Texture.Bind()", "Render");
+
             // Set this texture as bound texture
             Bound[TextureTarget] = this;
             GL.BindTexture(TextureTarget, ID);
 
             if (qualityDirty && quality != null)
                 SetQuality();
+
+            Time.StopTimer("Texture.Bind()");
         }
 
         public void UnBind()
@@ -104,6 +115,8 @@ namespace Hatzap.Textures
 
         public void Generate(OpenTK.Graphics.OpenGL.PixelFormat format, PixelType type)
         {
+            Time.StartTimer("Texture.Generate()", "Loading");
+
             // Get last bound texture
             Texture last = null;
             Bound.TryGetValue(TextureTarget, out last);
@@ -117,10 +130,14 @@ namespace Hatzap.Textures
             // Restore previous state
             if (last != null) last.Bind();
             else UnBind();
+
+            Time.StopTimer("Texture.Generate()");
         }
 
         public void Generate(OpenTK.Graphics.OpenGL.PixelFormat format, PixelType type, TextureMinFilter minFilter, TextureMagFilter magFilter, float anisotrophy)
         {
+            Time.StartTimer("Texture.Generate()", "Loading");
+
             // Get last bound texture
             Texture last = null;
             Bound.TryGetValue(TextureTarget, out last);
@@ -136,10 +153,16 @@ namespace Hatzap.Textures
             // Restore previous state
             if (last != null) last.Bind();
             else UnBind();
+
+            Time.StopTimer("Texture.Generate()");
         }
 
         public void Load(Bitmap bmp, OpenTK.Graphics.OpenGL.PixelFormat format, PixelType type, TextureMinFilter minFilter, TextureMagFilter magFilter, float anisotrophy, bool mipmaps)
         {
+            Time.StartTimer("Texture.Load()", "Loading");
+
+            
+
             // Get last bound texture
             Texture last = null;
             Bound.TryGetValue(TextureTarget, out last);
@@ -169,10 +192,14 @@ namespace Hatzap.Textures
             // Restore previous state
             if (last != null) last.Bind();
             else UnBind();
+
+            Time.StopTimer("Texture.Load()");
         }
 
         public void Load(Bitmap bmp, OpenTK.Graphics.OpenGL.PixelFormat format, PixelType type)
         {
+            Time.StartTimer("Texture.Load()", "Loading");
+
             // Get last bound texture
             Texture last = null;
             Bound.TryGetValue(TextureTarget, out last);
@@ -195,6 +222,8 @@ namespace Hatzap.Textures
             // Restore previous state
             if (last != null) last.Bind();
             else UnBind();
+
+            Time.StopTimer("Texture.Load()");
         }
 
         public void Load(TextureMeta meta)

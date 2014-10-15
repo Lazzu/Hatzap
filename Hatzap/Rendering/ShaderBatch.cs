@@ -3,17 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Hatzap.Shaders;
 using Hatzap.Textures;
 
 namespace Hatzap.Rendering
 {
     public class ShaderBatch
     {
-        public Dictionary<Texture, TextureBatch> TextureBatches = new Dictionary<Texture, TextureBatch>();
+        public ShaderProgram Program { get; set; }
 
-        public void Insert(RenderData data)
+        public Dictionary<Texture, TextureBatch> TextureBatches = new Dictionary<Texture, TextureBatch>();
+        
+        public void Insert(Renderable data)
         {
-            var texture = data.RenderObject.Texture;
+            Program = data.Shader;
+
+            var texture = data.Texture;
 
             TextureBatch batch = null;
 
@@ -29,6 +34,9 @@ namespace Hatzap.Rendering
         internal int Render()
         {
             int triangles = 0;
+
+            Program.Enable();
+            Program.SendUniform("mViewProjection", ref Camera.Current.VPMatrix);
 
             foreach (var textureBatch in TextureBatches)
             {

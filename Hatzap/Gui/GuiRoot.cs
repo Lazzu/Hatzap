@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Hatzap.Gui.Events;
 using Hatzap.Gui.Widgets;
 using Hatzap.Shaders;
 using Hatzap.Textures;
+using Hatzap.Utilities;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
@@ -87,22 +90,32 @@ namespace Hatzap.Gui
 
         public void Update(double delta)
         {
+            InternalUpdate(delta);
+            HandleEvents();
+        }
+
+        void InternalUpdate(double delta)
+        {
+            Time.StartTimer("GuiRoot.Update()", "Update");
+
             MouseOverGuiElementLastFrame = MouseOverGuiElement;
             MouseOverGuiElement = false;
-            sw.Reset();
-            sw.Start();
+            
             UpdateGroup(widgets, delta);
-            sw.Stop();
-            UpdateElapsedSeconds = sw.Elapsed.TotalSeconds;
 
-            sw.Reset();
-            sw.Start();
             if (widgets.Dirty)
             {
+                Time.StartTimer("GuiRoot.Rebuild()", "Update");
                 Rebuild();
+                Time.StopTimer("GuiRoot.Rebuild()");
             }
-            sw.Stop();
-            RebuildElapsedSeconds = sw.Elapsed.TotalSeconds;
+
+            Time.StopTimer("GuiRoot.Update()");
+        }
+
+        private void HandleEvents()
+        {
+            GuiEventManager.Current.HandleEvents();
         }
 
         void UpdateGroup(WidgetGroup rootGroup, double delta)
@@ -122,15 +135,13 @@ namespace Hatzap.Gui
                     widget.DirtyColor = false;
                     //Debug.WriteLine("DirtyColor = " + widget);
                 }
-                    
 
                 if (widget.CustomRenderLayer != string.Empty)
                     EnqueueCustomRenderingWidget(widget);
 
                 var group = widget as WidgetGroup;
 
-                if (group != null)
-                    UpdateGroup(group, delta);
+                if (group != null) UpdateGroup(group, delta);
             }
 
             if (rootGroup.RequiresSorting)
@@ -138,16 +149,22 @@ namespace Hatzap.Gui
                 rootGroup.SortChildWidgets();
                 rootGroup.RequiresSorting = false;
             }
-                
         }
 
         public void UpdateAsync(double delta)
         {
-            updateTask = Task.Run(() => Update(delta));
+            Time.StartTimer("GuiRoot.UpdateAsync()", "Update");
+            updateTask = Task.Run(() =>
+            {
+                InternalUpdate(delta);
+            });
+            Time.StopTimer("GuiRoot.UpdateAsync()");
         }
 
         public void Render()
         {
+            Time.StartTimer("GuiRoot.Render()", "Render");
+
             if (Texture != null && shader != null)
             {
                 if (renderer == null)
@@ -165,11 +182,10 @@ namespace Hatzap.Gui
                 Texture.Bind();
                 renderer.Render();
                 shader.Disable();
-
-                
             }
 
-            for (int i = 0; i < customRenderingWidgets.Count; i++)
+            Time.StartTimer("GuiRoot.CustomRender()", "Render");
+            for (int i = 0; i < customRenderingWidgetCount; i++)
             {
                 var item = customRenderingWidgets[i];
                 customRenderingWidgets[i] = null;
@@ -177,13 +193,15 @@ namespace Hatzap.Gui
                 if(item != null) item.CustomRender();
             }
             customRenderingWidgetCount = 0;
+            Time.StopTimer("GuiRoot.CustomRender()");
+            Time.StopTimer("GuiRoot.Render()");
         }
 
         internal void EnqueueCustomRenderingWidget(Widget widget)
         {
             lock(customRenderingWidgets)
             {
-                if (customRenderingWidgets.Count >= customRenderingWidgetCount)
+                if (customRenderingWidgets.Count <= customRenderingWidgetCount)
                 {
                     // No room in queue, add in the end of the queue
                     customRenderingWidgets.Add(widget);
@@ -205,10 +223,13 @@ namespace Hatzap.Gui
 
         public void WaitUpdateFinish()
         {
+            Time.StartTimer("GuiRoot.WaitUpdateFinish()", "Update");
             if(updateTask != null && !updateTask.IsCompleted)
             {
                 updateTask.Wait();
             }
+            HandleEvents();
+            Time.StopTimer("GuiRoot.WaitUpdateFinish()");
         }
 
         public void AddWidget(Widget widget)
