@@ -16,18 +16,18 @@ uniform mat4 mViewProjection;
 uniform mat4 mModel;
 uniform mat3 mNormal;
 
-out vec2 texcoord;
-out vec4 vColor;
-out vec3 vNormal;
+out vec2 gTexcoord;
+out vec4 gColor;
+out vec3 gNormal;
 
 void main( void )
 {	
-	texcoord = uv;
+	gTexcoord = uv;
 
-	vColor = color;
+	gColor = color;
 	vec3 binormal = cross(normal, tangent);
 	//vNormal = mNormal * normal;
-	vNormal = normalize(normal);
+	gNormal = normalize(normal);
 	
 	gl_Position = mViewProjection * mInstancedModelMatrix * vec4(vertex, 1);
 	//gl_Position = mViewProjection * mModel * vec4(vertex, 1);

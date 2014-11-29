@@ -57,5 +57,8 @@ namespace Hatzap.Rendering
 
             Time.StopTimer("RenderQueue.Render()");
         }
+
+        static bool allowInstancing = true;
+        public static bool AllowInstancing { get { return allowInstancing; } set { allowInstancing = value; } }
     }
 }

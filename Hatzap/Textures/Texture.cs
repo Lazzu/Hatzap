@@ -47,7 +47,7 @@ namespace Hatzap.Textures
             Texture tmp = null;
             if (Bound.TryGetValue(TextureTarget, out tmp) && tmp == this)
             {
-                Time.StopTimer("Texture.Bind()");
+                Time.StopTimer("Overhead");
                 return;
             }
 
@@ -170,7 +170,7 @@ namespace Hatzap.Textures
             // Bind current texture
             Bind();
 
-            var transparent = IsTransparent(bmp);
+            var transparent = HasTransparentPixels(bmp);
 
             BitmapData bitmapData = bmp.LockBits(new Rectangle(0,0,bmp.Width, bmp.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
@@ -207,7 +207,7 @@ namespace Hatzap.Textures
             // Bind current texture
             Bind();
 
-            var transparent = IsTransparent(bmp);
+            var transparent = HasTransparentPixels(bmp);
 
             BitmapData bitmapData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
@@ -235,6 +235,42 @@ namespace Hatzap.Textures
             TextureSettings(meta.TextureMinFilter, meta.TextureMagFilter, meta.AnisotrophicFiltering);
         }
 
+        /// <summary>
+        /// Uploads a region from source buffer to the texture. Currently only Bgra pixel format is supported.
+        /// WARNING: Unplanned feature, non-stable API.
+        /// </summary>
+        /// <param name="source">A pointer to the source buffer</param>
+        /// <param name="x">Region position x</param>
+        /// <param name="y">Region position y</param>
+        /// <param name="w">Region size width</param>
+        /// <param name="h">Region size height</param>
+        public void UploadRegion(IntPtr source, int x, int y, int w, int h)
+        {
+            Time.StartTimer("Texture.UploadRegion()", "Loading");
+
+            // Get last bound texture
+            Texture last = null;
+            Bound.TryGetValue(TextureTarget, out last);
+
+            // Bind current texture
+            Bind();
+
+            // Set texture row width
+            GL.PixelStore(PixelStoreParameter.UnpackRowLength, Width);
+
+            // Upload pixels
+            GL.TexSubImage2D(TextureTarget.Texture2D, 0, x, y, w, h, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, source);
+
+            // Reset texture row width
+            GL.PixelStore(PixelStoreParameter.UnpackRowLength, 0);
+
+            Time.StopTimer("Texture.UploadRegion()");
+
+            // Restore previous state
+            if (last != null) last.Bind();
+            else UnBind();
+        }
+
         public void GenMipMaps()
         {
             GL.TexParameter(TextureTarget, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
@@ -243,7 +279,7 @@ namespace Hatzap.Textures
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
 
-        protected bool IsTransparent(Bitmap bmp)
+        protected bool HasTransparentPixels(Bitmap bmp)
         {
             for (int i = 0; i < bmp.Width; i++)
             {

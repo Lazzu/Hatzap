@@ -24,6 +24,8 @@ namespace Hatzap.Utilities
 
         private ContainmentType result;
 
+        BoundingSphere bs = new BoundingSphere(new Vector3(0, 0, 0), 1);
+
         public OctTree(int capacity, int depth)
         {
             Capacity = capacity;
@@ -138,8 +140,15 @@ namespace Hatzap.Utilities
             {
                 for (int i = 0; i < Items.Count; i++)
                 {
-                    if(!cullPerItem || frustum.Contains(Items[i].Transform.Position) != ContainmentType.Disjoint)
-                    yield return Items[i];
+                    bool fits = true;
+                    
+                    if(cullPerItem)
+                    {
+                        frustum.Contains(ref Items[i].Transform.Position, out result);
+                        fits = result != ContainmentType.Disjoint;
+                    }
+                    
+                    if(fits) yield return Items[i];
                 }
             }
         }

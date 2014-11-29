@@ -52,6 +52,8 @@ namespace Hatzap.Utilities
             MaxVaryingFloats = n;
             GL.GetInteger(GetPName.MaxVaryingVectors, out n);
             MaxVaryingVectors = n;
+
+            SeamlessCubemaps = IsExtensionAvailable("GL_ARB_seamless_cube_map");
         }
         
         public static bool IsExtensionAvailable(string extension)
@@ -66,5 +68,7 @@ namespace Hatzap.Utilities
 
         public static int MaxVaryingFloats { get; private set; }
         public static int MaxVaryingVectors { get; private set; }
+
+        public static bool SeamlessCubemaps { get; set; }
     }
 }

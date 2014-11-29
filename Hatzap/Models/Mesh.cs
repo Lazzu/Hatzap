@@ -43,6 +43,40 @@ namespace Hatzap.Models
         public int UVAttribLocation { get; set; }
         public int ColorAttribLocation { get; set; }
 
+        public BoundingBox CalculatedBoundingbox
+        {
+            get
+            {
+                Vector3 min = verts[0];
+                Vector3 max = verts[0];
+
+                for (int i = 1; i < verts.Length; i++)
+                {
+                    var vert = verts[i];
+
+                    if (vert.X < min.X)
+                        min.X = vert.X;
+                    
+                    if (vert.X > max.X)
+                        max.X = vert.X;
+
+                    if (vert.Y < min.Y)
+                        min.Y = vert.Y;
+                    
+                    if (vert.Y > max.Y)
+                        max.Y = vert.Y;
+
+                    if (vert.Z < min.Z)
+                        min.Z = vert.Z;
+                    
+                    if (vert.Z > max.Z)
+                        max.Z = vert.Z;
+                }
+                
+                return new BoundingBox(min, max);
+            }
+        }
+
         public Assimp.Mesh AssimpMesh
         {
             get

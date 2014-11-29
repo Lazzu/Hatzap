@@ -25,7 +25,7 @@ namespace Hatzap.Rendering
 
             if(Instanced == null && BatchQueue == null)
             {
-                if (GPUCapabilities.Instancing && data is Model)
+                if (RenderQueue.AllowInstancing && GPUCapabilities.Instancing && data is Model)
                 {
                     Instanced = new Dictionary<Mesh,InstancedBatch>();
                     Debug.WriteLine("Instantiated InstacedBatch");
@@ -87,6 +87,18 @@ namespace Hatzap.Rendering
                 {
                     // Take object from the batch queue
                     var obj = BatchQueue[i];
+
+                    var model = obj as Model;
+
+                    if (model != null)
+                    {
+                        model.Mesh.VertexAttribLocation = model.Shader.GetAttribLocation("vertex");
+                        model.Mesh.NormalAttribLocation = model.Shader.GetAttribLocation("normal");
+                        model.Mesh.TangentAttribLocation = model.Shader.GetAttribLocation("tangent");
+                        model.Mesh.BinormalAttribLocation = model.Shader.GetAttribLocation("binormal");
+                        model.Mesh.UVAttribLocation = model.Shader.GetAttribLocation("uv");
+                        model.Mesh.ColorAttribLocation = model.Shader.GetAttribLocation("color");
+                    }
 
                     // Put a null back
                     BatchQueue[i] = null;

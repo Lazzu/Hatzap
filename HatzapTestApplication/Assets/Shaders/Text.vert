@@ -4,7 +4,6 @@ layout(location = 0) in vec2 vertex;
 layout(location = 1) in vec2 uv;
 layout(location = 2) in vec4 vColor;
 layout(location = 3) in vec4 vBorderColor;
-layout(location = 4) in vec3 vSettings;
 
 uniform mat4 MVP;
 uniform vec2 textureSize;

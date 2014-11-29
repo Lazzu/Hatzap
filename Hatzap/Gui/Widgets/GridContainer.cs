@@ -11,18 +11,23 @@ namespace Hatzap.Gui.Widgets
         public int Columns { get; set; }
         public int Rows { get; set; }
 
+        public List<int> RowHeights { get; protected set; }
+        public List<int> CellWidths { get; protected set; }
+
         public GridContainer()
         {
             Columns = 1;
             Rows = 1;
+            RowHeights = new List<int>();
+            CellWidths = new List<int>();
         }
 
         public override void GetAnchorPointsForChild(Widget child, out float left, out float right, out float top, out float bottom)
         {
-            left = LeftAnchorOffset;
-            right = RightAnchorOffset;
-            top = TopAnchorOffset;
-            bottom = BottomAnchorOffset;
+            left = 0;
+            right = 0;
+            top = 0;
+            bottom = 0;
 
             int index = Widgets.IndexOf(child);
 
@@ -31,15 +36,29 @@ namespace Hatzap.Gui.Widgets
                 int x = index % Columns;
                 int y = (index - x) / Columns;
 
-                int cellWidth = (int)(Size.X / Columns);
-                int cellHeight = (int)(Size.Y / Rows);
+                for(int i = 0; i < x; i++)
+                {
+                    left += CellWidths[i] + LeftAnchorOffset;
+                }
 
-                left += x * cellWidth + x * left;
-                top += y * cellHeight + y * top;
+                for (int i = 0; i < y; i++)
+                {
+                    top += RowHeights[i] + TopAnchorOffset;
+                }
 
-                right += (Columns - x - 1) * -cellWidth;
-                bottom += (Rows - y - 1) * -cellHeight;
+                int cellWidth = CellWidths[x];
+                int cellHeight = RowHeights[y];
+
+                right = left + cellWidth;
+                bottom = top + cellHeight;
+
+                left += LeftAnchorOffset;
+                right += RightAnchorOffset;
+                top += TopAnchorOffset;
+                bottom += BottomAnchorOffset;
             }
+
+            
         }
     }
 }

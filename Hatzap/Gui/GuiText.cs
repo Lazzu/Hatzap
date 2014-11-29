@@ -99,22 +99,55 @@ namespace Hatzap.Gui
                 GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
 
                 // Vertex
-                GL.EnableVertexAttribArray(0);
-                GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, stride, 0);
-                // TCoord
-                GL.EnableVertexAttribArray(1);
-                GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, stride, Vector2.SizeInBytes);
-                // Color
-                GL.EnableVertexAttribArray(2);
-                GL.VertexAttribPointer(2, 4, VertexAttribPointerType.Float, false, stride, Vector2.SizeInBytes * 2);
-                // BorderColor
-                GL.EnableVertexAttribArray(3);
-                GL.VertexAttribPointer(3, 4, VertexAttribPointerType.Float, false, stride, Vector2.SizeInBytes * 2 + Vector4.SizeInBytes);
-                // Weight
-                GL.EnableVertexAttribArray(4);
-                GL.VertexAttribPointer(4, 3, VertexAttribPointerType.Float, false, stride, Vector2.SizeInBytes * 2 + Vector4.SizeInBytes * 2);
+                int vertexLocation = shader.GetAttribLocation("vertex");
+                if(vertexLocation > -1)
+                {
+                    GL.EnableVertexAttribArray(vertexLocation);
+                    GL.VertexAttribPointer(vertexLocation, 2, VertexAttribPointerType.Float, false, stride, 0);
+                }
+                else
+                {
+                    Console.WriteLine("Bad attribute location for vertex: " + vertexLocation);
+                }
                 
-
+                // TCoord
+                int uvLocation = shader.GetAttribLocation("uv");
+                if(uvLocation > -1)
+                {
+                    GL.EnableVertexAttribArray(uvLocation);
+                    GL.VertexAttribPointer(uvLocation, 2, VertexAttribPointerType.Float, false, stride, Vector2.SizeInBytes);
+                }
+                else
+                {
+                    Console.WriteLine("Bad attribute location for uv: " + uvLocation);
+                }
+                // Color
+                int colorLocation = shader.GetAttribLocation("vColor");
+                if(colorLocation > -1)
+                {
+                    GL.EnableVertexAttribArray(colorLocation);
+                    GL.VertexAttribPointer(colorLocation, 4, VertexAttribPointerType.Float, false, stride, Vector2.SizeInBytes * 2);
+                }
+                else
+                {
+                    Console.WriteLine("Bad attribute location for vColor: " + colorLocation);
+                }
+                // BorderColor
+                int borderLocation = shader.GetAttribLocation("vBorderColor");
+                if (borderLocation > -1)
+                {
+                    GL.EnableVertexAttribArray(borderLocation);
+                    GL.VertexAttribPointer(borderLocation, 4, VertexAttribPointerType.Float, false, stride, Vector2.SizeInBytes * 2 + Vector4.SizeInBytes);
+                }
+                else
+                {
+                    Console.WriteLine("Bad attribute location for vBorderColor: " + borderLocation);
+                }
+                // Settings
+                /*int settingsLocation = shader.GetAttribLocation("vSettings");
+                GL.EnableVertexAttribArray(settingsLocation);
+                GL.VertexAttribPointer(settingsLocation, 3, VertexAttribPointerType.Float, false, stride, Vector2.SizeInBytes * 2 + Vector4.SizeInBytes * 2);*/
+                
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, ebo);
 
                 mustDescribe = false;

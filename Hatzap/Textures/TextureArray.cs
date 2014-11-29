@@ -27,7 +27,7 @@ namespace Hatzap.Textures
 
             for (int i = 0; i < bmps.Length; i++)
             {
-                var transparent = IsTransparent(bmps[i]);
+                var transparent = HasTransparentPixels(bmps[i]);
 
                 BitmapData bitmapData = bmps[i].LockBits(new Rectangle(0, 0, bmps[i].Width, bmps[i].Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
@@ -68,7 +68,7 @@ namespace Hatzap.Textures
 
             for (int i = 0; i < bmps.Length; i++)
             {
-                var transparent = IsTransparent(bmps[i]);
+                var transparent = HasTransparentPixels(bmps[i]);
 
                 BitmapData bitmapData = bmps[i].LockBits(new Rectangle(0, 0, bmps[i].Width, bmps[i].Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 

@@ -37,6 +37,9 @@ namespace Hatzap.Rendering
 
             Program.Enable();
             Program.SendUniform("mViewProjection", ref Camera.Current.VPMatrix);
+            Program.SendUniform("mNormal", ref Camera.Current.NormalMatrix);
+            Program.SendUniform("EyeDirection", ref Camera.Current.Direction);
+            
 
             foreach (var textureBatch in TextureBatches)
             {

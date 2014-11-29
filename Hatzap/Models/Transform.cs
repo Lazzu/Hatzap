@@ -36,10 +36,13 @@ namespace Hatzap.Models
 
         Matrix4 translate;
         Matrix4 rotate;
+        Matrix3 normalMatrix;
         Matrix4 scale;
         Matrix4 scaleRotate;
         Vector3 axis;
         float angle;
+
+        public Matrix3 NormalMatrix = Matrix3.Identity;
 
         /// <summary>
         /// If IRenderable is static, the Transform's matrix is calculated only the first time the matrix is needed.
@@ -71,13 +74,17 @@ namespace Hatzap.Models
             Matrix4.Mult(ref scale, ref rotate, out scaleRotate);
             Matrix4.Mult(ref scaleRotate, ref translate, out LocalMatrix);
 
+            Matrix3.CreateFromAxisAngle(axis, angle, out normalMatrix);
+
             if (parent != null)
             {
                 Matrix4.Mult(ref parent.Matrix, ref LocalMatrix, out Matrix);
+                Matrix3.Mult(ref parent.NormalMatrix, ref normalMatrix, out NormalMatrix);
             }
             else
             {
                 Matrix = LocalMatrix;
+                NormalMatrix = normalMatrix;
             }
 
             Time.StopTimer("Transform.CalculateMatrix()");

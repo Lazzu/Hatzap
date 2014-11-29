@@ -79,8 +79,10 @@ namespace Hatzap.Gui
 
         void gw_Resize(object sender, EventArgs e)
         {
-            Projection = Matrix4.CreateOrthographicOffCenter(0, gw.Width, gw.Height, 0, -1, 1);
-            widgets.size = new Vector2(gw.Width, gw.Height);
+            Projection = Matrix4.CreateOrthographicOffCenter(0, gw.Width, gw.Height, 0, -100, 100);
+            widgets.Size = new Vector2(gw.Width, gw.Height);
+            if (widgets.ChildWidgetCount > 0)
+                widgets.Dirty = true;
         }
 
         Stopwatch sw = new Stopwatch();
@@ -96,7 +98,7 @@ namespace Hatzap.Gui
 
         void InternalUpdate(double delta)
         {
-            Time.StartTimer("GuiRoot.Update()", "Update");
+            Time.StartTimer("GuiRoot.InternalUpdate()", "Update");
 
             MouseOverGuiElementLastFrame = MouseOverGuiElement;
             MouseOverGuiElement = false;
@@ -110,7 +112,7 @@ namespace Hatzap.Gui
                 Time.StopTimer("GuiRoot.Rebuild()");
             }
 
-            Time.StopTimer("GuiRoot.Update()");
+            Time.StopTimer("GuiRoot.InternalUpdate()");
         }
 
         private void HandleEvents()
@@ -170,7 +172,7 @@ namespace Hatzap.Gui
                 if (renderer == null)
                     throw new Exception("No renderer initialized. Did you call GuiRoot.Initialize AFTER gamewindow.OnLoad's base.OnLoad()?");
 
-                GL.Disable(EnableCap.DepthTest);
+                GLState.DepthTest = false;
 
                 shader.Enable();
 

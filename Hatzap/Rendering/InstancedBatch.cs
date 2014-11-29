@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Hatzap.Models;
@@ -90,23 +91,32 @@ namespace Hatzap.Rendering
 
                 byteSize = matrix.Count * Vector4.SizeInBytes * 4;
 
-                //GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(byteSize), matrix.ToArray(), BufferUsageHint.StreamDraw);
+                GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(byteSize), matrix.ToArray(), BufferUsageHint.StreamDraw);
 
-                GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(byteSize), IntPtr.Zero, BufferUsageHint.StreamDraw);
+                /*GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(byteSize), IntPtr.Zero, BufferUsageHint.StreamDraw);
 
-                var buffer = GL.MapBuffer(BufferTarget.ArrayBuffer, BufferAccess.WriteOnly);
-
-                unsafe
+                try
                 {
-                    var ptr = (Matrix4 *)buffer.ToPointer();
+                    var buffer = GL.MapBuffer(BufferTarget.ArrayBuffer, BufferAccess.WriteOnly);
 
-                    for (int i = 0; i < matrix.Count; i++)
+                    unsafe
                     {
-                        ptr[i] = matrix[i];
-                    }
-                }
+                        var ptr = (Matrix4*)buffer.ToPointer();
 
-                GL.UnmapBuffer(BufferTarget.ArrayBuffer);
+                        for (int i = 0; i < matrix.Count; i++)
+                        {
+                            ptr[i] = matrix[i];
+                        }
+                    }
+
+                    GL.UnmapBuffer(BufferTarget.ArrayBuffer);
+                }
+                catch(Exception e) 
+                {
+                    GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(byteSize), matrix.ToArray(), BufferUsageHint.StreamDraw);
+                    Debug.WriteLine(e);
+                }*/
+                
 
                 foreach (var uniform in material)
                 {
