@@ -9,15 +9,16 @@ using OpenTK;
 
 namespace Hatzap.Rendering
 {
-    public static class RenderQueue
+    public class RenderQueue
     {
-        static Dictionary<ShaderProgram, ShaderBatch> ShaderBatches = new Dictionary<ShaderProgram, ShaderBatch>();
+        Dictionary<ShaderProgram, ShaderBatch> SolidShaderBatches = new Dictionary<ShaderProgram, ShaderBatch>();
+        Dictionary<ShaderProgram, ShaderBatch> TransparentShaderBatches = new Dictionary<ShaderProgram, ShaderBatch>();
 
-        public static int TrianglesDrawn { get; set; }
+        public int TrianglesDrawn { get; set; }
 
-        public static int Count { get; set; }
-
-        public static void Insert(Renderable data)
+        public int Count { get; set; }
+        
+        public void Insert(Renderable data)
         {
             Time.StartTimer("RenderQueue.Insert()", "Render");
 
@@ -26,12 +27,16 @@ namespace Hatzap.Rendering
 
             var shader = data.Shader;
 
+            // Check if the object needs to be added in solid or transparent batch
+            var dict = data.Material.Transparent ? TransparentShaderBatches : SolidShaderBatches;
+
             ShaderBatch batch = null;
 
-            if (!ShaderBatches.TryGetValue(shader, out batch))
+            if (!dict.TryGetValue(shader, out batch))
             {
                 batch = new ShaderBatch();
-                ShaderBatches.Add(shader, batch);
+                batch.RenderQueue = this;
+                dict.Add(shader, batch);
             }
 
             batch.Insert(data);
@@ -40,25 +45,32 @@ namespace Hatzap.Rendering
             Time.StopTimer("RenderQueue.Insert()");
         }
 
-        public static void Render()
+        public void Render()
         {
             Time.StartTimer("RenderQueue.Render()", "Render");
 
             TrianglesDrawn = 0;
 
-            foreach (var shaderBatch in ShaderBatches)
-            {
-                var shader = shaderBatch.Key;
-                var textureBatch = shaderBatch.Value;
+            GLState.AlphaBleding = false;
 
-                TrianglesDrawn += textureBatch.Render();
+            foreach (var shaderBatch in SolidShaderBatches)
+            {
+                TrianglesDrawn += shaderBatch.Value.Render();
             }
+            
+            GLState.AlphaBleding = true;
+
+            foreach (var shaderBatch in TransparentShaderBatches)
+            {
+                TrianglesDrawn += shaderBatch.Value.Render();
+            }
+            
             Count = 0;
 
             Time.StopTimer("RenderQueue.Render()");
         }
 
-        static bool allowInstancing = true;
-        public static bool AllowInstancing { get { return allowInstancing; } set { allowInstancing = value; } }
+        bool allowInstancing = true;
+        public bool AllowInstancing { get { return allowInstancing; } set { allowInstancing = value; } }
     }
 }

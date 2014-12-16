@@ -11,6 +11,10 @@ namespace Hatzap.Models
     {
         public List<IUniformData> UniformData { get; set; }
 
+        public bool Transparent { get; set; }
+
+        public int DrawingOrder { get; set; }
+
         public IEnumerable<IUniformData> Uniforms 
         { 
             get

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Hatzap.Shaders;
@@ -11,24 +12,27 @@ namespace Hatzap.Rendering
     public class ShaderBatch
     {
         public ShaderProgram Program { get; set; }
+        public RenderQueue RenderQueue { get; set; }
 
         public Dictionary<Texture, TextureBatch> TextureBatches = new Dictionary<Texture, TextureBatch>();
-        
+
+        // Statics to improve performance a little bit
+        static Texture texture;
+        static TextureBatch batchQueue;
+
         public void Insert(Renderable data)
         {
             Program = data.Shader;
+            texture = data.Texture;
 
-            var texture = data.Texture;
-
-            TextureBatch batch = null;
-
-            if(!TextureBatches.TryGetValue(texture, out batch))
+            if (!TextureBatches.TryGetValue(texture, out batchQueue))
             {
-                batch = new TextureBatch();
-                TextureBatches.Add(texture, batch);
+                batchQueue = new TextureBatch();
+                batchQueue.RenderQueue = RenderQueue;
+                TextureBatches.Add(texture, batchQueue);
             }
 
-            batch.Insert(data);
+            batchQueue.Insert(data);
         }
 
         internal int Render()
@@ -40,17 +44,9 @@ namespace Hatzap.Rendering
             Program.SendUniform("mNormal", ref Camera.Current.NormalMatrix);
             Program.SendUniform("EyeDirection", ref Camera.Current.Direction);
             
-
             foreach (var textureBatch in TextureBatches)
             {
-                var texture = textureBatch.Key;
-                var batchQueue = textureBatch.Value;
-
-                texture.Bind();
-
-                triangles += batchQueue.Render();
-
-                texture.UnBind();
+                triangles += textureBatch.Value.Render();
             }
 
             return triangles;

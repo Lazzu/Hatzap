@@ -374,6 +374,7 @@ namespace Hatzap.Models
         void UploadData<T>(int buffer, BufferTarget target, int size, T[] Data) where T : struct
         {
             GL.BindBuffer(target, buffer);
+            //GL.BufferSubData(target, IntPtr.Zero, new IntPtr(size), Data);
             GL.BufferData(target, new IntPtr(size), Data, this.BufferUsageHint);
             GL.BindBuffer(target, 0);
         }

@@ -74,7 +74,7 @@ namespace Hatzap.Scenes
             }
         }
 
-        public static void QueueForRendering(Camera camera)
+        public static void QueueForRendering(Camera camera, RenderQueue renderQueue)
         {
             Time.StartTimer("SceneManager.QueueForRendering(Camera)", "Update");
 
@@ -84,7 +84,7 @@ namespace Hatzap.Scenes
 
                 if(tmp != null)
                 {
-                    RenderQueue.Insert(tmp);
+                    renderQueue.Insert(tmp);
                 }
             }
 

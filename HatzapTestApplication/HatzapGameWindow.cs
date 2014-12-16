@@ -55,7 +55,7 @@ namespace HatzapTestApplication
 
         Scene scene = new Scene();
 
-        
+        RenderQueue renderQueue;
 
         public HatzapGameWindow() : base(1280,720, new GraphicsMode(new ColorFormat(32), 24, 8, 32, 0, 2, false), "Hatzap Test Application", GameWindowFlags.Default, 
             DisplayDevice.GetDisplay(DisplayIndex.Default), 3, 3, GraphicsContextFlags.Default)
@@ -156,6 +156,7 @@ namespace HatzapTestApplication
             Debug.WriteLine("GPUCapabilities.MaxVaryingFloats=" + GPUCapabilities.MaxVaryingFloats);
             Debug.WriteLine("GPUCapabilities.MaxVaryingVectors=" + GPUCapabilities.MaxVaryingVectors);
             Debug.WriteLine("GPUCapabilities.SeamlessCubemaps=" + GPUCapabilities.SeamlessCubemaps);
+            Debug.WriteLine("GPUCapabilities.TextureCompression=" + GPUCapabilities.TextureCompression);
 
             if (GPUCapabilities.SeamlessCubemaps)
                 GL.Enable(EnableCap.TextureCubeMapSeamless);
@@ -167,7 +168,8 @@ namespace HatzapTestApplication
             SceneManager.Initialize(500, 5, 20, Vector3.Zero);
             SceneManager.CullByObject = false;
 
-            RenderQueue.AllowInstancing = true;
+            renderQueue = new RenderQueue();
+            renderQueue.AllowInstancing = true;
 
             viewPort = new Vector2(Width, Height);
 
@@ -619,7 +621,7 @@ namespace HatzapTestApplication
 
             //Import the model. All configs are set. The model
             //is imported, loaded into managed memory. Then the unmanaged memory is released, and everything is reset.
-            Scene model = importer.ImportFile("Assets/Models/suzanne.fbx", flags);
+            Scene model = importer.ImportFile("Assets/Models/cube.fbx", flags);
             
             mesh = new Hatzap.Models.Mesh();
 
@@ -646,8 +648,6 @@ namespace HatzapTestApplication
             //End of example
             importer.Dispose();
 
-            Debug.WriteLine("Compressed texture support: " + GPUCapabilities.TextureCompression);
-
             var bitmaps = new[] { 
                 new Bitmap("Assets/Textures/sh3.jpg"), 
                 new Bitmap("Assets/Textures/sh3_n.png"),
@@ -661,14 +661,6 @@ namespace HatzapTestApplication
 
             font = FontManager.Get("OpenSans-Regular");
 
-            text = new GuiText();
-            text.Font = font;
-            text.FontSize = 10f;
-            text.Weight = 1f;
-            text.Smooth = 0.5f;
-            text.Border = 0;
-            text.Text = "\"The quick brown fox jumps over the lazy dog\" is an English-language pangram—a phrase that contains all of the letters of the alphabet.";
-
             fpsText = new GuiText();
             fpsText.Font = font;
             fpsText.FontSize = 8f;
@@ -678,8 +670,8 @@ namespace HatzapTestApplication
             fpsText.Color = new Vector4(1, 1, 1, 1);
             fpsText.Text = "FPS: Calculating..";
 
-            int n = 1;
-            int sizeScale = 5;
+            int n = 5;
+            int sizeScale = 10;
 
             Random rand = new Random();
 
@@ -689,11 +681,25 @@ namespace HatzapTestApplication
                 {
                     Hatzap.Models.Material spaceShipMaterial = new Hatzap.Models.Material();
 
-                    spaceShipMaterial.UniformData = new List<IUniformData> { 
+                    bool transparent = rand.NextDouble() < 0.5;
+
+                    float transparency = (float)rand.NextDouble();
+
+                    transparency += 0.05f;
+
+                    if (!(transparency < 1.0f))
+                    {
+                        transparency = 1.0f;
+                        transparent = false;
+                    }
+
+                    spaceShipMaterial.Transparent = transparent;
+
+                    spaceShipMaterial.UniformData = new List<IUniformData> {
                         new UniformDataVector4()
                         {
                             Name = "Color",
-                            Data = new Vector4((float)rand.NextDouble(), (float)rand.NextDouble(), (float)rand.NextDouble(), 1.0f)
+                            Data = new Vector4((float)rand.NextDouble(), (float)rand.NextDouble(), (float)rand.NextDouble(), transparency)
                         }
                     };
 
@@ -703,10 +709,9 @@ namespace HatzapTestApplication
                         spaceShip.Texture = shipTexture;
                         spaceShip.Shader = ShaderManager.Get("Textureless");
                         spaceShip.Mesh = mesh;
-                        spaceShip.Transform.Static = true;
+                        //spaceShip.Transform.Static = true;
                         spaceShip.Transform.Position = new Vector3(x * sizeScale, y * sizeScale, z * sizeScale);
                         spaceShip.Transform.Rotation = Quaternion.FromEulerAngles(x * 360.0f / n / (float)Math.PI, y * 360.0f / n / (float)Math.PI, z * 360.0f / n / (float)Math.PI);
-
                         spaceShip.Material = spaceShipMaterial;
 
                         SceneManager.Insert(spaceShip);
@@ -784,7 +789,7 @@ namespace HatzapTestApplication
             base.OnUpdateFrame(e);
 
             SceneManager.Update();
-            SceneManager.QueueForRendering(Hatzap.Camera.Current);
+            SceneManager.QueueForRendering(Hatzap.Camera.Current, renderQueue);
 
             totalTime += e.Time * 0.25;
 
@@ -850,7 +855,7 @@ namespace HatzapTestApplication
 
             base.OnRenderFrame(e);
 
-            RenderQueue.Render();
+            renderQueue.Render();
 
             // Wait for gui update in case it was done in a background thread
             GuiRoot.Root.WaitUpdateFinish();
@@ -863,10 +868,10 @@ namespace HatzapTestApplication
 
             //GuiRoot.Root.Render();
 
-            UploadUpdatedPixels();
+            /*UploadUpdatedPixels();
             streamedTexture.Bind();
             ScreenFiller.DrawScreenFillingTexturedQuad();
-            streamedTexture.UnBind();
+            streamedTexture.UnBind();*/
 
             DrawFpsText();
 
@@ -884,7 +889,7 @@ namespace HatzapTestApplication
             Time.StartTimer("DrawMeasurementsText()", "Render");
             Matrix4 projection = Matrix4.CreateOrthographicOffCenter(0, Width, Height, 0, -1, 1);
             Matrix4 view = Matrix4.CreateTranslation(10, 30, 0);
-            var textureSize = new Vector2(text.Font.Texture.Width, text.Font.Texture.Height);
+            var textureSize = new Vector2(fpsText.Font.Texture.Width, fpsText.Font.Texture.Height);
             textShader.Enable();
             view = Matrix4.CreateTranslation(0, 10, 0);
             var mvp = view * projection;
@@ -905,34 +910,30 @@ namespace HatzapTestApplication
             sb.Clear();
 
             sb.Append("FPS: ").Append(fps).Append("\n");
-            sb.Append("RenderQueue count: ").Append(RenderQueue.Count).Append("\n");
-            sb.Append("RenderQueue triangles: ").Append(RenderQueue.TrianglesDrawn).Append("\n");
+            sb.Append("RenderQueue count: ").Append(renderQueue.Count).Append("\n");
+            sb.Append("RenderQueue triangles: ").Append(renderQueue.TrianglesDrawn).Append("\n");
             sb.Append("Scenemanager object count: ").Append(SceneManager.ObjectCount).Append("\n");
             sb.Append("\nTimers:\n");
 
 
             foreach (var item in Time.History)
             {
-                double average = 0, total = 0;
-                int n = 0;
-                int count = 0;
+                double total = 0;
+                int measureCount = 0;
+                int frameCount = 0;
                 foreach (var measures in item.Value)
                 {
-                    total = 0;
-                    count = 0;
+                    frameCount++;
                     foreach (var time in measures)
                     {
-                        average += time;
                         total += time;
-                        count++;
+                        measureCount++;
                     }
-                    n++;
                 }
                 //if (count > 0)
                 {
-                    average = Math.Round(average / n, 4);
-                    total = Math.Round(total / count, 4);
-                    sb.Append(item.Key).Append(": ").Append(total).Append(" ms, count: ").Append(count).Append(", total average: ").Append(average).Append(" ms").Append("\n");
+                    total = Math.Round(total / frameCount, 4);
+                    sb.Append(item.Key).Append(", count: ").Append(measureCount / frameCount).Append(", time: ").Append(total).Append(" ms").Append("\n");
                 }
             }
 

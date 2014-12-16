@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Hatzap.Utilities;
@@ -56,6 +57,7 @@ namespace Hatzap.Models
         /// If Transform is static and the transform matrix has already been calculated previously, nothig happens. This method
         /// also assumes that parents' matrices have already been calculated.
         /// </summary>
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void CalculateMatrix()
         {
             Time.StartTimer("Transform.CalculateMatrix()", "Update");

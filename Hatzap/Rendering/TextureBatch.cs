@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Hatzap.Models;
@@ -18,6 +19,8 @@ namespace Hatzap.Rendering
         public Dictionary<Mesh, InstancedBatch> Instanced;
 
         int count = 0;
+
+        public RenderQueue RenderQueue { get; set; }
 
         public void Insert(Renderable data)
         {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Hatzap.Models;
 using Hatzap.Shaders;
@@ -24,6 +25,10 @@ namespace Hatzap.Rendering
 
         int pos1, pos2, pos3, pos4, stride, attribPos, byteSize, c;
 
+        // Statics to improve performance a little bit
+        static Material material;
+        static List<Matrix4> matrix;
+
         public InstancedBatch(Model model)
         {
             Mesh = model.Mesh;
@@ -39,17 +44,16 @@ namespace Hatzap.Rendering
 
         public void Insert(Renderable obj)
         {
-            List<Matrix4> m;
-            if(!matrices.TryGetValue(obj.Material, out m))
+            if(!matrices.TryGetValue(obj.Material, out matrix))
             {
-                m = new List<Matrix4>();
-                matrices.Add(obj.Material, m);
+                matrix = new List<Matrix4>();
+                matrices.Add(obj.Material, matrix);
 
                 if(!mbo.ContainsKey(obj.Material)) 
                     mbo.Add(obj.Material, GL.GenBuffer());
             }
 
-            m.Add(obj.Transform.Matrix);
+            matrix.Add(obj.Transform.Matrix);
             Count++;
         }
 
@@ -72,8 +76,8 @@ namespace Hatzap.Rendering
 
             foreach (var materialGroup in matrices)
             {
-                var material = materialGroup.Key;
-                var matrix = materialGroup.Value;
+                material = materialGroup.Key;
+                matrix = materialGroup.Value;
 
                 GL.BindBuffer(BufferTarget.ArrayBuffer, mbo[material]);
                 GL.VertexAttribPointer(pos1, 4, VertexAttribPointerType.Float, false, stride, Vector4.SizeInBytes * 0);
@@ -108,7 +112,6 @@ namespace Hatzap.Rendering
                             ptr[i] = matrix[i];
                         }
                     }
-
                     GL.UnmapBuffer(BufferTarget.ArrayBuffer);
                 }
                 catch(Exception e) 
@@ -116,15 +119,13 @@ namespace Hatzap.Rendering
                     GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(byteSize), matrix.ToArray(), BufferUsageHint.StreamDraw);
                     Debug.WriteLine(e);
                 }*/
-                
 
-                foreach (var uniform in material)
+                foreach (var uniform in material.Uniforms)
                 {
                     uniform.SendData(Shader);
                 }
 
                 Mesh.DrawInstanced(matrix.Count);
-
 
                 c += matrix.Count;
 

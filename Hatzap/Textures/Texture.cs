@@ -21,6 +21,9 @@ namespace Hatzap.Textures
         public int Width { get; protected set; }
         public int Height { get; protected set; }
 
+        // TODO: Populate this property automatically when texture is loaded
+        public bool HasAlpha { get; set; }
+
         public TextureQuality Quality { get { return quality; } set { quality = value; qualityDirty = true; } }
 
         TextureQuality quality;
@@ -111,6 +114,10 @@ namespace Hatzap.Textures
 
             if (maxAniso > 0)
                 GL.TexParameter(TextureTarget, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, maxAniso);
+
+            // Wrap options
+            GL.TexParameter(TextureTarget, TextureParameterName.TextureWrapS, (int)quality.TextureWrapMode_S);
+            GL.TexParameter(TextureTarget, TextureParameterName.TextureWrapT, (int)quality.TextureWrapMode_T);
         }
 
         public void Generate(OpenTK.Graphics.OpenGL.PixelFormat format, PixelType type)
