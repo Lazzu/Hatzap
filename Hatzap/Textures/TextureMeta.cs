@@ -12,7 +12,6 @@ namespace Hatzap.Textures
     {
         public TextureMeta()
         {
-            UID = Guid.NewGuid();
             FileName = "Unnamed";
             Name = "Unnamed";
             PixelInternalFormat = PixelInternalFormat.Rgba;
@@ -29,10 +28,7 @@ namespace Hatzap.Textures
 
         [XmlText]
         public string Name { get; set; }
-
-        [XmlAttribute]
-        public Guid UID { get; internal set; }
-
+        
         [XmlAttribute]
         public PixelInternalFormat PixelInternalFormat { get; set; }
 

@@ -25,7 +25,29 @@ namespace Hatzap.Textures
 
         public TextureQuality Quality { get; set; }
 
-        public TextureMeta Metadata { get; internal set; }
+        TextureMeta savedMeta;
+        public TextureMeta Metadata
+        {
+            get
+            {
+                if (savedMeta == null)
+                    savedMeta = new TextureMeta()
+                    {
+                        Name = "Unnamed",
+                        FileName = "Unnamed",
+                        PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Bgra,
+                        PixelType = PixelType.UnsignedByte
+                    };
+
+                savedMeta.Height = Height;
+                savedMeta.Width = Width;
+                savedMeta.PixelInternalFormat = PixelInternalFormat;
+
+                savedMeta.Quality = Quality;
+
+                return savedMeta;
+            }
+        }
 
         public Texture()
         {
@@ -82,6 +104,11 @@ namespace Hatzap.Textures
 
         public void Generate(OpenTK.Graphics.OpenGL.PixelFormat format, PixelType type)
         {
+            var meta = this.Metadata;
+
+            meta.PixelType = type;
+            meta.PixelFormat = format;
+
             Time.StartTimer("Texture.Generate()", "Loading");
 
             // Get last bound texture
@@ -103,6 +130,11 @@ namespace Hatzap.Textures
 
         void Load(Bitmap bmp, OpenTK.Graphics.OpenGL.PixelFormat format, PixelType type)
         {
+            var meta = this.Metadata;
+
+            meta.PixelType = type;
+            meta.PixelFormat = format;
+
             // Get last bound texture
             Texture last = null;
             Bound.TryGetValue(TextureTarget, out last);
@@ -116,7 +148,7 @@ namespace Hatzap.Textures
 
             Width = bmp.Width;
             Height = bmp.Height;
-
+            
             // Push image data to the gpu
             GL.TexImage2D(TextureTarget, 0, this.PixelInternalFormat, Width, Height, 0, format, type, bitmapData.Scan0);
 
@@ -159,6 +191,8 @@ namespace Hatzap.Textures
         /// <param name="meta">Texture metadata</param>
         public void Load(TextureMeta meta)
         {
+            savedMeta = meta;
+
             Quality = meta.Quality;
 
             PixelInternalFormat = meta.PixelInternalFormat;
