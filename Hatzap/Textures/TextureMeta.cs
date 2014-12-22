@@ -65,6 +65,25 @@ namespace Hatzap.Textures
             }
         }
 
+        public TextureMeta Copy
+        {
+            get
+            {
+                return new TextureMeta()
+                {
+                    FileName = FileName,
+                    Name = Name,
+                    PixelInternalFormat = PixelInternalFormat,
+                    PixelFormat = PixelFormat,
+                    PixelType = PixelType,
+                    Width = Width,
+                    Height = Height,
+                    Precompressed = Precompressed,
+                    Quality = Quality,
+                    filenames = filenames,
+                };
+            }
+        }
 
         public static TextureMeta Generate()
         {

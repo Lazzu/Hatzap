@@ -31,21 +31,21 @@ namespace Hatzap.Textures
             get
             {
                 if (savedMeta == null)
+                {
                     savedMeta = new TextureMeta()
                     {
                         Name = "Unnamed",
                         FileName = "Unnamed",
                         PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Bgra,
-                        PixelType = PixelType.UnsignedByte
+                        PixelType = PixelType.UnsignedByte,
+                        Height = Height,
+                        Width = Width,
+                        PixelInternalFormat = PixelInternalFormat,
+                        Quality = Quality
                     };
+                }
 
-                savedMeta.Height = Height;
-                savedMeta.Width = Width;
-                savedMeta.PixelInternalFormat = PixelInternalFormat;
-
-                savedMeta.Quality = Quality;
-
-                return savedMeta;
+                return savedMeta.Copy;
             }
         }
 
@@ -148,6 +148,9 @@ namespace Hatzap.Textures
 
             Width = bmp.Width;
             Height = bmp.Height;
+
+            meta.Width = Width;
+            meta.Height = Height;
             
             // Push image data to the gpu
             GL.TexImage2D(TextureTarget, 0, this.PixelInternalFormat, Width, Height, 0, format, type, bitmapData.Scan0);
