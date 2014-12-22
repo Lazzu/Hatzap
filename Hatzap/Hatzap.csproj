@@ -117,6 +117,7 @@
     <Compile Include="Textures\CubeTexture.cs" />
     <Compile Include="Textures\Texture.cs" />
     <Compile Include="Textures\TextureArray.cs" />
+    <Compile Include="Textures\TextureFiltering.cs" />
     <Compile Include="Textures\TextureManager.cs" />
     <Compile Include="Textures\TextureMeta.cs" />
     <Compile Include="Textures\TextureQuality.cs" />

@@ -155,8 +155,8 @@ void main( void )
 	lightSide = TBN * normalize(vec3(1,0,0));
 	
 	front = ashikhmin_shirley(lightFront, n, eye, material);
-	//top = ashikhmin_shirley(lightTop, n, eye, material);
-	//side = ashikhmin_shirley(lightSide, n, eye, material);
+	top = ashikhmin_shirley(lightTop, n, eye, material);
+	side = ashikhmin_shirley(lightSide, n, eye, material);
 
 	vec2 tmp = clamp(front + top + side, vec2(0), vec2(1));
 
@@ -166,8 +166,8 @@ void main( void )
 	vec4 outColor;
 
 	outColor = texture( textureSampler, vec3(texcoord,0) ) * diffuse + specular;
-	//outColor = texture( textureSampler, texcoord );
-	//outColor = pow(texture( textureSampler, texcoord ), vec4(g, g, g, 1));
+	//outColor = texture( textureSampler, vec3(texcoord,0) );
+	//outColor = pow(texture( textureSampler, vec3(texcoord,0) ), vec4(g, g, g, 1));
 	//outColor = vec4(1);
 	//outColor = vec4(texcoord, 0, 1);
 	//outColor = vec4((n + 1) * 0.5, 1);
@@ -175,7 +175,7 @@ void main( void )
 	//outColor = diffuse + specular;
 	//outColor = vec4(specularTexel, 1);
 
-	RGBA = pow(outColor, vec4(g,g,g,1));
-	//RGBA = outColor;
+	//RGBA = pow(outColor, vec4(g,g,g,1));
+	RGBA = outColor;
 }
 

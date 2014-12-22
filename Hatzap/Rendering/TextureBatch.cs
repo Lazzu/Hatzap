@@ -75,6 +75,7 @@ namespace Hatzap.Rendering
             int triangles = 0;
 
             Texture.Bind();
+            Texture.UpdateQuality();
 
             if(Instanced != null)
             {

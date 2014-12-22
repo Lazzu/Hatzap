@@ -37,7 +37,7 @@ void main( void )
 	//RGBA = vec4(texcoord, 0, 1);
 	//RGBA = color;
 	//RGBA = vec4(1);
-	//RGBA = vec4(1,1,1,0.1);
+	//RGBA = vec4(sdf, sdf, sdf,1);
 
 
 

@@ -110,7 +110,7 @@ namespace HatzapTestApplication
         {
             Debug.WriteLine("OnLoad()");
 
-            thread = new Thread(new ThreadStart(() =>
+            /*thread = new Thread(new ThreadStart(() =>
             {
                 view = WebCore.CreateWebView(Width, Height, WebViewType.Offscreen);
 
@@ -146,7 +146,7 @@ namespace HatzapTestApplication
 
             }));
 
-            thread.Start();
+            thread.Start();*/
 
             GPUCapabilities.Initialize();
 
@@ -157,6 +157,8 @@ namespace HatzapTestApplication
             Debug.WriteLine("GPUCapabilities.MaxVaryingVectors=" + GPUCapabilities.MaxVaryingVectors);
             Debug.WriteLine("GPUCapabilities.SeamlessCubemaps=" + GPUCapabilities.SeamlessCubemaps);
             Debug.WriteLine("GPUCapabilities.TextureCompression=" + GPUCapabilities.TextureCompression);
+            Debug.WriteLine("GPUCapabilities.AnisotrophicFiltering=" + GPUCapabilities.AnisotrophicFiltering);
+            Debug.WriteLine("GPUCapabilities.MaxAnisotrophyLevel=" + GPUCapabilities.MaxAnisotrophyLevel);
 
             if (GPUCapabilities.SeamlessCubemaps)
                 GL.Enable(EnableCap.TextureCubeMapSeamless);
@@ -211,7 +213,7 @@ namespace HatzapTestApplication
                     Path = "Assets/Shaders/Model.vert",
                     Type = ShaderType.VertexShader
                 },new ShaderInfo() {
-                    Path = "Assets/Shaders/ModelColored.frag",
+                    Path = "Assets/Shaders/Model.frag",
                     Type = ShaderType.FragmentShader
                 }}),
                 Name = "Model"
@@ -259,7 +261,7 @@ namespace HatzapTestApplication
                     Path = "Assets/Shaders/SimpleModel2.vert",
                     Type = ShaderType.VertexShader
                 },new ShaderInfo() {
-                    Path = "Assets/Shaders/SimpleModel.frag",
+                    Path = "Assets/Shaders/SimpleModel2.frag",
                     Type = ShaderType.FragmentShader
                 },/*new ShaderInfo() {
                     Path = "Assets/Shaders/SimpleModel.geom",
@@ -293,11 +295,28 @@ namespace HatzapTestApplication
             GuiRoot.Initialize(this);
 
             GuiRoot.Root.Texture = new TextureArray();
+            
+            TextureMeta guiTextureMeta = new TextureMeta()
+            {
+                FileName = "Assets/Textures/greySheet.png",
+                Name = "GuiTexture",
+                Width = 512,
+                Height = 512,
+                PixelInternalFormat = PixelInternalFormat.Rgba,
+                PixelFormat = PixelFormat.Bgra,
+                PixelType = PixelType.UnsignedByte,
+                Precompressed = false,
+                Quality = new TextureQuality()
+                {
+                    Anisotrophy = 0,
+                    Filtering = TextureFiltering.Nearest,
+                    TextureWrapMode_S = OpenTK.Graphics.OpenGL.TextureWrapMode.Clamp,
+                    TextureWrapMode_T = OpenTK.Graphics.OpenGL.TextureWrapMode.Clamp,
+                },
+            };
 
-            GuiRoot.Root.Texture.Load(new[] { new Bitmap("Assets/Textures/greySheet.png") }, PixelInternalFormat.Rgba, PixelFormat.Bgra, PixelType.UnsignedByte);
-
-            GuiRoot.Root.Texture.TextureSettings(TextureMinFilter.Nearest, TextureMagFilter.Nearest, 0);
-
+            GuiRoot.Root.Texture.Load(guiTextureMeta);
+            
             ElementCollection guiElements = new ElementCollection()
             {
                 Elements = new List<WidgetInfo> { 
@@ -648,16 +667,27 @@ namespace HatzapTestApplication
             //End of example
             importer.Dispose();
 
-            var bitmaps = new[] { 
-                new Bitmap("Assets/Textures/sh3.jpg"), 
-                new Bitmap("Assets/Textures/sh3_n.png"),
-                new Bitmap("Assets/Textures/sh3_s.jpg")
+            TextureMeta shipTextureMeta = new TextureMeta()
+            {
+                Name = "ShipTexture",
+                FileName = "Assets/Textures/sh3.jpg,Assets/Textures/sh3_n.png,Assets/Textures/sh3_s.jpg",
+                PixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext,
+                PixelFormat = PixelFormat.Bgra,
+                PixelType = PixelType.UnsignedByte,
+                Width = 1024,
+                Height = 1024,
+                Quality = new TextureQuality()
+                {
+                    Filtering = TextureFiltering.Trilinear,
+                    Anisotrophy = 32,
+                    Mipmaps = true,
+                    TextureWrapMode_S = OpenTK.Graphics.OpenGL.TextureWrapMode.Repeat,
+                    TextureWrapMode_T = OpenTK.Graphics.OpenGL.TextureWrapMode.Repeat
+                }
             };
 
             shipTexture = new TextureArray();
-            shipTexture.PixelInternalFormat = PixelInternalFormat.CompressedRgbS3tcDxt1Ext;
-            shipTexture.Load(bitmaps, PixelInternalFormat.Rgba, PixelFormat.Bgra, PixelType.UnsignedByte);
-            shipTexture.TextureSettings(TextureMinFilter.Linear, TextureMagFilter.Linear, 32);
+            shipTexture.Load(shipTextureMeta);
 
             font = FontManager.Get("OpenSans-Regular");
 
@@ -671,9 +701,11 @@ namespace HatzapTestApplication
             fpsText.Text = "FPS: Calculating..";
 
             int n = 5;
-            int sizeScale = 10;
+            int sizeScale = 7;
 
             Random rand = new Random();
+
+            
 
             for (int x = -n; x <= n; x++)
             {
@@ -709,8 +741,8 @@ namespace HatzapTestApplication
                         spaceShip.Texture = shipTexture;
                         spaceShip.Shader = ShaderManager.Get("Textureless");
                         spaceShip.Mesh = mesh;
-                        //spaceShip.Transform.Static = true;
-                        spaceShip.Transform.Position = new Vector3(x * sizeScale, y * sizeScale, z * sizeScale);
+                        spaceShip.Transform.Static = true;
+                        spaceShip.Transform.Position = new Vector3((x + (float)(rand.NextDouble() - 0.5)) * sizeScale, (y + (float)(rand.NextDouble() - 0.5)) * sizeScale, (z + (float)(rand.NextDouble() - 0.5)) * sizeScale);
                         spaceShip.Transform.Rotation = Quaternion.FromEulerAngles(x * 360.0f / n / (float)Math.PI, y * 360.0f / n / (float)Math.PI, z * 360.0f / n / (float)Math.PI);
                         spaceShip.Material = spaceShipMaterial;
 
@@ -720,7 +752,15 @@ namespace HatzapTestApplication
             }
 
             streamedTexture = new Texture(Width, Height);
-            streamedTexture.Generate(PixelFormat.Bgra, PixelType.Byte, TextureMinFilter.Nearest, TextureMagFilter.Nearest, 0);
+            streamedTexture.Quality = new TextureQuality()
+            {
+                Filtering = TextureFiltering.Nearest,
+                Anisotrophy = 0,
+                Mipmaps = false,
+                TextureWrapMode_S = OpenTK.Graphics.OpenGL.TextureWrapMode.Clamp,
+                TextureWrapMode_T = OpenTK.Graphics.OpenGL.TextureWrapMode.Clamp
+            };
+            streamedTexture.Generate(PixelFormat.Bgra, PixelType.Byte);
 
             Debug.WriteLine("OnLoad() ends");
             
@@ -852,7 +892,6 @@ namespace HatzapTestApplication
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
             Time.StopTimer("glClear()");
             
-
             base.OnRenderFrame(e);
 
             renderQueue.Render();

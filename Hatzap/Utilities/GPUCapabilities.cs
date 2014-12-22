@@ -54,6 +54,16 @@ namespace Hatzap.Utilities
             MaxVaryingVectors = n;
 
             SeamlessCubemaps = IsExtensionAvailable("GL_ARB_seamless_cube_map");
+
+            AnisotrophicFiltering = IsExtensionAvailable("GL_EXT_texture_filter_anisotropic");
+            MaxAnisotrophyLevel = 0;
+            if(AnisotrophicFiltering)
+            {
+                float maxAniso = 0;
+                GL.GetFloat((GetPName)ExtTextureFilterAnisotropic.MaxTextureMaxAnisotropyExt, out maxAniso);
+                MaxAnisotrophyLevel = maxAniso;
+            }
+
         }
         
         public static bool IsExtensionAvailable(string extension)
@@ -63,12 +73,11 @@ namespace Hatzap.Utilities
         }
 
         public static bool TextureCompression { get; private set; }
-
         public static bool Instancing { get; private set; }
-
         public static int MaxVaryingFloats { get; private set; }
         public static int MaxVaryingVectors { get; private set; }
-
-        public static bool SeamlessCubemaps { get; set; }
+        public static bool SeamlessCubemaps { get; private set; }
+        public static bool AnisotrophicFiltering { get; set; }
+        public static float MaxAnisotrophyLevel { get; private set; }
     }
 }

@@ -22,6 +22,9 @@ namespace Hatzap.Sprites
         [XmlArrayAttribute("Sprites")]
         public List<Sprite> Sprites { get; protected set; }
 
+        [XmlArrayAttribute("Quality")]
+        public TextureQuality Quality { get; protected set; }
+
         public SpriteAtlas()
         {
             Sprites = new List<Sprite>();
@@ -32,14 +35,6 @@ namespace Hatzap.Sprites
             Texture = new Texture();
             Texture.Load(TextureMeta);
             Texture.Bind();
-            Texture.GenMipMaps();
-            TextureQuality quality = new TextureQuality()
-            {
-                TextureMinFilter = TextureMinFilter.Linear,
-                TextureMagFilter = TextureMagFilter.Linear,
-                Anisotrophy = 0
-            };
-            Texture.TextureSettings(quality);
         }
 
         public static SpriteAtlas Load(string file)

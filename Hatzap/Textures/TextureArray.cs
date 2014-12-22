@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using OpenTK;
@@ -14,8 +15,15 @@ namespace Hatzap.Textures
             this.TextureTarget = TextureTarget.Texture2DArray;
         }
 
-        public void Load(Bitmap[] bmps, SizedInternalFormat internalFormat, OpenTK.Graphics.OpenGL.PixelFormat format, PixelType type, TextureMinFilter minFilter, TextureMagFilter magFilter, float anisotrophy, bool mipmaps)
+        /// <summary>
+        /// Loads a TextureArray in to GPU memory
+        /// </summary>
+        /// <param name="meta"></param>
+        public void Load(TextureMeta meta)
         {
+            PixelInternalFormat = meta.PixelInternalFormat;
+            Quality = meta.Quality;
+            
             // Get last bound texture
             Texture last = null;
             Bound.TryGetValue(TextureTarget, out last);
@@ -23,62 +31,25 @@ namespace Hatzap.Textures
             // Bind current texture
             Bind();
 
-            GL.TexStorage3D(TextureTarget3d.Texture2DArray, 1, internalFormat, Width, Height, bmps.Length);
+            Width = meta.Width;
+            Height = meta.Height;
 
-            for (int i = 0; i < bmps.Length; i++)
+            string[] files = meta.FileName.Split(',');
+
+            int filesCount = files.Length;
+
+            GL.TexImage3D(TextureTarget, 0, PixelInternalFormat, Width, Height, filesCount, 0, meta.PixelFormat, meta.PixelType, IntPtr.Zero);
+
+            for (int i = 0; i < filesCount; i++)
             {
-                var transparent = HasTransparentPixels(bmps[i]);
+                using(var bmp = new Bitmap(files[i]))
+                {
+                    BitmapData bitmapData = bmp.LockBits(new Rectangle(0, 0, Width, Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-                BitmapData bitmapData = bmps[i].LockBits(new Rectangle(0, 0, bmps[i].Width, bmps[i].Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                    GL.TexSubImage3D(TextureTarget, 0, 0, 0, i, Width, Height, 1, meta.PixelFormat, meta.PixelType, bitmapData.Scan0);
 
-                // Reserve an empty image from GPU memory
-                //GL.TexImage2D(TextureTarget, 0, internalFormat, Width, Height, 0, format, type, bitmapData.Scan0);
-
-
-                GL.TexSubImage3D(TextureTarget, 0, 0, 0, i, Width, Height, 1, format, type, bitmapData.Scan0);
-
-                bmps[i].UnlockBits(bitmapData);
-            }
-
-            if (mipmaps)
-            {
-                GenMipMaps();
-            }
-
-            TextureSettings(minFilter, magFilter, anisotrophy);
-
-            // Restore previous state
-            if (last != null) last.Bind();
-            else UnBind();
-        }
-
-        public void Load(Bitmap[] bmps, PixelInternalFormat internalFormat, OpenTK.Graphics.OpenGL.PixelFormat format, PixelType type)
-        {
-            // Get last bound texture
-            Texture last = null;
-            Bound.TryGetValue(TextureTarget, out last);
-
-            // Bind current texture
-            Bind();
-
-            Width = bmps[0].Width;
-            Height = bmps[0].Height;
-
-            GL.TexImage3D(TextureTarget, 0, internalFormat, Width, Height, bmps.Length, 0, format, type, IntPtr.Zero);
-
-            for (int i = 0; i < bmps.Length; i++)
-            {
-                var transparent = HasTransparentPixels(bmps[i]);
-
-                BitmapData bitmapData = bmps[i].LockBits(new Rectangle(0, 0, bmps[i].Width, bmps[i].Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-                // Reserve an empty image from GPU memory
-                //GL.TexImage2D(TextureTarget, 0, internalFormat, Width, Height, 0, format, type, bitmapData.Scan0);
-
-
-                GL.TexSubImage3D(TextureTarget, 0, 0, 0, i, Width, Height, 1, format, type, bitmapData.Scan0);
-
-                bmps[i].UnlockBits(bitmapData);
+                    bmp.UnlockBits(bitmapData);
+                }
             }
 
             // Restore previous state

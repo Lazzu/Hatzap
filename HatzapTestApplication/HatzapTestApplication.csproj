@@ -80,6 +80,9 @@
     <None Include="Assets\Shaders\SimpleModel1.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Assets\Shaders\SimpleModel2.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Assets\Shaders\SimpleModel2.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

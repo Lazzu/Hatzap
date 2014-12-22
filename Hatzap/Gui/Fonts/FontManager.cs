@@ -25,12 +25,31 @@ namespace Hatzap.Gui.Fonts
             {
                 var font = new Font();
                 font.LoadBMFont(item.FontDataFile);
-                font.Texture = new Texture();
-                font.Texture.PixelInternalFormat = PixelInternalFormat.R8;
-                font.Texture.Load(new Bitmap(item.FontTextureFile), PixelFormat.Bgra, PixelType.UnsignedByte);
-                font.Texture.Bind();
-                font.Texture.TextureSettings(TextureMinFilter.Linear, TextureMagFilter.Linear, 0);
 
+                TextureMeta metadata = new TextureMeta()
+                {
+                    Name = item.FontFamily,
+                    Precompressed = false,
+                    FileName = item.FontTextureFile,
+                    PixelInternalFormat = PixelInternalFormat.R8,
+                    PixelFormat = PixelFormat.Bgra,
+                    PixelType = PixelType.UnsignedByte,
+                    Quality = new TextureQuality()
+                    {
+                        Anisotrophy = 1,
+                        Filtering = TextureFiltering.Nearest,
+                        TextureWrapMode_S = TextureWrapMode.Clamp,
+                        TextureWrapMode_T = TextureWrapMode.Clamp,
+                        Mipmaps = false
+                    }
+                };
+
+                font.Texture = new Texture();
+                font.Texture.Load(metadata);
+                font.Texture.Bind();
+                font.Texture.UpdateQuality();
+                font.Texture.UnBind();
+                
                 fonts.Add(item.FontFamily, font);
             }
         }
