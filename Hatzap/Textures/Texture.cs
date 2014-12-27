@@ -25,6 +25,8 @@ namespace Hatzap.Textures
 
         public TextureQuality Quality { get; set; }
 
+        bool released = false;
+
         TextureMeta savedMeta;
         public TextureMeta Metadata
         {
@@ -64,6 +66,9 @@ namespace Hatzap.Textures
 
         public void Bind()
         {
+            if (released)
+                throw new InvalidOperationException("A texture has been released and can not be bound.");
+
             // Check if this texture is already bound
             Texture tmp = null;
             if (Bound.TryGetValue(TextureTarget, out tmp) && tmp == this)
@@ -82,8 +87,8 @@ namespace Hatzap.Textures
 
         public void UnBind()
         {
-            // Check if there are any textures bound
-            if (!Bound.ContainsKey(TextureTarget) || Bound[TextureTarget] == null)
+            // Check if the current TextureTarget is bound
+            if (!Bound.ContainsKey(TextureTarget))
                 return;
 
             // Set current texture as unbound
@@ -213,13 +218,19 @@ namespace Hatzap.Textures
             {
                 Time.StartTimer("Texture.Load()", "Loading");
 
-                using (var bmp = new Bitmap(meta.FileName))
+                var path = Path.GetFullPath(meta.FileName);
+
+                var bmp = new Bitmap(path);
+
+                using (bmp)
                 {
                     Load(bmp, meta.PixelFormat, meta.PixelType);
                 }
 
                 Time.StopTimer("Texture.Load()");
             }
+
+            UpdateQuality();
         }
 
         /// <summary>
@@ -336,6 +347,15 @@ namespace Hatzap.Textures
             // Restore previous state
             if (last != null) last.Bind();
             else UnBind();
+        }
+
+        /// <summary>
+        /// Release the texture for removal in GPU memory.
+        /// </summary>
+        public void Release()
+        {
+            GL.DeleteTexture(ID);
+            ID = -1;
         }
 
         protected bool HasTransparentPixels(Bitmap bmp)

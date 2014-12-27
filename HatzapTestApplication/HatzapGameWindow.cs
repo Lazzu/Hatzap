@@ -740,6 +740,7 @@ namespace HatzapTestApplication
                         var spaceShip = new Model();
                         spaceShip.Texture = shipTexture;
                         spaceShip.Shader = ShaderManager.Get("Textureless");
+                        //spaceShip.Shader = ShaderManager.Get("Model");
                         spaceShip.Mesh = mesh;
                         spaceShip.Transform.Static = true;
                         spaceShip.Transform.Position = new Vector3((x + (float)(rand.NextDouble() - 0.5)) * sizeScale, (y + (float)(rand.NextDouble() - 0.5)) * sizeScale, (z + (float)(rand.NextDouble() - 0.5)) * sizeScale);

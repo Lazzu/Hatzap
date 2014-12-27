@@ -8,5 +8,9 @@ namespace Hatzap.Sprites
 {
     public class Sprite
     {
+
+        public SpriteAtlas Atlas { get; set; }
+
+        public SpriteVertex[] Vertices { get; set; }
     }
 }

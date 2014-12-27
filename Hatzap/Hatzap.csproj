@@ -104,6 +104,7 @@
     <Compile Include="Rendering\ShaderBatch.cs" />
     <Compile Include="Rendering\TextureBatch.cs" />
     <Compile Include="Rendering\UniformData.cs" />
+    <Compile Include="Rendering\VertexBatch.cs" />
     <Compile Include="Scenes\SceneManager.cs" />
     <Compile Include="Shaders\Shader.cs" />
     <Compile Include="Shaders\ShaderCollection.cs" />
@@ -112,8 +113,16 @@
     <Compile Include="Shaders\ShaderInfo.cs" />
     <Compile Include="Shaders\ShaderManager.cs" />
     <Compile Include="Shaders\ShaderProgram.cs" />
+    <Compile Include="Sprites\ISpriteRenderQueueAlgorithm.cs" />
     <Compile Include="Sprites\Sprite.cs" />
     <Compile Include="Sprites\SpriteAtlas.cs" />
+    <Compile Include="Sprites\SpriteCollection.cs" />
+    <Compile Include="Sprites\SpritePaintBatch.cs" />
+    <Compile Include="Sprites\SpritePainterAlgorithm.cs" />
+    <Compile Include="Sprites\SpritePaintQueue.cs" />
+    <Compile Include="Sprites\SpriteRenderData.cs" />
+    <Compile Include="Sprites\SpriteRenderQueue.cs" />
+    <Compile Include="Sprites\SpriteVertex.cs" />
     <Compile Include="Textures\CubeTexture.cs" />
     <Compile Include="Textures\Texture.cs" />
     <Compile Include="Textures\TextureArray.cs" />

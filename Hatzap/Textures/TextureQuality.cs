@@ -6,6 +6,7 @@ using System.Xml.Serialization;
 using System.Threading.Tasks;
 using OpenTK.Graphics.OpenGL;
 using Hatzap.Utilities;
+using System.Diagnostics;
 
 namespace Hatzap.Textures
 {
@@ -33,6 +34,9 @@ namespace Hatzap.Textures
         private bool mipmaps;
         [NonSerialized]
         private bool mipmapsDirty = true;
+
+        private bool pregeneratedMipmaps = false;
+        private int mipmapLevels = -1;
 
         #endregion
 
@@ -112,10 +116,51 @@ namespace Hatzap.Textures
                 {
                     mipmaps = value;
                     mipmapsDirty = true;
+                    textureFilteringDirty = true;
                 }
             }
         }
-        
+
+        public int MipmapLevels
+        {
+            get
+            {
+                return mipmapLevels;
+            }
+            set
+            {
+                if (mipmapLevels != value)
+                {
+                    mipmapLevels = value;
+                    mipmapsDirty = true;
+                    if (!pregeneratedMipmaps)
+                    {
+                        textureFilteringDirty = true;
+                    }
+                }
+            }
+        }
+
+        public bool PregeneratedMipmaps
+        {
+            get
+            {
+                return pregeneratedMipmaps;
+            }
+            set
+            {
+                if (pregeneratedMipmaps != value)
+                {
+                    pregeneratedMipmaps = value;
+                    if (!pregeneratedMipmaps)
+                    {
+                        mipmapsDirty = true;
+                        textureFilteringDirty = true;
+                    }
+                }
+            }
+        }
+
         public bool Dirty
         {
             get
@@ -148,42 +193,56 @@ namespace Hatzap.Textures
             {
                 mipmapsDirty = false;
 
-                GL.TexParameter(target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-                GL.TexParameter(target, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-
-                switch(target)
+                if(mipmaps)
                 {
-                    case TextureTarget.Texture1D:
-                        GL.GenerateMipmap(GenerateMipmapTarget.Texture1D);
-                        break;
-                    case TextureTarget.Texture2D:
-                        GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-                        break;
-                    case TextureTarget.Texture3D:
-                        GL.GenerateMipmap(GenerateMipmapTarget.Texture3D);
-                        break;
-                    case TextureTarget.Texture1DArray:
-                        GL.GenerateMipmap(GenerateMipmapTarget.Texture1DArray);
-                        break;
-                    case TextureTarget.Texture2DArray:
-                        GL.GenerateMipmap(GenerateMipmapTarget.Texture2DArray);
-                        break;
-                    case TextureTarget.TextureCubeMap:
-                        GL.GenerateMipmap(GenerateMipmapTarget.TextureCubeMap);
-                        break;
-                    case TextureTarget.TextureCubeMapArray:
-                        GL.GenerateMipmap(GenerateMipmapTarget.TextureCubeMapArray);
-                        break;
-                    case TextureTarget.Texture2DMultisample:
-                        GL.GenerateMipmap(GenerateMipmapTarget.Texture2DMultisample);
-                        break;
-                    case TextureTarget.Texture2DMultisampleArray:
-                        GL.GenerateMipmap(GenerateMipmapTarget.Texture2DMultisampleArray);
-                        break;
-                    default:
-                        throw new NotImplementedException("Generating mipmaps not supported for TextureTarget." + target.ToString() + ". Currently supported mipmaps are: Texture1D, Texture2D, Texture3D, Texture1DArray, Texture2DArray, TextureCubeMap, TextureCubeMapArray, Texture2DMultisample, Texture2DMultisampleArray.");
-                }
+                    GL.TexParameter(target, TextureParameterName.TextureBaseLevel, 0);
 
+                    int levels = mipmapLevels;
+                    if (levels < 0)
+                    {
+                        levels = 1000;
+                    }
+                    GL.TexParameter(target, TextureParameterName.TextureMaxLevel, levels);
+
+                    if(!pregeneratedMipmaps)
+                    {
+                        GL.TexParameter(target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+                        GL.TexParameter(target, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);                    
+
+                        switch (target)
+                        {
+                            case TextureTarget.Texture1D:
+                                GL.GenerateMipmap(GenerateMipmapTarget.Texture1D);
+                                break;
+                            case TextureTarget.Texture2D:
+                                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+                                break;
+                            case TextureTarget.Texture3D:
+                                GL.GenerateMipmap(GenerateMipmapTarget.Texture3D);
+                                break;
+                            case TextureTarget.Texture1DArray:
+                                GL.GenerateMipmap(GenerateMipmapTarget.Texture1DArray);
+                                break;
+                            case TextureTarget.Texture2DArray:
+                                GL.GenerateMipmap(GenerateMipmapTarget.Texture2DArray);
+                                break;
+                            case TextureTarget.TextureCubeMap:
+                                GL.GenerateMipmap(GenerateMipmapTarget.TextureCubeMap);
+                                break;
+                            case TextureTarget.TextureCubeMapArray:
+                                GL.GenerateMipmap(GenerateMipmapTarget.TextureCubeMapArray);
+                                break;
+                            case TextureTarget.Texture2DMultisample:
+                                GL.GenerateMipmap(GenerateMipmapTarget.Texture2DMultisample);
+                                break;
+                            case TextureTarget.Texture2DMultisampleArray:
+                                GL.GenerateMipmap(GenerateMipmapTarget.Texture2DMultisampleArray);
+                                break;
+                            default:
+                                throw new NotImplementedException("Generating mipmaps not supported for TextureTarget." + target.ToString() + ". Currently supported mipmaps are: Texture1D, Texture2D, Texture3D, Texture1DArray, Texture2DArray, TextureCubeMap, TextureCubeMapArray, Texture2DMultisample, Texture2DMultisampleArray.");
+                        }
+                    }
+                }
             }
 
             if(textureFilteringDirty)
@@ -239,7 +298,7 @@ namespace Hatzap.Textures
 
                 textureFilteringDirty = false;
             }
-
+            
             if (anisotrophyDirty)
             {
                 if (GPUCapabilities.AnisotrophicFiltering)

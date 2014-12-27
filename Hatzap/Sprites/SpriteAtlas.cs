@@ -21,13 +21,10 @@ namespace Hatzap.Sprites
 
         [XmlArrayAttribute("Sprites")]
         public List<Sprite> Sprites { get; protected set; }
-
-        [XmlArrayAttribute("Quality")]
-        public TextureQuality Quality { get; protected set; }
-
-        public SpriteAtlas()
+        
+        public SpriteAtlas(SpriteCollection collection)
         {
-            Sprites = new List<Sprite>();
+            Sprites = new List<Sprite>(collection.Sprites);
         }
 
         void Initialize()

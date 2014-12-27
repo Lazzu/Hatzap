@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hatzap", "Hatzap\Hatzap.csproj", "{9DBE6731-9BAA-4EB6-A5CB-10D7CC10ACBC}"
 EndProject
@@ -9,10 +9,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HatzapTestApplication", "Ha
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenTK", "OpenTK\Source\OpenTK\OpenTK.csproj", "{A37A7E14-0000-0000-0000-000000000000}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DA52BC27-899C-4AE5-822F-70BD02FF6FEF}"
-	ProjectSection(SolutionItems) = preProject
-		Performance1.psess = Performance1.psess
-	EndProjectSection
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Example_Apps", "Example_Apps", "{A34EA762-BA92-4D29-89B5-57967BBABDDC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextureExample", "TextureFilteringExample\TextureExample.csproj", "{8010E18C-F2AB-481E-AB5E-CF8C9F4AB2D3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloTriangle", "HelloTriangle\HelloTriangle.csproj", "{51C47888-676D-4A84-90FF-DA15ABB29559}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -94,11 +95,52 @@ Global
 		{A37A7E14-0000-0000-0000-000000000000}.Release|ARM.ActiveCfg = Release|Any CPU
 		{A37A7E14-0000-0000-0000-000000000000}.Release|x64.ActiveCfg = Release|Any CPU
 		{A37A7E14-0000-0000-0000-000000000000}.Release|x86.ActiveCfg = Release|Any CPU
+		{8010E18C-F2AB-481E-AB5E-CF8C9F4AB2D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8010E18C-F2AB-481E-AB5E-CF8C9F4AB2D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8010E18C-F2AB-481E-AB5E-CF8C9F4AB2D3}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{8010E18C-F2AB-481E-AB5E-CF8C9F4AB2D3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8010E18C-F2AB-481E-AB5E-CF8C9F4AB2D3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8010E18C-F2AB-481E-AB5E-CF8C9F4AB2D3}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{8010E18C-F2AB-481E-AB5E-CF8C9F4AB2D3}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{8010E18C-F2AB-481E-AB5E-CF8C9F4AB2D3}.Documentation|ARM.ActiveCfg = Debug|Any CPU
+		{8010E18C-F2AB-481E-AB5E-CF8C9F4AB2D3}.Documentation|x64.ActiveCfg = Debug|Any CPU
+		{8010E18C-F2AB-481E-AB5E-CF8C9F4AB2D3}.Documentation|x86.ActiveCfg = Debug|Any CPU
+		{8010E18C-F2AB-481E-AB5E-CF8C9F4AB2D3}.Nsis|Any CPU.ActiveCfg = Release|Any CPU
+		{8010E18C-F2AB-481E-AB5E-CF8C9F4AB2D3}.Nsis|Any CPU.Build.0 = Release|Any CPU
+		{8010E18C-F2AB-481E-AB5E-CF8C9F4AB2D3}.Nsis|ARM.ActiveCfg = Release|Any CPU
+		{8010E18C-F2AB-481E-AB5E-CF8C9F4AB2D3}.Nsis|x64.ActiveCfg = Release|Any CPU
+		{8010E18C-F2AB-481E-AB5E-CF8C9F4AB2D3}.Nsis|x86.ActiveCfg = Release|Any CPU
+		{8010E18C-F2AB-481E-AB5E-CF8C9F4AB2D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8010E18C-F2AB-481E-AB5E-CF8C9F4AB2D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8010E18C-F2AB-481E-AB5E-CF8C9F4AB2D3}.Release|ARM.ActiveCfg = Release|Any CPU
+		{8010E18C-F2AB-481E-AB5E-CF8C9F4AB2D3}.Release|x64.ActiveCfg = Release|Any CPU
+		{8010E18C-F2AB-481E-AB5E-CF8C9F4AB2D3}.Release|x86.ActiveCfg = Release|Any CPU
+		{51C47888-676D-4A84-90FF-DA15ABB29559}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51C47888-676D-4A84-90FF-DA15ABB29559}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51C47888-676D-4A84-90FF-DA15ABB29559}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{51C47888-676D-4A84-90FF-DA15ABB29559}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{51C47888-676D-4A84-90FF-DA15ABB29559}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{51C47888-676D-4A84-90FF-DA15ABB29559}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{51C47888-676D-4A84-90FF-DA15ABB29559}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{51C47888-676D-4A84-90FF-DA15ABB29559}.Documentation|ARM.ActiveCfg = Debug|Any CPU
+		{51C47888-676D-4A84-90FF-DA15ABB29559}.Documentation|x64.ActiveCfg = Debug|Any CPU
+		{51C47888-676D-4A84-90FF-DA15ABB29559}.Documentation|x86.ActiveCfg = Debug|Any CPU
+		{51C47888-676D-4A84-90FF-DA15ABB29559}.Nsis|Any CPU.ActiveCfg = Release|Any CPU
+		{51C47888-676D-4A84-90FF-DA15ABB29559}.Nsis|Any CPU.Build.0 = Release|Any CPU
+		{51C47888-676D-4A84-90FF-DA15ABB29559}.Nsis|ARM.ActiveCfg = Release|Any CPU
+		{51C47888-676D-4A84-90FF-DA15ABB29559}.Nsis|x64.ActiveCfg = Release|Any CPU
+		{51C47888-676D-4A84-90FF-DA15ABB29559}.Nsis|x86.ActiveCfg = Release|Any CPU
+		{51C47888-676D-4A84-90FF-DA15ABB29559}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51C47888-676D-4A84-90FF-DA15ABB29559}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51C47888-676D-4A84-90FF-DA15ABB29559}.Release|ARM.ActiveCfg = Release|Any CPU
+		{51C47888-676D-4A84-90FF-DA15ABB29559}.Release|x64.ActiveCfg = Release|Any CPU
+		{51C47888-676D-4A84-90FF-DA15ABB29559}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
+	GlobalSection(NestedProjects) = preSolution
+		{8010E18C-F2AB-481E-AB5E-CF8C9F4AB2D3} = {A34EA762-BA92-4D29-89B5-57967BBABDDC}
+		{51C47888-676D-4A84-90FF-DA15ABB29559} = {A34EA762-BA92-4D29-89B5-57967BBABDDC}
 	EndGlobalSection
 EndGlobal

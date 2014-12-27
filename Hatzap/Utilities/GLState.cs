@@ -117,5 +117,47 @@ namespace Hatzap.Utilities
                 }
             }
         }
+
+        static bool primitiveRestart = false;
+        public static bool PrimitiveRestart {
+            get
+            {
+                return primitiveRestart;
+            }
+            set
+            {
+                if (primitiveRestart == value)
+                    return;
+
+                primitiveRestart = value;
+
+                if(primitiveRestart)
+                {
+                    GL.Enable(EnableCap.PrimitiveRestart);
+                }
+                else
+                {
+                    GL.Disable(EnableCap.PrimitiveRestart);
+                }
+            }
+        }
+
+        static int primitiveRestartIndex = -1;
+        public static int PrimitiveRestartIndex
+        {
+            get
+            {
+                return primitiveRestartIndex;
+            }
+            set
+            {
+                if (primitiveRestartIndex == value)
+                    return;
+
+                primitiveRestartIndex = value;
+
+                GL.PrimitiveRestartIndex(primitiveRestartIndex);
+            }
+        }
     }
 }

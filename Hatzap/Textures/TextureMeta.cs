@@ -23,10 +23,16 @@ namespace Hatzap.Textures
             Quality = new TextureQuality();
         }
 
-        [XmlText]
+        /// <summary>
+        /// The path to the file containing the texture data.
+        /// </summary>
+        [XmlAttribute]
         public string FileName { get; set; }
 
-        [XmlText]
+        /// <summary>
+        /// The unique name of the texture
+        /// </summary>
+        [XmlAttribute]
         public string Name { get; set; }
         
         [XmlAttribute]
@@ -48,8 +54,9 @@ namespace Hatzap.Textures
         public bool Precompressed { get; set; }
 
         [XmlAttribute]
-        public TextureQuality Quality { get; set; }
+        public bool PreMipmapped { get; set; }
 
+        public TextureQuality Quality { get; set; }
 
         protected List<string> filenames;
         internal List<string> FileNames
@@ -79,6 +86,7 @@ namespace Hatzap.Textures
                     Width = Width,
                     Height = Height,
                     Precompressed = Precompressed,
+                    PreMipmapped = PreMipmapped,
                     Quality = Quality,
                     filenames = filenames,
                 };
