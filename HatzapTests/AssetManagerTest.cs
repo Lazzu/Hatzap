@@ -43,10 +43,16 @@ namespace HatzapTests
         [TestMethod]
         public void CreateAndLoadPackage()
         {
+            // Write asset package to disk
             AssetManager.WritePackage(header);
+
+            // Read asset package headers to the asset manager asset registry
             AssetManager.AddPackage("test.zap");
+
+            // Get a stream to an asset
             var stream = AssetManager.GetStream("test.txt");
 
+            // Read the asset from the stream
             string text;
             using (StreamReader reader = new StreamReader(stream))
             {
@@ -59,12 +65,19 @@ namespace HatzapTests
         [TestMethod]
         public void CompressedPackage()
         {
+            // Insert asset data compression processor to the asset manager
             AssetManager.InsertAssetProcessor(new AssetDataCompressionProcessor());
 
+            // Build asset package to disk from asset files on disk
             AssetManager.WritePackage(header);
+
+            // Read asset package headers to the asset manager asset registry
             AssetManager.AddPackage("test.zap");
+
+            // Get a stream to an asset
             var stream = AssetManager.GetStream("test.txt");
 
+            // Read the asset from the stream
             string text;
             using (StreamReader reader = new StreamReader(stream))
             {
