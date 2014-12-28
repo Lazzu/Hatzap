@@ -46,6 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\AssetDataCompressionProcessor.cs" />
+    <Compile Include="Assets\AssetManager.cs" />
+    <Compile Include="Assets\AssetMeta.cs" />
+    <Compile Include="Assets\AssetPackageHeader.cs" />
+    <Compile Include="Assets\IAssetDataProcessor.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="GraphicsException.cs" />
     <Compile Include="Gui\Anchors\Anchor.cs" />

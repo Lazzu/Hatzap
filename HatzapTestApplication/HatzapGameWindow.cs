@@ -9,7 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Assimp;
 using Assimp.Configs;
-using Awesomium.Core;
 using Hatzap;
 using Hatzap.Gui;
 using Hatzap.Gui.Anchors;
@@ -61,49 +60,6 @@ namespace HatzapTestApplication
             DisplayDevice.GetDisplay(DisplayIndex.Default), 3, 3, GraphicsContextFlags.Default)
         {
             //WindowState = OpenTK.WindowState.Maximized;
-        }
-
-        ConcurrentQueue<Vector4> subAreas = new ConcurrentQueue<Vector4>();
-
-        private void UploadWebpageToGPU(WebView webView)
-        {
-            var surface = (BitmapSurface)webView.Surface;
-
-            surface.Updated += surface_Updated;
-
-            subAreas.Enqueue(new Vector4(0, 0, Width, Height));
-
-            // A BitmapSurface is assigned by default to all WebViews.
-            uploadableBuffer = surface.Buffer;
-        }
-
-        void surface_Updated(object sender, SurfaceUpdatedEventArgs e)
-        {
-            subAreas.Enqueue(new Vector4(e.DirtyRegion.X, e.DirtyRegion.Y, e.DirtyRegion.Width, e.DirtyRegion.Height));
-            finishedLoading = true;
-        }
-
-        private void UploadUpdatedPixels()
-        {
-            if (subAreas.Count == 0)
-                return;
-            
-            lock (WebCore.SyncRoot)
-            {
-                Vector4 subArea;
-                while (subAreas.TryDequeue(out subArea))
-                {
-                    int x = (int)subArea.X;
-                    int y = (int)subArea.Y;
-                    int w = (int)subArea.Z;
-                    int h = (int)subArea.W;
-
-                    IntPtr newPtr = uploadableBuffer + (x + y * Width) * sizeof(Int32);
-
-                    streamedTexture.UploadRegion(newPtr, x, y, w, h);
-                }
-            }
-
         }
 
         protected override void OnLoad(EventArgs e)
@@ -739,8 +695,8 @@ namespace HatzapTestApplication
                     {
                         var spaceShip = new Model();
                         spaceShip.Texture = shipTexture;
-                        spaceShip.Shader = ShaderManager.Get("Textureless");
-                        //spaceShip.Shader = ShaderManager.Get("Model");
+                        //spaceShip.Shader = ShaderManager.Get("Textureless");
+                        spaceShip.Shader = ShaderManager.Get("Model");
                         spaceShip.Mesh = mesh;
                         spaceShip.Transform.Static = true;
                         spaceShip.Transform.Position = new Vector3((x + (float)(rand.NextDouble() - 0.5)) * sizeScale, (y + (float)(rand.NextDouble() - 0.5)) * sizeScale, (z + (float)(rand.NextDouble() - 0.5)) * sizeScale);
@@ -751,28 +707,10 @@ namespace HatzapTestApplication
                     }
                 }
             }
-
-            streamedTexture = new Texture(Width, Height);
-            streamedTexture.Quality = new TextureQuality()
-            {
-                Filtering = TextureFiltering.Nearest,
-                Anisotrophy = 0,
-                Mipmaps = false,
-                TextureWrapMode_S = OpenTK.Graphics.OpenGL.TextureWrapMode.Clamp,
-                TextureWrapMode_T = OpenTK.Graphics.OpenGL.TextureWrapMode.Clamp
-            };
-            streamedTexture.Generate(PixelFormat.Bgra, PixelType.Byte);
-
+            
             Debug.WriteLine("OnLoad() ends");
             
             base.OnLoad(e);
-        }
-
-        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
-        {
-            base.OnClosing(e);
-
-            WebCore.Shutdown();
         }
 
         Vector2 mousepos;
@@ -983,11 +921,6 @@ namespace HatzapTestApplication
         }
 
         int frame, fps;
-        private Texture streamedTexture;
-        private Thread thread;
-        private WebView view;
-        private bool finishedLoading;
-        private IntPtr uploadableBuffer;
     }
 }
 
