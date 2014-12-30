@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Hatzap.Rendering;
+using Hatzap.Textures;
+using Hatzap_Editor.Renderables;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -25,7 +27,7 @@ namespace Hatzap_Editor
     public partial class MainWindow : Window
     {
         GLControl gl;
-        VertexBatch triangle;
+        EditorRenderer renderer;
 
         public MainWindow()
         {
@@ -34,44 +36,42 @@ namespace Hatzap_Editor
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            gl = new GLControl(new GraphicsMode(new ColorFormat(32)), 3, 3, GraphicsContextFlags.Default);
-
-            gl.Paint += gl_Paint;
-            gl.Resize += gl_Resize;
-            gl.Load += gl_Load;
-
+            gl = new GLControl(new GraphicsMode(new ColorFormat(32), 24, 8, 16, new ColorFormat(0), 2, false), 3, 3, GraphicsContextFlags.Default);
+            renderer = new EditorRenderer(gl);
             winFormsHost.Child = gl;
-
-            
         }
 
-        void gl_Load(object sender, EventArgs e)
+        private void LoadTexture_Click(object sender, RoutedEventArgs e)
         {
-            triangle = new VertexBatch();
+            TextureMeta textureMeta = new TextureMeta()
+            {
+                FileName = "EditorAssets/Textures/test.png",
+                PixelInternalFormat = PixelInternalFormat.Rgba,
+                PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Bgra,
+                PixelType = PixelType.UnsignedByte,
+                Quality = new TextureQuality()
+                {
+                    Filtering = TextureFiltering.Trilinear,
+                    Anisotrophy = 16,
+                    Mipmaps = true,
+                    TextureWrapMode = TextureWrapMode.Clamp
+                }
+            };
 
-            triangle.StartBatch(PrimitiveType.Triangles);
+            var t = new Texture();
+            t.Load(textureMeta);
 
-            triangle.Add(new Vector3(-1, -1, 0));
-            triangle.Add(new Vector3(1, -1, 0));
-            triangle.Add(new Vector3(0, 1, 0));
+            RenderableTexture texture = new RenderableTexture(t);
+            renderer.Asset = texture;
 
-            triangle.EndBatch();
+            renderer.Redraw();
         }
 
-        void gl_Resize(object sender, EventArgs e)
+        void OpenTab(string header, RenderableAsset asset)
         {
-            GL.Viewport(0, 0, gl.Width, gl.Height);
-        }
-
-        void gl_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
-        {
-            
-            GL.ClearColor(0.25f, 0.25f, 0.25f, 1);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            triangle.Render();
-
-            gl.SwapBuffers();
+            gl = new GLControl(new GraphicsMode(new ColorFormat(32), 24, 8, 16, new ColorFormat(0), 2, false), 3, 3, GraphicsContextFlags.Default);
+            renderer = new EditorRenderer(gl);
+            winFormsHost.Child = gl;
         }
     }
 }

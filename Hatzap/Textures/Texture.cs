@@ -36,8 +36,8 @@ namespace Hatzap.Textures
                 {
                     savedMeta = new TextureMeta()
                     {
-                        Name = "Unnamed",
                         FileName = "Unnamed",
+                        Type = TextureType.Texture2D,
                         PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Bgra,
                         PixelType = PixelType.UnsignedByte,
                         Height = Height,
@@ -220,9 +220,7 @@ namespace Hatzap.Textures
 
                 var path = Path.GetFullPath(meta.FileName);
 
-                var bmp = new Bitmap(path);
-
-                using (bmp)
+                using (var bmp = new Bitmap(path))
                 {
                     Load(bmp, meta.PixelFormat, meta.PixelType);
                 }
@@ -230,7 +228,7 @@ namespace Hatzap.Textures
                 Time.StopTimer("Texture.Load()");
             }
 
-            UpdateQuality();
+            //UpdateQuality();
         }
 
         /// <summary>

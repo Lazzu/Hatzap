@@ -28,7 +28,7 @@ namespace Hatzap.Assets
                     {
                         Path = br.ReadString(),
                         Position = br.ReadInt64(),
-                        Size = br.ReadInt32()
+                        Size = br.ReadInt64()
                     });
                 }
             }

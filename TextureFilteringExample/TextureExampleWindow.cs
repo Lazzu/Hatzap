@@ -47,7 +47,6 @@ namespace TextureExample
             // Load texture
             TextureMeta textureMeta = new TextureMeta()
             {
-                Name = "Texture",
                 FileName = "../../Assets/Textures/3D_pattern_textures_25/pattern_124/diffuse.png",
                 PixelInternalFormat = PixelInternalFormat.Rgba,
                 PixelFormat = PixelFormat.Bgra,
@@ -62,7 +61,6 @@ namespace TextureExample
 
             texture = new Texture();
             texture.Load(textureMeta);
-            texture.UpdateQuality();
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -75,6 +73,9 @@ namespace TextureExample
 
             // Bind the texture to use
             texture.Bind();
+
+            // Update the texture quality settings if they have changed
+            texture.UpdateQuality();
 
             // Enable the shader
             shader.Enable();

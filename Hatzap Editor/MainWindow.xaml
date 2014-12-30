@@ -20,7 +20,7 @@
             <Label Content="Foobar" BorderThickness="0" Foreground="{DynamicResource ForegroundColor}"/>
         </StatusBar>
         <TreeView DockPanel.Dock="Left" Width="200" Background="{DynamicResource BackgroundColor}" Foreground="{DynamicResource ForegroundColor}" BorderThickness="0" BorderBrush="{DynamicResource BorderColor}">
-            <TreeViewItem >
+            <TreeViewItem AllowDrop="True" >
                 <TreeViewItem.Header>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Assets" Foreground="{DynamicResource ForegroundColor}"></Label>
@@ -48,7 +48,36 @@
         </TreeView>
         <StackPanel DockPanel.Dock="Right" Width="200" Background="{DynamicResource BackgroundColor}">
             <Label Content="Properties" Foreground="{DynamicResource ForegroundColor}" />
+            <Button Content="Load test image" Click="LoadTexture_Click"></Button>
         </StackPanel>
-        <WindowsFormsHost x:Name="winFormsHost" />
+        <TabControl Background="{DynamicResource BackgroundColor}" Foreground="{DynamicResource ForegroundColor}" BorderBrush="{x:Null}">
+            <TabControl.Resources>
+                <Style TargetType="TabItem">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="TabItem">
+                                <Border Name="Border" BorderThickness="0" Padding="5,5">
+                                    <ContentPresenter x:Name="ContentSite" VerticalAlignment="Center" HorizontalAlignment="Center" ContentSource="Header"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="Border" Property="Background" Value="{DynamicResource SelectedBackground}" />
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="False">
+                                        <Setter TargetName="Border" Property="Background" Value="{DynamicResource BackgroundColor}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
+            <TabItem Header="test.png" BorderBrush="{DynamicResource BorderColor}" Foreground="{DynamicResource ForegroundColor}">
+                <WindowsFormsHost x:Name="winFormsHost" />
+            </TabItem>
+            <TabItem Header="Foobar" BorderBrush="{DynamicResource BorderColor}" Foreground="{DynamicResource ForegroundColor}">
+                <Label Content="Foobar" />
+            </TabItem>
+        </TabControl>
     </DockPanel>
 </Window>

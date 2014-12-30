@@ -105,6 +105,16 @@ namespace Hatzap.Textures
                 }
             }
         }
+
+        public TextureWrapMode TextureWrapMode
+        {
+            set
+            {
+                TextureWrapMode_S = value;
+                TextureWrapMode_T = value;
+            }
+        }
+        
         public bool Mipmaps { 
             get
             {

@@ -7,6 +7,7 @@
         <SolidColorBrush x:Key="BackgroundColor" Color="#FF2C2C2C"/>
         <SolidColorBrush x:Key="ForegroundColor" Color="#FFE0E0E0"/>
         <SolidColorBrush x:Key="BorderColor" Color="Black"/>
+        <SolidColorBrush x:Key="SelectedBackground" Color="#FF384559"/>
 
     </Application.Resources>
 </Application>

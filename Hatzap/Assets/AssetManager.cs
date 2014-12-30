@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -62,6 +63,11 @@ namespace Hatzap.Assets
                     package.Seek(0, SeekOrigin.Begin);
                     AssetPackageHeader header = new AssetPackageHeader();
                     header.Read(processed);
+                    foreach (var item in header.Assets)
+                    {
+                        item.Package = path;
+                    }
+                    AddPackage(header);
                 }
             }
         }
@@ -128,7 +134,7 @@ namespace Hatzap.Assets
 
         private static Stream GetStreamFromPackage(string path)
         {
-            // Get asset package meta
+            // Get asset meta
             var meta = assetPaths[path];
 
             // Get the package stream and seek to the correct position
@@ -144,17 +150,15 @@ namespace Hatzap.Assets
             byte[] data;
             using (BinaryReader binread = new BinaryReader(package, Encoding.UTF8, true))
             {
-                data = binread.ReadBytes(meta.Size);
+                data = binread.ReadBytes((int)meta.Size);
             }
 
-            // Make a memorystream and construct the process pipeline
-            var stream = (Stream)new MemoryStream(data, false);
-            foreach (var item in assetProcessors)
-            {
-                stream = item.AssetRead(stream);
-            }
+            Debug.WriteLine("Read data from package: " + data.Length + " bytes");
 
-            return stream;
+            // Create a stream from the byte array and apply read processors
+            Stream readProcessorStream = SetAssetReadProcessors(new MemoryStream(data));
+
+            return readProcessorStream;
         }
 
         /// <summary>
@@ -199,6 +203,17 @@ namespace Hatzap.Assets
         }
 
         /// <summary>
+        /// Clear the asset registry and processors.
+        /// </summary>
+        public static void Clear()
+        {
+            CloseAllPackages();
+            assetPaths.Clear();
+            assetProcessors.Clear();
+            packageProcessors.Clear();
+        }
+
+        /// <summary>
         /// Writes a package file using the header information
         /// </summary>
         /// <param name="header"></param>
@@ -212,22 +227,33 @@ namespace Hatzap.Assets
             {
                 // Write file paths and placeholder sizes and positions so that we can start writing the files themselves.
                 header.Write(package);
-
-                var assetStream = SetAssetWriteProcessors(package);
+                
+                foreach (var asset in header.Assets)
                 {
-                    foreach (var asset in header.Assets)
+                    // Get the asset full path in file system
+                    var assetPath = Path.Combine(appPath, basePath, asset.Path);
+
+                    using(MemoryStream ms = new MemoryStream())
                     {
-                        var assetPath = Path.Combine(appPath, basePath, asset.Path);
-
-                        var bytes = File.ReadAllBytes(assetPath);
-
-                        asset.Size = bytes.Length;
+                        // Set asset position before write
                         asset.Position = package.Position;
+                        
+                        // Process them bytes, nao!
+                        using(var assetStream = SetAssetWriteProcessors(ms))
+                        {
+                            var bytes = File.ReadAllBytes(assetPath);
+                            assetStream.Write(bytes, 0, bytes.Length);
+                        }
 
-                        assetStream.Write(bytes, 0, bytes.Length);
+                        // Get processed bytes and write them to the file
+                        var processedBytes = ms.ToArray();
+                        package.Write(processedBytes, 0, processedBytes.Length);
+
+                        // Set asset size
+                        asset.Size = processedBytes.Length;
                     }
                 }
-
+                
                 // Return to the start of the file
                 package.Seek(0, SeekOrigin.Begin);
 
@@ -271,5 +297,7 @@ namespace Hatzap.Assets
             }
             return asset;
         }
+
+        
     }
 }

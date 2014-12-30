@@ -28,7 +28,6 @@ namespace Hatzap.Gui.Fonts
 
                 TextureMeta metadata = new TextureMeta()
                 {
-                    Name = item.FontFamily,
                     Precompressed = false,
                     FileName = item.FontTextureFile,
                     PixelInternalFormat = PixelInternalFormat.R8,

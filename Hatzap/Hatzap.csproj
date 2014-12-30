@@ -46,10 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\AssetCollection.cs" />
     <Compile Include="Assets\AssetDataCompressionProcessor.cs" />
     <Compile Include="Assets\AssetManager.cs" />
     <Compile Include="Assets\AssetMeta.cs" />
     <Compile Include="Assets\AssetPackageHeader.cs" />
+    <Compile Include="Assets\IAssetCollection.cs" />
     <Compile Include="Assets\IAssetDataProcessor.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="GraphicsException.cs" />
@@ -131,12 +133,14 @@
     <Compile Include="Textures\CubeTexture.cs" />
     <Compile Include="Textures\Texture.cs" />
     <Compile Include="Textures\TextureArray.cs" />
+    <Compile Include="Textures\TextureCollection.cs" />
     <Compile Include="Textures\TextureFiltering.cs" />
     <Compile Include="Textures\TextureManager.cs" />
     <Compile Include="Textures\TextureMeta.cs" />
     <Compile Include="Textures\TextureQuality.cs" />
     <Compile Include="Input\Input.cs" />
     <Compile Include="Input\RealTimeMouse.cs" />
+    <Compile Include="Textures\TextureType.cs" />
     <Compile Include="Utilities\BoundingBox.cs" />
     <Compile Include="Utilities\BoundingFrustum.cs" />
     <Compile Include="Utilities\BoundingSphere.cs" />

@@ -14,10 +14,19 @@ namespace Hatzap.Rendering
         Dictionary<ShaderProgram, ShaderBatch> SolidShaderBatches = new Dictionary<ShaderProgram, ShaderBatch>();
         Dictionary<ShaderProgram, ShaderBatch> TransparentShaderBatches = new Dictionary<ShaderProgram, ShaderBatch>();
 
+        bool allowInstancing = true;
+
+        public bool AllowInstancing { get { return allowInstancing; } set { allowInstancing = value; } }
+
         public int TrianglesDrawn { get; set; }
 
         public int Count { get; set; }
-        
+
+        public RenderQueue()
+        {
+            allowInstancing = GPUCapabilities.Instancing;
+        }
+
         public void Insert(Renderable data)
         {
             Time.StartTimer("RenderQueue.Insert()", "Render");
@@ -70,7 +79,5 @@ namespace Hatzap.Rendering
             Time.StopTimer("RenderQueue.Render()");
         }
 
-        bool allowInstancing = true;
-        public bool AllowInstancing { get { return allowInstancing; } set { allowInstancing = value; } }
     }
 }

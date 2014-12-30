@@ -255,7 +255,6 @@ namespace HatzapTestApplication
             TextureMeta guiTextureMeta = new TextureMeta()
             {
                 FileName = "Assets/Textures/greySheet.png",
-                Name = "GuiTexture",
                 Width = 512,
                 Height = 512,
                 PixelInternalFormat = PixelInternalFormat.Rgba,
@@ -625,7 +624,6 @@ namespace HatzapTestApplication
 
             TextureMeta shipTextureMeta = new TextureMeta()
             {
-                Name = "ShipTexture",
                 FileName = "Assets/Textures/sh3.jpg,Assets/Textures/sh3_n.png,Assets/Textures/sh3_s.jpg",
                 PixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext,
                 PixelFormat = PixelFormat.Bgra,
@@ -660,8 +658,6 @@ namespace HatzapTestApplication
             int sizeScale = 7;
 
             Random rand = new Random();
-
-            
 
             for (int x = -n; x <= n; x++)
             {

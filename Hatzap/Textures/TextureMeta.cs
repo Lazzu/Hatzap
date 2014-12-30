@@ -13,12 +13,13 @@ namespace Hatzap.Textures
         public TextureMeta()
         {
             FileName = "Unnamed";
-            Name = "Unnamed";
+            Type = TextureType.Texture2D;
             PixelInternalFormat = PixelInternalFormat.Rgba;
             PixelFormat = PixelFormat.Bgra;
             PixelType = PixelType.UnsignedByte;
             Width = 0;
             Height = 0;
+            Depth = 0;
             Precompressed = false;
             Quality = new TextureQuality();
         }
@@ -29,12 +30,9 @@ namespace Hatzap.Textures
         [XmlAttribute]
         public string FileName { get; set; }
 
-        /// <summary>
-        /// The unique name of the texture
-        /// </summary>
         [XmlAttribute]
-        public string Name { get; set; }
-        
+        public TextureType Type { get; set; }
+
         [XmlAttribute]
         public PixelInternalFormat PixelInternalFormat { get; set; }
 
@@ -49,6 +47,9 @@ namespace Hatzap.Textures
 
         [XmlAttribute]
         public int Height { get; set; }
+
+        [XmlAttribute]
+        public int Depth { get; set; }
 
         [XmlAttribute]
         public bool Precompressed { get; set; }
@@ -79,12 +80,13 @@ namespace Hatzap.Textures
                 return new TextureMeta()
                 {
                     FileName = FileName,
-                    Name = Name,
+                    Type = Type,
                     PixelInternalFormat = PixelInternalFormat,
                     PixelFormat = PixelFormat,
                     PixelType = PixelType,
                     Width = Width,
                     Height = Height,
+                    Depth = Depth,
                     Precompressed = Precompressed,
                     PreMipmapped = PreMipmapped,
                     Quality = Quality,

@@ -21,10 +21,10 @@ namespace Hatzap.Textures
 
         public static void Insert(TextureMeta meta)
         {
-            if (availableTextures.ContainsKey(meta.Name))
+            if (availableTextures.ContainsKey(meta.FileName))
                 return;
 
-            availableTextures.Add(meta.Name, meta);
+            availableTextures.Add(meta.FileName, meta);
         }
 
         public static bool Load(string name)
@@ -52,9 +52,9 @@ namespace Hatzap.Textures
 
             if (loadedTextures.TryGetValue(name, out t))
             {
-                
+                t.Release();
+                loadedTextures.Remove(name);
             }
-
         }
 
         public static Texture Get(string name)

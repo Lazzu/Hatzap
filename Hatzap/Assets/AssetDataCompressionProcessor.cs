@@ -13,6 +13,15 @@ namespace Hatzap.Assets
     /// </summary>
     public class AssetDataCompressionProcessor : IAssetDataProcessor
     {
+        public CompressionLevel CompressionLevel { get; set; }
+
+        public AssetDataCompressionProcessor() : this(CompressionLevel.Optimal) { }
+
+        public AssetDataCompressionProcessor(CompressionLevel level)
+        {
+            CompressionLevel = level;
+        }
+
         public Stream AssetRead(Stream source)
         {
             return new GZipStream(source, CompressionMode.Decompress);
@@ -24,7 +33,7 @@ namespace Hatzap.Assets
 
         public Stream AssetWrite(Stream source)
         {
-            return new GZipStream(source, CompressionMode.Compress);
+            return new GZipStream(source, CompressionLevel);
         }
 
         public Stream PackagaeWrite(Stream source)

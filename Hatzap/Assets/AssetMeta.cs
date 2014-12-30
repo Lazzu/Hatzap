@@ -21,7 +21,7 @@ namespace Hatzap.Assets
         /// <summary>
         /// The file size
         /// </summary>
-        public int Size { get; set; }
+        public long Size { get; set; }
 
         /// <summary>
         /// The file position in package

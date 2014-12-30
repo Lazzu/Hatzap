@@ -11,7 +11,7 @@ namespace HelloTriangle
     class HelloTriangleWindow : GameWindow
     {
         public HelloTriangleWindow()
-            : base(1280, 720, new GraphicsMode(new ColorFormat(32), 24, 8, 32, 0, 2, false), "Hatzap Hello Triangle", GameWindowFlags.Default,
+            : base(1280, 720, new GraphicsMode(new ColorFormat(32), 24, 8, 16, 0, 2, false), "Hatzap Hello Triangle", GameWindowFlags.Default,
                 DisplayDevice.GetDisplay(DisplayIndex.Default), 3, 3, GraphicsContextFlags.Default)
         { }
 

@@ -9,6 +9,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Hatzap.Utilities
 {
+    [ObsoleteAttribute("ScreenFiller is obsolete and will be removed at some point in future. Use VertexBatch with custom shader instead.", false)]
     public static class ScreenFiller
     {
         static Vector3[] vertices = new Vector3[] {
