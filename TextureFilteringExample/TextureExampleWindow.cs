@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Hatzap.Assets;
 using Hatzap.Rendering;
 using Hatzap.Shaders;
 using Hatzap.Textures;
@@ -26,10 +27,11 @@ namespace TextureExample
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            
+
+            PackageManager.BasePath = "../../Assets/";
+
             // Load shaders
-            var collection = XML.Read.FromFile<ShaderCollection>("../../Assets/Shaders/collection.xml");
-            ShaderManager.LoadCollection(collection);
+            ShaderManager.LoadCollection("Shaders/collection.xml");
             shader = ShaderManager.Get("texturedquad");
 
             // Create screen-filling quad

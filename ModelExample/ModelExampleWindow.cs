@@ -45,8 +45,7 @@ namespace ModelExample
             camera.SetAsCurrent();
 
             // Load shaders
-            var collection = XML.Read.FromFile<ShaderCollection>("../../Assets/Shaders/collection.xml");
-            ShaderManager.LoadCollection(collection);
+            ShaderManager.LoadCollection("Shaders/collection.xml");
             shader = ShaderManager.Get("simplemodel");
 
             // Load texture

@@ -1,4 +1,5 @@
 ﻿using System;
+using Hatzap.Assets;
 using Hatzap.Rendering;
 using Hatzap.Shaders;
 using Hatzap.Utilities;
@@ -20,9 +21,10 @@ namespace HelloTriangle
 
         protected override void OnLoad(EventArgs e)
         {
+            PackageManager.BasePath = "../../Assets/";
+
             // Load shaders
-            var collection = XML.Read.FromFile<ShaderCollection>("../../Assets/Shaders/collection.xml");
-            ShaderManager.LoadCollection(collection);
+            ShaderManager.LoadCollection("Shaders/collection.xml");
             shader = ShaderManager.Get("hellotriangle");
 
             // Generate triangle

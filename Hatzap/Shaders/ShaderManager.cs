@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Hatzap.Assets;
 using Hatzap.Utilities;
 using OpenTK.Graphics.OpenGL;
 
@@ -16,7 +17,10 @@ namespace Hatzap.Shaders
 
         public static List<ShaderProgram> LoadCollection(string path)
         {
-            return LoadCollection(XML.Read.FromFile<ShaderCollection>(path));
+            using(var stream = PackageManager.GetStream(path))
+            {
+                return LoadCollection(XML.Read.FromStream<ShaderCollection>(stream));
+            }
         }
 
         public static List<ShaderProgram> LoadCollection(ShaderCollection collection)
