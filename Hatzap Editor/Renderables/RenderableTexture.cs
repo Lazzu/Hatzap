@@ -54,11 +54,13 @@ namespace Hatzap_Editor.Renderables
                 new Vector3(-1, 1, 0),
                 new Vector3(1, 1, 0),
             };
-            mesh.UV = new Vector3[] {
-                new Vector3(0,1,0),
-                new Vector3(1,1,0),
-                new Vector3(0,0,0),
-                new Vector3(1,0,0),
+            mesh.UV = new Vector3[][] {
+                new Vector3[] {
+                    new Vector3(0,1,0),
+                    new Vector3(1,1,0),
+                    new Vector3(0,0,0),
+                    new Vector3(1,0,0),
+                }
             };
             mesh.Indices = new uint[]{
                 0,1,2,3

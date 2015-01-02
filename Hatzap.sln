@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HatzapTests", "HatzapTests\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hatzap Editor", "Hatzap Editor\Hatzap Editor.csproj", "{5842EF47-9FF5-4FD4-B152-D6020D37D722}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelExample", "ModelExample\ModelExample.csproj", "{6A43431F-6D83-4520-A220-020C20B81573}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -179,6 +181,26 @@ Global
 		{5842EF47-9FF5-4FD4-B152-D6020D37D722}.Release|ARM.ActiveCfg = Release|Any CPU
 		{5842EF47-9FF5-4FD4-B152-D6020D37D722}.Release|x64.ActiveCfg = Release|Any CPU
 		{5842EF47-9FF5-4FD4-B152-D6020D37D722}.Release|x86.ActiveCfg = Release|Any CPU
+		{6A43431F-6D83-4520-A220-020C20B81573}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A43431F-6D83-4520-A220-020C20B81573}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A43431F-6D83-4520-A220-020C20B81573}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{6A43431F-6D83-4520-A220-020C20B81573}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6A43431F-6D83-4520-A220-020C20B81573}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6A43431F-6D83-4520-A220-020C20B81573}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A43431F-6D83-4520-A220-020C20B81573}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{6A43431F-6D83-4520-A220-020C20B81573}.Documentation|ARM.ActiveCfg = Debug|Any CPU
+		{6A43431F-6D83-4520-A220-020C20B81573}.Documentation|x64.ActiveCfg = Debug|Any CPU
+		{6A43431F-6D83-4520-A220-020C20B81573}.Documentation|x86.ActiveCfg = Debug|Any CPU
+		{6A43431F-6D83-4520-A220-020C20B81573}.Nsis|Any CPU.ActiveCfg = Release|Any CPU
+		{6A43431F-6D83-4520-A220-020C20B81573}.Nsis|Any CPU.Build.0 = Release|Any CPU
+		{6A43431F-6D83-4520-A220-020C20B81573}.Nsis|ARM.ActiveCfg = Release|Any CPU
+		{6A43431F-6D83-4520-A220-020C20B81573}.Nsis|x64.ActiveCfg = Release|Any CPU
+		{6A43431F-6D83-4520-A220-020C20B81573}.Nsis|x86.ActiveCfg = Release|Any CPU
+		{6A43431F-6D83-4520-A220-020C20B81573}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A43431F-6D83-4520-A220-020C20B81573}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A43431F-6D83-4520-A220-020C20B81573}.Release|ARM.ActiveCfg = Release|Any CPU
+		{6A43431F-6D83-4520-A220-020C20B81573}.Release|x64.ActiveCfg = Release|Any CPU
+		{6A43431F-6D83-4520-A220-020C20B81573}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -186,5 +208,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{8010E18C-F2AB-481E-AB5E-CF8C9F4AB2D3} = {A34EA762-BA92-4D29-89B5-57967BBABDDC}
 		{51C47888-676D-4A84-90FF-DA15ABB29559} = {A34EA762-BA92-4D29-89B5-57967BBABDDC}
+		{6A43431F-6D83-4520-A220-020C20B81573} = {A34EA762-BA92-4D29-89B5-57967BBABDDC}
 	EndGlobalSection
 EndGlobal

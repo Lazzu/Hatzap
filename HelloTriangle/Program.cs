@@ -4,6 +4,7 @@ namespace HelloTriangle
 {
     class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
             using (HelloTriangleWindow gw = new HelloTriangleWindow())

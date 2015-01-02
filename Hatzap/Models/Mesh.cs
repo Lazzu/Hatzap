@@ -19,8 +19,8 @@ namespace Hatzap.Models
         Vector3[] norms;
         Vector3[] tangents;
         Vector3[] binormals;
-        Vector3[] uv;
-        Vector4[] colors;
+        Vector3[][] uv;
+        Vector4[][] colors;
         uint[] indices;
         #endregion
 
@@ -74,77 +74,6 @@ namespace Hatzap.Models
                 }
                 
                 return new BoundingBox(min, max);
-            }
-        }
-
-        public Assimp.Mesh AssimpMesh
-        {
-            get
-            {
-                //throw new NotSupportedException("Converting mesh to Assimp.Mesh not supported.");
-
-                var mesh = new Assimp.Mesh(Assimp.PrimitiveType.Triangle);
-
-                for (int i = 0; i < verts.Length; i++)
-                {
-                    if (verts != null) mesh.Vertices.Add(new Assimp.Vector3D(verts[i].X, verts[i].Y, verts[i].Z));
-                    if (norms != null) mesh.Normals.Add(new Assimp.Vector3D(norms[i].X, norms[i].Y, norms[i].Z));
-                    if (tangents != null) mesh.Tangents.Add(new Assimp.Vector3D(tangents[i].X, tangents[i].Y, tangents[i].Z));
-                    if (binormals != null) mesh.BiTangents.Add(new Assimp.Vector3D(binormals[i].X, binormals[i].Y, binormals[i].Z));
-                    if (uv != null) mesh.TextureCoordinateChannels[0].Add(new Assimp.Vector3D(uv[i].X, uv[i].Y, 0));
-                    if (colors != null) mesh.VertexColorChannels[0].Add(new Assimp.Color4D(colors[i].X, colors[i].Y, colors[i].Z, colors[i].W));
-                }
-
-                return mesh;
-            }
-            set
-            {
-                var mesh = value;
-
-                var v = mesh.Vertices;
-                var n = mesh.Normals;
-                var t = mesh.Tangents;
-                var b = mesh.BiTangents;
-                var tc = mesh.TextureCoordinateChannels[0];
-                var c = mesh.VertexColorChannels[0];
-
-                verts = new Vector3[v.Count];
-
-                if (mesh.HasNormals) norms = new Vector3[v.Count]; else norms = null;
-                if (mesh.HasTangentBasis) tangents = new Vector3[v.Count]; else tangents = null;
-                if (mesh.HasTangentBasis) binormals = new Vector3[v.Count]; else binormals = null;
-                if (mesh.HasTextureCoords(0)) uv = new Vector3[v.Count]; else uv = null;
-                if (mesh.HasVertexColors(0)) colors = new Vector4[v.Count]; else colors = null;
-
-                for (int i = 0; i < v.Count; i++)
-                {
-                    verts[i] = new Vector3(v[i].X, v[i].Y, v[i].Z);
-                    if (norms != null) norms[i] = new Vector3(n[i].X, n[i].Y, n[i].Z);
-                    if (tangents != null) tangents[i] = new Vector3(t[i].X, t[i].Y, t[i].Z);
-                    if (binormals != null) binormals[i] = new Vector3(b[i].X, b[i].Y, b[i].Z);
-                    if (uv != null) uv[i] = new Vector3(tc[i].X, tc[i].Y, tc[i].Z);
-                    if (colors != null) colors[i] = new Vector4(c[i].R, c[i].G, c[i].B, c[i].A);
-                }
-
-                if (verts != null) vertsDirty = true;
-                if (norms != null) normsDirty = true;
-                if (tangents != null) tangentsDirty = true;
-                if (binormals != null) binormalsDirty = true;
-                if (uv != null) uvDirty = true;
-                if (colors != null) colorsDirty = true;
-
-                var tmp = mesh.GetIndices();
-
-                indices = new uint[tmp.Length];
-
-                for(int i = 0; i < tmp.Length; i++)
-                {
-                    indices[i] = (uint)tmp[i];
-                }
-
-                indicesDirty = true;
-
-                Triangles = mesh.FaceCount;
             }
         }
 
@@ -231,7 +160,7 @@ namespace Hatzap.Models
         /// <summary>
         /// Array of mesh texture coordinates.
         /// </summary>
-        public Vector3[] UV
+        public Vector3[][] UV
         {
             get
             {
@@ -247,7 +176,7 @@ namespace Hatzap.Models
         /// <summary>
         /// Array of mesh vertex colors
         /// </summary>
-        public Vector4[] Colors
+        public Vector4[][] Colors
         {
             get
             {
@@ -349,7 +278,8 @@ namespace Hatzap.Models
 
                 if (uvVbo == 0) GL.GenBuffers(1, out uvVbo);
 
-                UploadData(uvVbo, BufferTarget.ArrayBuffer, uv.Length * Vector3.SizeInBytes, uv);
+                // TODO: Support multiple uv channels
+                UploadData(uvVbo, BufferTarget.ArrayBuffer, uv[0].Length * Vector3.SizeInBytes, uv[0]);
             }
 
             if (colorsDirty && colors != null && ColorAttribLocation > -1)
@@ -358,7 +288,8 @@ namespace Hatzap.Models
 
                 if (colorsVbo == 0) GL.GenBuffers(1, out colorsVbo);
 
-                UploadData(colorsVbo, BufferTarget.ArrayBuffer, colors.Length * Vector4.SizeInBytes, colors);
+                // TODO: Support multiple color channels
+                UploadData(colorsVbo, BufferTarget.ArrayBuffer, colors[0].Length * Vector4.SizeInBytes, colors[0]);
             }
 
             if (indicesDirty && indices != null)
@@ -455,12 +386,12 @@ namespace Hatzap.Models
 
                 if (uv != null && UVAttribLocation > -1)
                 {
-                    BindVertexAttribBuffer(UVAttribLocation, uvVbo, BlittableValueType.StrideOf(uv), 3, VertexAttribPointerType.Float);
+                    BindVertexAttribBuffer(UVAttribLocation, uvVbo, BlittableValueType.StrideOf(uv[0]), 3, VertexAttribPointerType.Float);
                 }
 
                 if (colors != null && ColorAttribLocation > -1)
                 {
-                    BindVertexAttribBuffer(ColorAttribLocation, colorsVbo, BlittableValueType.StrideOf(colors), 4, VertexAttribPointerType.Float);
+                    BindVertexAttribBuffer(ColorAttribLocation, colorsVbo, BlittableValueType.StrideOf(colors[0]), 4, VertexAttribPointerType.Float);
                 }
 
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, ebo);

@@ -4,6 +4,7 @@ namespace TextureExample
 {
     class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
             using(TextureExampleWindow gw = new TextureExampleWindow())

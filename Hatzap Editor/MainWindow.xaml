@@ -9,12 +9,24 @@
         </LinearGradientBrush>
     </Window.Resources>
     <DockPanel LastChildFill="True">
-        <Menu DockPanel.Dock="Top" Background="{DynamicResource BackgroundGradient}" Foreground="{DynamicResource ForegroundColor}" BorderThickness="0" Margin="0">
-            <MenuItem Header="_File" Margin="5,5,0,5" />
-            <MenuItem Header="_Edit" Margin="0,5" />
-            <MenuItem Header="_View" Margin="0,5" />
-            <MenuItem Header="_Window" Margin="0,5" />
-            <MenuItem Header="_Help" Margin="0,5" />
+        <Menu DockPanel.Dock="Top" BorderThickness="0" Margin="0">
+            <MenuItem Header="_File">
+                <MenuItem x:Name="MenuNewPackage" Header="_New package" />
+                <MenuItem x:Name="MenuOpenPackage" Header="_Open package" />
+                <MenuItem x:Name="MenuSavePackage" Header="_Save package" />
+                <MenuItem x:Name="MenuSavePackageAs" Header="Save package _as.." />
+                <Separator />
+                <MenuItem x:Name="MenuImport" Header="_Import asset">
+                    <MenuItem x:Name="MenuImportMesh" Header="_Mesh" Click="MenuImportMesh_Click" />
+                </MenuItem>
+                <MenuItem x:Name="MenuExport" Header="_Export asset" />
+                <Separator />
+                <MenuItem x:Name="MenuExit" Header="E_xit" Click="MenuExit_Click" />
+            </MenuItem>
+            <MenuItem Header="_Edit" />
+            <MenuItem Header="_View" />
+            <MenuItem Header="_Window" />
+            <MenuItem Header="_Help" />
         </Menu>
         <StatusBar DockPanel.Dock="Bottom" Foreground="{DynamicResource ForegroundColor}" Background="{DynamicResource BackgroundGradient}">
             <Label Content="Foobar" BorderThickness="0" Foreground="{DynamicResource ForegroundColor}"/>

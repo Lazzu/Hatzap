@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using Hatzap.Utilities;
 
 namespace Hatzap.Assets
 {
-    public static class AssetManager
+    public static class PackageManager
     {
         static Dictionary<string, Stream> packageStreams = new Dictionary<string, Stream>();
         static Dictionary<string, AssetMeta> assetPaths = new Dictionary<string, AssetMeta>();
@@ -111,7 +109,7 @@ namespace Hatzap.Assets
         }
 
         /// <summary>
-        /// Gets a stream to the file in the assets folder
+        /// Gets a stream from the file in the assets folder
         /// </summary>
         /// <param name="path">The path to the file inside the assets folder</param>
         /// <returns>A stream to the file</returns>

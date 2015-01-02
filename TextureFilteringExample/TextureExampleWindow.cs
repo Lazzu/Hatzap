@@ -15,7 +15,7 @@ namespace TextureExample
     class TextureExampleWindow : OpenTK.GameWindow
     {
         public TextureExampleWindow()
-            : base(1280, 720, new GraphicsMode(new ColorFormat(32), 24, 8, 32, 0, 2, false), "Hatzap Texture Examples", GameWindowFlags.Default,
+            : base(1280, 720, new GraphicsMode(new ColorFormat(32), 24, 8, 16, 0, 2, false), "Hatzap Texture Examples", GameWindowFlags.Default,
                 DisplayDevice.GetDisplay(DisplayIndex.Default), 3, 3, GraphicsContextFlags.Default)
         { }
 
@@ -26,10 +26,7 @@ namespace TextureExample
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-
-            // Set GL state
-            GLState.AlphaBleding = true;
-
+            
             // Load shaders
             var collection = XML.Read.FromFile<ShaderCollection>("../../Assets/Shaders/collection.xml");
             ShaderManager.LoadCollection(collection);

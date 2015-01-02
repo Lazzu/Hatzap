@@ -48,7 +48,8 @@
   <ItemGroup>
     <Compile Include="Assets\AssetCollection.cs" />
     <Compile Include="Assets\AssetDataCompressionProcessor.cs" />
-    <Compile Include="Assets\AssetManager.cs" />
+    <Compile Include="Assets\PackageManager.cs" />
+    <Compile Include="Assets\AssetManagerBase.cs" />
     <Compile Include="Assets\AssetMeta.cs" />
     <Compile Include="Assets\AssetPackageHeader.cs" />
     <Compile Include="Assets\IAssetCollection.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="Models\ITransformable.cs" />
     <Compile Include="Models\Material.cs" />
     <Compile Include="Models\Mesh.cs" />
+    <Compile Include="Models\MeshManager.cs" />
     <Compile Include="Models\Model.cs" />
     <Compile Include="Models\Transform.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

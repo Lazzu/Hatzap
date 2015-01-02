@@ -25,7 +25,7 @@ namespace HatzapTests
         [TestCleanup]
         public void Cleanup()
         {
-            AssetManager.Clear();
+            PackageManager.Clear();
 
             if (Directory.Exists("Assets"))
                 Directory.Delete("Assets", true);
@@ -35,7 +35,7 @@ namespace HatzapTests
         public void LoadNonpackagedFiles()
         {
             // Get a stream to an asset
-            var stream = AssetManager.GetStream("test.txt");
+            var stream = PackageManager.GetStream("test.txt");
 
             Assert.IsNotNull(stream, "The stream returned should not be null.");
 
@@ -65,13 +65,13 @@ namespace HatzapTests
             };
 
             // Write asset package to disk
-            AssetManager.WritePackage(header);
+            PackageManager.WritePackage(header);
 
             // Read asset package headers to the asset manager asset registry
-            AssetManager.AddPackage("test.zap");
+            PackageManager.AddPackage("test.zap");
 
             // Get a stream to an asset
-            var stream = AssetManager.GetStream("test.txt");
+            var stream = PackageManager.GetStream("test.txt");
 
             Assert.IsNotNull(stream, "The stream returned should not be null.");
 
@@ -101,16 +101,16 @@ namespace HatzapTests
             };
 
             // Insert asset data compression processor to the asset manager
-            AssetManager.InsertAssetProcessor(new AssetDataCompressionProcessor(System.IO.Compression.CompressionLevel.Optimal));
+            PackageManager.InsertAssetProcessor(new AssetDataCompressionProcessor(System.IO.Compression.CompressionLevel.Optimal));
 
             // Build asset package to disk from asset files on disk
-            AssetManager.WritePackage(header);
+            PackageManager.WritePackage(header);
 
             // Read asset package headers to the asset manager asset registry
-            AssetManager.AddPackage("test.zap");
+            PackageManager.AddPackage("test.zap");
 
             // Get a stream to an asset
-            var stream = AssetManager.GetStream("test.txt");
+            var stream = PackageManager.GetStream("test.txt");
 
             Assert.IsNotNull(stream, "The stream returned should not be null.");
 
