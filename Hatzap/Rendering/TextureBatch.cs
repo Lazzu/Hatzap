@@ -104,6 +104,9 @@ namespace Hatzap.Rendering
                         model.Mesh.ColorAttribLocation = model.Shader.GetAttribLocation("color");
                     }
 
+                    model.Transform.CalculateMatrix();
+                    model.Shader.SendUniform("mModel", ref model.Transform.Matrix);
+
                     // Put a null back
                     BatchQueue[i] = null;
 

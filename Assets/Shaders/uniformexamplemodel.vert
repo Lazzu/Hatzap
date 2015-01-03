@@ -17,8 +17,9 @@ uniform float time;
 
 void main()
 {
-	tcoord = uv.xy;
+	tcoord = (vertex.xy - vec2(time * 0.0, 0)) ;
 	norm = mat3(mModel) * normal;
-	gl_Position = mViewProjection * mModel * vec4(vertex , 1);
+	vec3 tmp = vertex + vec3( 0.0, sin((time + vertex.x * 20 + vertex.z * 20)) * 0.05, 0.0 );
+	gl_Position = mViewProjection * mModel * vec4(tmp, 1);
 }
 

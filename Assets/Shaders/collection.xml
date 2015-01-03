@@ -15,6 +15,13 @@
         <Shader Type="FragmentShader" Path="../../Assets/Shaders/simplemodel.frag" />
       </Shaders>
     </ShaderProgram>
+	<ShaderProgram>
+      <Name>uniformexamplemodel</Name>
+      <Shaders>
+        <Shader Type="VertexShader" Path="../../Assets/Shaders/uniformexamplemodel.vert" />
+        <Shader Type="FragmentShader" Path="../../Assets/Shaders/simplemodel.frag" />
+      </Shaders>
+    </ShaderProgram>
     <ShaderProgram>
       <Name>hellotriangle</Name>
       <Shaders>
