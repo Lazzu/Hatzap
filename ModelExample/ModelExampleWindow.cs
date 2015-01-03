@@ -103,10 +103,7 @@ namespace ModelExample
 
             // Rotate model around Y axis
             model.Transform.Rotation *= new Quaternion(0, (float)e.Time * 0.2f, 0);
-
-            model.Shader.Enable();
-            model.Shader.SendUniform("time", (float)totalTime);
-
+            
             // Render model
             renderQueue.Insert(model);
             renderQueue.Render();
