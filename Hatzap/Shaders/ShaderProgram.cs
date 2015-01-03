@@ -86,7 +86,8 @@ namespace Hatzap.Shaders
 
         public void SendUniform(string name, float value)
         {
-            GL.Uniform1(GetUniformLocation(name), value);
+            int location = GetUniformLocation(name);
+            GL.Uniform1(location, value);
         }
 
         public void SendUniform(string name, double value)

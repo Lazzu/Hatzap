@@ -9,6 +9,7 @@ layout(location = 5) in mat4 mInstancedModelMatrix;
 
 out vec2 tcoord;
 out vec3 norm;
+out float theTime;
 
 uniform mat4 mViewProjection;
 uniform mat4 mModel;
@@ -17,9 +18,10 @@ uniform float time;
 
 void main()
 {
-	tcoord = (vertex.xy - vec2(time * 0.0, 0)) ;
+	tcoord = (vertex.xy - vec2(time * 0.01, 0)) ;
 	norm = mat3(mModel) * normal;
-	vec3 tmp = vertex + vec3( 0.0, sin((time + vertex.x * 20 + vertex.z * 20)) * 0.05, 0.0 );
+	vec3 offset = vec3( 0.0, sin((time + vertex.x * 20 + vertex.z * 20)) * 0.05, 0.0 );
+	vec3 tmp = vertex + offset;
 	gl_Position = mViewProjection * mModel * vec4(tmp, 1);
 }
 

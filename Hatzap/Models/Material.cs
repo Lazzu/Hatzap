@@ -9,7 +9,27 @@ namespace Hatzap.Models
 {
     public class Material : IList<IUniformData>, IEnumerable<IUniformData>
     {
-        public List<IUniformData> UniformData { get; set; }
+        List<IUniformData> uniforms = new List<IUniformData>();
+        Dictionary<string, IUniformData> uniformDictionary = new Dictionary<string, IUniformData>();
+        Dictionary<string, int> uniformIndex = new Dictionary<string, int>();
+
+        public List<IUniformData> UniformData {
+            get
+            {
+                return uniforms;
+            }
+            set
+            {
+                uniforms = value;
+                uniformDictionary.Clear();
+                for (int i = 0; i < uniforms.Count; i++)
+                {
+                    var item = uniforms[i];
+                    uniformDictionary.Add(item.Name, item);
+                    uniformIndex.Add(item.Name, i);
+                }
+            }
+        }
 
         public bool Transparent { get; set; }
 
@@ -26,31 +46,26 @@ namespace Hatzap.Models
             }
         }
 
-        public Material()
-        {
-            UniformData = new List<IUniformData>();
-        }
-
         public int IndexOf(IUniformData item)
         {
-            return UniformData.IndexOf(item);
+            return uniforms.IndexOf(item);
         }
 
         public void Insert(int index, IUniformData item)
         {
-            UniformData.Insert(index, item);
+            uniforms.Insert(index, item);
         }
 
         public void RemoveAt(int index)
         {
-            UniformData.RemoveAt(index);
+            uniforms.RemoveAt(index);
         }
 
         public IUniformData this[int index]
         {
             get
             {
-                return UniformData[index];
+                return uniforms[index];
             }
             set
             {
@@ -60,34 +75,73 @@ namespace Hatzap.Models
                 }
                 else
                 {
-                    UniformData[index] = value;
+                    uniforms[index] = value;
                 }
+            }
+        }
+
+        public IUniformData this[string name]
+        {
+            get
+            {
+                return uniformDictionary[name];
+            }
+            set
+            {
+                if (value == null)
+                {
+                    Remove(name);
+                }
+                else
+                {
+                    int index;
+                    if (uniformIndex.TryGetValue(name, out index))
+                    {
+                        uniforms[index] = value;
+                        uniformDictionary[name] = value;
+                    }
+                }
+            }
+        }
+
+        private void Remove(string name)
+        {
+            int index;
+            if (uniformIndex.TryGetValue(name, out index))
+            {
+                uniforms.RemoveAt(index);
+                uniformDictionary.Remove(name);
+                uniformIndex.Remove(name);
             }
         }
 
         public void Add(IUniformData item)
         {
-            UniformData.Add(item);
+            uniformIndex.Add(item.Name, uniforms.Count);
+            uniforms.Add(item);
+            uniformDictionary.Add(item.Name, item);
         }
 
         public void Clear()
         {
-            UniformData.Clear();
+            uniforms.Clear();
+            uniformIndex.Clear();
+            uniformDictionary.Clear();
         }
 
         public bool Contains(IUniformData item)
         {
-            return UniformData.Contains(item);
+            return uniformIndex.ContainsKey(item.Name);
         }
 
         public void CopyTo(IUniformData[] array, int arrayIndex)
         {
-            UniformData.CopyTo(array, arrayIndex);
+            uniforms.CopyTo(array, arrayIndex);
         }
 
         public int Count
         {
-            get { return UniformData.Count; }
+            get { return uniforms.Count; }
         }
 
         public bool IsReadOnly
@@ -97,28 +151,34 @@ namespace Hatzap.Models
 
         public bool Remove(IUniformData item)
         {
-            return UniformData.Remove(item);
+            if (uniforms.Remove(item))
+            {
+                uniformDictionary.Remove(item.Name);
+                uniformIndex.Remove(item.Name);
+                return true;
+            }
+            return false;
         }
 
         public IEnumerator<IUniformData> GetEnumerator()
         {
-            return UniformData.GetEnumerator();
+            return uniforms.GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return UniformData.GetEnumerator();
+            return uniforms.GetEnumerator();
         }
 
         IEnumerator<IUniformData> IEnumerable<IUniformData>.GetEnumerator()
         {
-            return UniformData.GetEnumerator();
+            return uniforms.GetEnumerator();
         }
 
         public Material Copy()
         {
             Material m = new Material();
-            foreach (var data in UniformData)
+            foreach (var data in uniforms)
             {
                 throw new NotImplementedException();
             }

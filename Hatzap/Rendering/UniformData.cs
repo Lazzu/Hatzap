@@ -9,12 +9,14 @@ namespace Hatzap.Rendering
 {
     public interface IUniformData
     {
+        string Name { get; }
+
         void SendData(ShaderProgram program);
     }
 
     public abstract class UniformData<T> : IUniformData
     {
-        public string Name;
+        public string Name { get; set; }
         public T Data;
         public abstract void SendData(ShaderProgram program);
     }
