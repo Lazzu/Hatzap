@@ -41,7 +41,7 @@ namespace ModelExample
             camera.Perspective(Width, Height, (float)Math.PI / 4, 1f, 1000);
             camera.Position = new Vector3(0, 20, 200);
             camera.Target = new Vector3(0, 0, -1);
-            camera.SetAsCurrent();
+            camera.SetAsCurrent(); // Use this camera for rendering
 
             // Set up PackageManager
             PackageManager.BasePath = "../../Assets/";
@@ -53,6 +53,7 @@ namespace ModelExample
             // Load texture
             textures = new TextureManager();
             var texture = textures.Get("Textures/lucymetal.tex", true);
+            texture.Quality.Mipmaps = true;
 
             // Load up a mesh
             MeshManager meshManager = new MeshManager();

@@ -39,9 +39,9 @@ namespace Hatzap.Models
         { 
             get
             {
-                for (int i = 0; i < UniformData.Count; i++)
+                for (int i = 0; i < uniforms.Count; i++)
                 {
-                    if(UniformData[i] != null) yield return UniformData[i];
+                    if (uniforms[i] != null) yield return uniforms[i];
                 }
             }
         }
@@ -177,10 +177,14 @@ namespace Hatzap.Models
 
         public Material Copy()
         {
-            Material m = new Material();
+            Material m = new Material()
+            {
+                uniforms = new List<IUniformData>()
+            };
+
             foreach (var data in uniforms)
             {
-                throw new NotImplementedException();
+                m.Add(data.Copy());
             }
             return m;
         }

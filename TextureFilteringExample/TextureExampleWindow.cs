@@ -46,21 +46,6 @@ namespace TextureExample
 
             // Load texture
             textures = new TextureManager();
-
-            /*TextureMeta textureMeta = new TextureMeta()
-            {
-                FileName = "../../Assets/Textures/3D_pattern_textures_25/pattern_124/diffuse.png",
-                PixelInternalFormat = PixelInternalFormat.Rgba,
-                PixelFormat = PixelFormat.Bgra,
-                PixelType = PixelType.UnsignedByte,
-                Quality = new TextureQuality()
-                {
-                    Filtering = TextureFiltering.Nearest,
-                    Anisotrophy = 0,
-                    Mipmaps = false,
-                }
-            };*/
-
             texture = textures.Get("Textures/concreteslabs.tex", true);
         }
 

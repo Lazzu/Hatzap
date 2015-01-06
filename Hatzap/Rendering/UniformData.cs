@@ -12,6 +12,8 @@ namespace Hatzap.Rendering
         string Name { get; }
 
         void SendData(ShaderProgram program);
+
+        IUniformData Copy();
     }
 
     public abstract class UniformData<T> : IUniformData
@@ -19,13 +21,24 @@ namespace Hatzap.Rendering
         public string Name { get; set; }
         public T Data;
         public abstract void SendData(ShaderProgram program);
+
+        public abstract IUniformData Copy();
     }
 
     public class UniformDataFloat : UniformData<float>
-    {   
+    {
         public override void SendData(ShaderProgram program)
         {
             program.SendUniform(Name, Data);
+        }
+
+        public override IUniformData Copy()
+        {
+            return new UniformDataFloat()
+            {
+                Name = Name,
+                Data = Data
+            } as IUniformData;
         }
     }
 
@@ -35,6 +48,15 @@ namespace Hatzap.Rendering
         {
             program.SendUniform(Name, Data);
         }
+
+        public override IUniformData Copy()
+        {
+            return new UniformDataDouble()
+            {
+                Name = Name,
+                Data = Data
+            } as IUniformData;
+        }
     }
 
     public class UniformDataInt : UniformData<int>
@@ -42,6 +64,15 @@ namespace Hatzap.Rendering
         public override void SendData(ShaderProgram program)
         {
             program.SendUniform(Name, Data);
+        }
+
+        public override IUniformData Copy()
+        {
+            return new UniformDataDouble()
+            {
+                Name = Name,
+                Data = Data
+            } as IUniformData;
         }
     }
 
@@ -51,6 +82,15 @@ namespace Hatzap.Rendering
         {
             program.SendUniform(Name, Data);
         }
+
+        public override IUniformData Copy()
+        {
+            return new UniformDataUInt()
+            {
+                Name = Name,
+                Data = Data
+            } as IUniformData;
+        }
     }
 
     public class UniformDataVector2 : UniformData<Vector2>
@@ -58,6 +98,15 @@ namespace Hatzap.Rendering
         public override void SendData(ShaderProgram program)
         {
             program.SendUniform(Name, ref Data);
+        }
+
+        public override IUniformData Copy()
+        {
+            return new UniformDataVector2()
+            {
+                Name = Name,
+                Data = Data
+            } as IUniformData;
         }
     }
 
@@ -67,6 +116,15 @@ namespace Hatzap.Rendering
         {
             program.SendUniform(Name, ref Data);
         }
+
+        public override IUniformData Copy()
+        {
+            return new UniformDataVector3()
+            {
+                Name = Name,
+                Data = Data
+            } as IUniformData;
+        }
     }
 
     public class UniformDataVector4 : UniformData<Vector4>
@@ -74,6 +132,15 @@ namespace Hatzap.Rendering
         public override void SendData(ShaderProgram program)
         {
             program.SendUniform(Name, ref Data);
+        }
+
+        public override IUniformData Copy()
+        {
+            return new UniformDataVector4()
+            {
+                Name = Name,
+                Data = Data
+            } as IUniformData;
         }
     }
 
@@ -83,6 +150,15 @@ namespace Hatzap.Rendering
         {
             program.SendUniform(Name, ref Data);
         }
+
+        public override IUniformData Copy()
+        {
+            return new UniformDataMatrix2()
+            {
+                Name = Name,
+                Data = Data
+            } as IUniformData;
+        }
     }
 
     public class UniformDataMatrix3 : UniformData<Matrix3>
@@ -91,6 +167,15 @@ namespace Hatzap.Rendering
         {
             program.SendUniform(Name, ref Data);
         }
+
+        public override IUniformData Copy()
+        {
+            return new UniformDataMatrix3()
+            {
+                Name = Name,
+                Data = Data
+            } as IUniformData;
+        }
     }
 
     public class UniformDataMatrix4 : UniformData<Matrix4>
@@ -98,6 +183,15 @@ namespace Hatzap.Rendering
         public override void SendData(ShaderProgram program)
         {
             program.SendUniform(Name, ref Data);
+        }
+
+        public override IUniformData Copy()
+        {
+            return new UniformDataMatrix4()
+            {
+                Name = Name,
+                Data = Data
+            } as IUniformData;
         }
     }
 }

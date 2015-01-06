@@ -98,6 +98,7 @@
     <Compile Include="Input\Keyboard.cs" />
     <Compile Include="Models\ITransformable.cs" />
     <Compile Include="Models\Material.cs" />
+    <Compile Include="Models\MaterialManager.cs" />
     <Compile Include="Models\Mesh.cs" />
     <Compile Include="Models\MeshManager.cs" />
     <Compile Include="Models\Model.cs" />

@@ -14,11 +14,12 @@ out float theTime;
 uniform mat4 mViewProjection;
 uniform mat4 mModel;
 uniform mat3 mNormal;
-uniform float time;
+uniform float time = 0;
+uniform vec2 toffset = vec2(0,0);
 
 void main()
 {
-	tcoord = (vertex.xy - vec2(time * 0.01, 0)) ;
+	tcoord = (vertex.xy + (toffset * 0.1) - vec2(time * 0.01, 0)) ;
 	norm = mat3(mModel) * normal;
 	vec3 offset = vec3( 0.0, sin((time + vertex.x * 20 + vertex.z * 20)) * 0.05, 0.0 );
 	vec3 tmp = vertex + offset;

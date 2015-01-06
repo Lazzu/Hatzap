@@ -25,6 +25,7 @@ namespace TransparencyExample
         Model groundplane, model, model2;
         Camera camera;
         RenderQueue renderQueue;
+        TextureManager textures;
 
         protected override void OnLoad(EventArgs e)
         {
@@ -49,37 +50,13 @@ namespace TransparencyExample
             ShaderManager.LoadCollection("Shaders/collection.xml");
 
             // Load texture
-            TextureMeta textureMeta = new TextureMeta()
-            {
-                FileName = "../../Assets/Textures/lucymetal.jpg",
-                PixelInternalFormat = PixelInternalFormat.Rgba,
-                PixelFormat = PixelFormat.Bgra,
-                PixelType = PixelType.UnsignedByte,
-                Quality = new TextureQuality()
-                {
-                    Filtering = TextureFiltering.Trilinear,
-                    Anisotrophy = 16,
-                    Mipmaps = true,
-                }
-            };
-            var texture = new Texture();
-            texture.Load(textureMeta);
+            textures = new TextureManager();
+            var texture = textures.Get("Textures/lucymetal.tex", true);
+            texture.Quality.Mipmaps = true;
 
-            TextureMeta groundtextureMeta = new TextureMeta()
-            {
-                FileName = "../../Assets/Textures/3D_pattern_textures_25/pattern_128/diffuse.png",
-                PixelInternalFormat = PixelInternalFormat.Rgba,
-                PixelFormat = PixelFormat.Bgra,
-                PixelType = PixelType.UnsignedByte,
-                Quality = new TextureQuality()
-                {
-                    Filtering = TextureFiltering.Trilinear,
-                    Anisotrophy = 16,
-                    Mipmaps = true,
-                }
-            };
-            var groundtexture = new Texture();
-            groundtexture.Load(groundtextureMeta);
+            var groundtexture = textures.Get("Textures/concreteslabs.tex", true);
+            groundtexture.Quality.Mipmaps = true;
+            groundtexture.Quality.TextureWrapMode = TextureWrapMode.Repeat;
 
             // Load up a mesh
             MeshManager meshManager = new MeshManager();
