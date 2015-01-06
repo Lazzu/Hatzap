@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using Hatzap;
 using Hatzap.Assets;
 using Hatzap.Models;
@@ -23,14 +25,15 @@ namespace ModelExample
         Model model;
         Camera camera;
         RenderQueue renderQueue;
+        TextureManager textures = new TextureManager();
 
         protected override void OnLoad(EventArgs e)
         {
             // Initialize GL settings
             GPUCapabilities.Initialize();
             GLState.DepthTest = true;
-            GLState.AlphaBleding = false;
             GLState.CullFace = true;
+            GLState.BlendFunc(BlendingFactorSrc.DstAlpha, BlendingFactorDest.OneMinusDstAlpha);
             GL.ClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 
             // Set up camera
@@ -48,21 +51,8 @@ namespace ModelExample
             var shader = ShaderManager.Get("simplemodel");
 
             // Load texture
-            TextureMeta textureMeta = new TextureMeta()
-            {
-                FileName = "../../Assets/Textures/lucymetal.jpg",
-                PixelInternalFormat = PixelInternalFormat.Rgba,
-                PixelFormat = PixelFormat.Bgra,
-                PixelType = PixelType.UnsignedByte,
-                Quality = new TextureQuality()
-                {
-                    Filtering = TextureFiltering.Trilinear,
-                    Anisotrophy = 16,
-                    Mipmaps = true,
-                }
-            };
-            var texture = new Texture();
-            texture.Load(textureMeta);
+            textures = new TextureManager();
+            var texture = textures.Get("Textures/lucymetal.tex", true);
 
             // Load up a mesh
             MeshManager meshManager = new MeshManager();

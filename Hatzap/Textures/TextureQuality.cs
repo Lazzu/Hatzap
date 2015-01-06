@@ -212,7 +212,7 @@ namespace Hatzap.Textures
                     {
                         levels = 1000;
                     }
-                    GL.TexParameter(target, TextureParameterName.TextureMaxLevel, levels);
+                    //GL.TexParameter(target, TextureParameterName.TextureMaxLevel, levels);
 
                     if(!pregeneratedMipmaps)
                     {

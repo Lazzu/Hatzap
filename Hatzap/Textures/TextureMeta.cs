@@ -27,7 +27,7 @@ namespace Hatzap.Textures
         /// <summary>
         /// The path to the file containing the texture data.
         /// </summary>
-        [XmlAttribute]
+        [XmlIgnore]
         public string FileName { get; set; }
 
         [XmlAttribute]
@@ -59,7 +59,10 @@ namespace Hatzap.Textures
 
         public TextureQuality Quality { get; set; }
 
+        [XmlIgnore]
         protected List<string> filenames;
+
+        [XmlIgnore]
         internal List<string> FileNames
         {
             get
@@ -73,6 +76,7 @@ namespace Hatzap.Textures
             }
         }
 
+        [XmlIgnore]
         public TextureMeta Copy
         {
             get

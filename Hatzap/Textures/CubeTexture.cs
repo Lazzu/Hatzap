@@ -8,6 +8,10 @@ namespace Hatzap.Textures
 {
     public class CubeTexture : Texture
     {
+        public CubeTexture(TextureMeta meta) : base(meta)
+        {
+            
+        }
         
     }
 }

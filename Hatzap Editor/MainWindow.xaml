@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Hatzap_Editor.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Hatzap Editor" Height="720" Width="1280" Background="{DynamicResource BackgroundColor}" Foreground="{DynamicResource ForegroundColor}" Loaded="Window_Loaded">
+        Title="Hatzap Editor" Height="720" Width="1280" Background="{DynamicResource BackgroundColor}" Foreground="{DynamicResource ForegroundColor}" Loaded="Window_Loaded" Closing="Window_Closing">
     <Window.Resources>
         <LinearGradientBrush x:Key="BackgroundGradient" EndPoint="0.5,1" StartPoint="0.5,0">
             <GradientStop Color="#FF1B1B1B" Offset="1"/>
@@ -18,6 +18,7 @@
                 <Separator />
                 <MenuItem x:Name="MenuImport" Header="_Import asset">
                     <MenuItem x:Name="MenuImportMesh" Header="_Mesh" Click="MenuImportMesh_Click" />
+                    <MenuItem x:Name="MenuImportTexture" Header="_Texture" Click="MenuImportTexture_Click" />
                 </MenuItem>
                 <MenuItem x:Name="MenuExport" Header="_Export asset" />
                 <Separator />

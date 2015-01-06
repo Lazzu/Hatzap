@@ -44,10 +44,13 @@ namespace Hatzap.Gui.Fonts
                 };
 
                 font.Texture = new Texture();
-                font.Texture.Load(metadata);
+
+                throw new Exception("Fonts are broken until they adopt the new texture loading method.");
+
+                /*font.Texture.Load(metadata);
                 font.Texture.Bind();
                 font.Texture.UpdateQuality();
-                font.Texture.UnBind();
+                font.Texture.UnBind();*/
                 
                 fonts.Add(item.FontFamily, font);
             }

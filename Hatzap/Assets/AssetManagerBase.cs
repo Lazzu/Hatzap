@@ -14,24 +14,50 @@ namespace Hatzap.Assets
     /// <typeparam name="T">The asset type the derived class is managing. Must be a reference type.</typeparam>
     public abstract class AssetManagerBase<T> where T : new()
     {
-        Dictionary<string, T> loadedAssets = new Dictionary<string, T>();
+        protected Dictionary<string, T> loadedAssets = new Dictionary<string, T>();
+
+        /// <summary>
+        /// Insert an already loaded asset to the manager.
+        /// </summary>
+        /// <param name="path">Path of the asset</param>
+        /// <param name="asset">The asset</param>
+        public virtual void Insert(string path, T asset)
+        {
+            if (!loadedAssets.ContainsKey(path))
+            {
+                loadedAssets.Add(path, asset);
+            }
+        }
+
+        public virtual void Remove(string path)
+        {
+            if(loadedAssets.ContainsKey(path))
+            {
+                loadedAssets.Remove(path);
+            }
+        }
 
         /// <summary>
         /// Saves the asset on disk.
         /// </summary>
         /// <param name="path">The asset path</param>
         /// <param name="targetPath">The asset target path on disk</param>
-        public void Save(string path, string targetPath)
+        public virtual void Save(string path, string targetPath)
         {
-            throw new NotImplementedException();
+            T asset = Get(path, true);
+            
+            using(FileStream fs = new FileStream(targetPath, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                SaveAsset(asset, fs);
+            }
         }
-
+        
         /// <summary>
         /// Loads an asset to memory.
         /// </summary>
         /// <param name="path">Path to the asset.</param>
         /// <exception cref="FileNotFoundException">Thrown when the requested asset was unable to load.</exception>
-        public void Load(string path)
+        public virtual void Load(string path)
         {
             if (loadedAssets.ContainsKey(path))
             {
@@ -57,7 +83,7 @@ namespace Hatzap.Assets
         /// <param name="path">The asset path</param>
         /// <param name="autoload">Automatically loads the asset to memory if set to true</param>
         /// <returns>The requested asset if it existed. Null if it did not exist.</returns>
-        public T Get(string path, bool autoload = false)
+        public virtual T Get(string path, bool autoload = false)
         {
             if(autoload)
             {

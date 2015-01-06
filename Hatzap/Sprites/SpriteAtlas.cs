@@ -2,51 +2,40 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Hatzap.Textures;
-using Hatzap.Utilities;
-using OpenTK.Graphics.OpenGL;
 
 namespace Hatzap.Sprites
 {
-    [XmlRootAttribute("SpriteAtlas", IsNullable = false)]
     public class SpriteAtlas
     {
+        public string TextureName { get; set; }
+
         [XmlIgnore]
-        public Texture Texture { get; set; }
+        Texture atlas = null;
 
-        [XmlElement("Texture")]
-        public TextureMeta TextureMeta { get; set; }
+        [XmlIgnore]
+        public Texture Atlas { 
+            get
+            {
+                if (atlas == null)
+                    Prepare();
 
-        [XmlArrayAttribute("Sprites")]
-        public List<Sprite> Sprites { get; protected set; }
-        
-        public SpriteAtlas(SpriteCollection collection)
-        {
-            Sprites = new List<Sprite>(collection.Sprites);
+                return atlas;
+            }
         }
 
-        void Initialize()
+        public List<Sprite> Sprites { get; set; }
+
+        public void Prepare()
         {
-            Texture = new Texture();
-            Texture.Load(TextureMeta);
-            Texture.Bind();
-        }
+            if (TextureName == string.Empty)
+                return;
 
-        public static SpriteAtlas Load(string file)
-        {
-            var atlas = XML.Read.FromFile<SpriteAtlas>(file);
+            
 
-            if(atlas != null)
-                atlas.Initialize();
-
-            return atlas;
-        }
-
-        public static void Save(string file, SpriteAtlas atlas)
-        {
-            XML.Write.ToFile(atlas, file);
+            /*atlas = new Texture();
+            atlas.Load(meta);*/
         }
     }
 }

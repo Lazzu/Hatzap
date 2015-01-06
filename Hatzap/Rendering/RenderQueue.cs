@@ -61,6 +61,7 @@ namespace Hatzap.Rendering
             TrianglesDrawn = 0;
 
             GLState.AlphaBleding = false;
+            GLState.DepthTest = true;
 
             foreach (var shaderBatch in SolidShaderBatches)
             {
@@ -68,6 +69,7 @@ namespace Hatzap.Rendering
             }
             
             GLState.AlphaBleding = true;
+            GLState.DepthTest = false;
 
             foreach (var shaderBatch in TransparentShaderBatches)
             {

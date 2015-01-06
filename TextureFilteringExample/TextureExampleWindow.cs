@@ -23,6 +23,7 @@ namespace TextureExample
         VertexBatch batch;
         ShaderProgram shader;
         Texture texture;
+        TextureManager textures;
 
         protected override void OnLoad(EventArgs e)
         {
@@ -44,7 +45,9 @@ namespace TextureExample
             batch.EndBatch();
 
             // Load texture
-            TextureMeta textureMeta = new TextureMeta()
+            textures = new TextureManager();
+
+            /*TextureMeta textureMeta = new TextureMeta()
             {
                 FileName = "../../Assets/Textures/3D_pattern_textures_25/pattern_124/diffuse.png",
                 PixelInternalFormat = PixelInternalFormat.Rgba,
@@ -56,10 +59,9 @@ namespace TextureExample
                     Anisotrophy = 0,
                     Mipmaps = false,
                 }
-            };
+            };*/
 
-            texture = new Texture();
-            texture.Load(textureMeta);
+            texture = textures.Get("Textures/concreteslabs.tex", true);
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -70,21 +72,24 @@ namespace TextureExample
             GL.ClearColor(0.1f, 0.1f, 0.1f, 1.0f);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            // Bind the texture to use
-            texture.Bind();
+            if(texture != null)
+            {
+                // Bind the texture to use
+                texture.Bind();
 
-            // Update the texture quality settings if they have changed
-            texture.UpdateQuality();
+                // Update the texture quality settings if they have changed
+                texture.UpdateQuality();
 
-            // Enable the shader
-            shader.Enable();
+                // Enable the shader
+                shader.Enable();
 
-            // Render the batch
-            batch.Render();
+                // Render the batch
+                batch.Render();
 
-            // Clean up frame
-            shader.Disable();
-            texture.UnBind();
+                // Clean up frame
+                shader.Disable();
+                texture.UnBind();
+            }
 
             // Display rendered frame
             SwapBuffers();

@@ -1,0 +1,40 @@
+﻿<Window x:Class="Hatzap_Editor.TextureSettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Texture save settings" Height="325.875" Width="297" Loaded="Window_Loaded">
+    <StackPanel Margin="5">
+        <StackPanel Margin="5" Orientation="Horizontal">
+            <Label Width="80">Width:</Label>
+            <TextBox Width="180" VerticalContentAlignment="Center" x:Name="Width">Width</TextBox>
+        </StackPanel>
+        <StackPanel Margin="5" Orientation="Horizontal">
+            <Label Width="80">Height:</Label>
+            <TextBox Width="180" VerticalContentAlignment="Center" x:Name="Height">Height</TextBox>
+        </StackPanel>
+        <StackPanel Margin="5" Orientation="Horizontal">
+            <Label Width="80">Format</Label>
+            <ComboBox x:Name="FormatLayout" 
+                      Loaded="FormatLayout_Loaded"
+                      Width="180"/>
+        </StackPanel>
+        <StackPanel Margin="5" Orientation="Horizontal">
+            <Label Width="80">Filtering</Label>
+            <ComboBox x:Name="cmbFiltering" 
+                      Loaded="Filtering_Loaded"
+                      Width="180"/>
+        </StackPanel>
+        <StackPanel Margin="5" Orientation="Horizontal">
+            <Label Width="80">Aniso level</Label>
+            <TextBox Width="180" VerticalContentAlignment="Center" x:Name="txtAniso">Anisotrophy level</TextBox>
+        </StackPanel>
+        <StackPanel Margin="85,5,5,5" Orientation="Horizontal">
+            <CheckBox Width="100" x:Name="chkMipmapped" IsEnabled="False">Mipmapped</CheckBox>
+            <CheckBox x:Name="chkSaveMipmaps" IsEnabled="False">Save to file</CheckBox>
+        </StackPanel>
+        <StackPanel Margin="85,5,5,5" Orientation="Horizontal">
+            <CheckBox Width="100" x:Name="chkCompressed" IsEnabled="False">Compressed</CheckBox>
+            <CheckBox x:Name="chkSaveCompressed" IsEnabled="False">Save to file</CheckBox>
+        </StackPanel>
+        <Button Width="200" Margin="20" x:Name="OKButton" Click="OKButton_Click">OK</Button>
+    </StackPanel>
+</Window>

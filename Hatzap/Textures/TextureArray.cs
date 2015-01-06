@@ -10,9 +10,17 @@ namespace Hatzap.Textures
 {
     public class TextureArray : Texture
     {
+        public int Depth { get; protected set; }
+
         public TextureArray()
         {
             this.TextureTarget = TextureTarget.Texture2DArray;
+        }
+
+        public TextureArray(TextureMeta meta) : base(meta)
+        {
+            this.TextureTarget = TextureTarget.Texture2DArray;
+            Depth = meta.Depth;
         }
 
         /// <summary>

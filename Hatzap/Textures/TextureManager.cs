@@ -1,89 +1,137 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
+using System.IO.Compression;
 using System.Text;
-using System.Threading.Tasks;
+using Hatzap.Assets;
+using Hatzap.Utilities;
+using OpenTK.Graphics.OpenGL;
 
 namespace Hatzap.Textures
 {
-    public static class TextureManager
+    public class TextureManager : AssetManagerBase<Texture>
     {
-        static Dictionary<string, TextureMeta> availableTextures = new Dictionary<string, TextureMeta>();
-        static Dictionary<string, Texture> loadedTextures = new Dictionary<string, Texture>();
-
-        public static void Insert(IEnumerable<TextureMeta> metas)
+        protected override Texture LoadAsset(Stream stream)
         {
-            foreach (var item in metas)
+            byte[] metaBytes = null;
+            byte[] rawBytes = null;
+            int rawSize;
+            using(BinaryReader br = new BinaryReader(stream, Encoding.UTF8))
             {
-                Insert(item);
+                var length = br.ReadInt32();
+                metaBytes = br.ReadBytes(length);
+
+                length = br.ReadInt32();          
+                rawBytes = br.ReadBytes(length);
+
+                rawSize = br.ReadInt32();
             }
-        }
 
-        public static void Insert(TextureMeta meta)
-        {
-            if (availableTextures.ContainsKey(meta.FileName))
-                return;
+            TextureMeta meta = null;
+            Texture texture = null;
 
-            availableTextures.Add(meta.FileName, meta);
-        }
-
-        public static bool Load(string name)
-        {
-            Texture t;
-
-            if (!loadedTextures.TryGetValue(name, out t))
+            // Uncompress header data
+            using (MemoryStream ms = new MemoryStream(metaBytes))
             {
-                TextureMeta meta;
-
-                if (availableTextures.TryGetValue(name, out meta))
+                using (GZipStream gz = new GZipStream(ms, CompressionMode.Decompress))
                 {
-                    t = new Texture();
-                    t.Load(meta);
-                    loadedTextures.Add(name, t);
+                    meta = XML.Read.FromStream<TextureMeta>(gz);
                 }
             }
 
-            return t != null;
-        }
+            var pixels = new byte[rawSize];
 
-        public static void Unload(string name)
-        {
-            Texture t;
-
-            if (loadedTextures.TryGetValue(name, out t))
+            // Uncompress image data
+            using (MemoryStream ms = new MemoryStream(rawBytes))
             {
-                t.Release();
-                loadedTextures.Remove(name);
-            }
-        }
-
-        public static Texture Get(string name)
-        {
-            Texture t;
-
-            if (!loadedTextures.TryGetValue(name, out t))
-            {
-                TextureMeta meta;
-
-                if (availableTextures.TryGetValue(name, out meta))
+                using (GZipStream gz = new GZipStream(ms, CompressionMode.Decompress))
                 {
-                    t = new Texture();
-                    t.Load(meta);
-                    loadedTextures.Add(name, t);
+                    using(BinaryReader br = new BinaryReader(gz))
+                    {
+                        pixels = br.ReadBytes(rawSize);
+                    }
                 }
             }
 
-            return t;
+            metaBytes = null;
+
+            switch(meta.Type)
+            {
+                case TextureType.Texture2D:
+                    texture = new Texture(meta);
+                    break;
+                case TextureType.TextureArray:
+                    throw new NotImplementedException();
+                    //texture = new TextureArray(meta);
+                    break;
+                case TextureType.TextureCubemap:
+                    throw new NotImplementedException();
+                    //texture = new CubeTexture(meta);
+                    break;
+                case TextureType.Texture3D:
+                    throw new NotImplementedException();
+                    break;
+                case TextureType.Texture1D:
+                    throw new NotImplementedException();
+                    break;
+                case TextureType.TextureArray3D:
+                    throw new NotImplementedException();
+                    break;
+                case TextureType.TextureCubemapArray:
+                    throw new NotImplementedException();
+                    break;
+                case TextureType.TextureRectangle:
+                    throw new NotImplementedException();
+                    break;
+                default:
+                    throw new Exception("Unknown texture format.");
+            }
+
+            texture.Load(pixels, meta);
+
+            return texture;
         }
 
-        public static bool IsLoaded(string key)
+        protected override void SaveAsset(Texture asset, Stream stream)
         {
-            return loadedTextures.ContainsKey(key);
-        }
+            byte[] metaBytes;
 
-        public static bool IsAvailable(string key)
-        {
-            return availableTextures.ContainsKey(key);
+            // Compress header data
+            using (MemoryStream ms = new MemoryStream())
+            {
+                using (GZipStream gz = new GZipStream(ms, CompressionLevel.Optimal))
+                {
+                    XML.Write.ToStream(asset.Metadata, gz);
+                }
+
+                metaBytes = ms.ToArray();
+            }
+
+            // Get raw texture bytes
+            var rawPixels = asset.GetPixels(asset.Metadata);
+            int rawSize = rawPixels.Length;
+
+            byte[] rawBytes;
+
+            // Compress texture data
+            using (MemoryStream ms = new MemoryStream())
+            {
+                using (GZipStream gz = new GZipStream(ms, CompressionLevel.Optimal))
+                {
+                    gz.Write(rawPixels, 0, rawPixels.Length);
+                }
+
+                rawBytes = ms.ToArray();
+            }
+
+            using(BinaryWriter bw = new BinaryWriter(stream, Encoding.UTF8))
+            {
+                bw.Write(metaBytes.Length);
+                bw.Write(metaBytes);
+                bw.Write(rawBytes.Length);
+                bw.Write(rawBytes);
+                bw.Write(rawSize);
+            }
         }
     }
 }

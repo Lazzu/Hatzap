@@ -5,6 +5,7 @@ in vec3 norm;
 
 uniform sampler2D textureSampler;
 uniform float time;
+uniform vec4 color = vec4(1,1,1,1);
 
 layout(location = 0) out vec4 RGBA;
 
@@ -23,13 +24,14 @@ void main( void )
 	float specular = pow( max(0.0, nDotH), 64 );
 
 	vec3 texel = texture2D(textureSampler, tcoord).rgb;
-	vec3 finalColor = pow(texel, vec3(gamma)) * light + specular;
+	vec3 finalColor = pow(texel, vec3(gamma)) * light * color.rgb + specular;
 
 	finalColor = pow(finalColor, vec3(2.2));
 	finalColor = clamp(finalColor, vec3(0.0), vec3(1.0));
 	
-    RGBA = vec4(finalColor, 1);
+  RGBA = vec4(finalColor, color.a);
 	//RGBA = vec4(texel, 1);
+	//RGBA = vec4(tcoord, 0, 1);
 	//RGBA = vec4(value, value, value, 1);
 }
 

@@ -1,0 +1,8 @@
+﻿<Window x:Class="Hatzap_Editor.BackgroundJobWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="BackgroundJobWindow" Height="130" Width="130" AllowsTransparency="True" WindowStyle="None" Background="Transparent" Loaded="Window_Loaded">
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Image Source="EditorAssets/loading.gif" Stretch="None" />
+    </Grid>
+</Window>

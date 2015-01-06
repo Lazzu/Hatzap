@@ -2,45 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using OpenTK;
 
 namespace Hatzap.Sprites
 {
     public class SpriteRenderData
     {
-        public Sprite Sprite { get; set; }
-        public Vector4 Color { get; set; }
+        /// <summary>
+        /// The sprite position on screen in pixels
+        /// </summary>
         public Vector3 Position { get; set; }
+
+        /// <summary>
+        /// The sprite size on screen in pixels
+        /// </summary>
         public Vector2 Size { get; set; }
 
-        SpriteVertex[] vertices;
-
-        public SpriteVertex[] Vertices
-        {
-            get
-            {
-                if(vertices == null)
-                {
-                    GenerateVertices();
-                }
-
-                for (int i = 0; i < vertices.Length; i++ )
-                {
-                    vertices[i].position = Position;
-                    vertices[i].scale = Size;
-                    vertices[i].color = Color;
-                }
-
-                return vertices;
-            }
-        }
-
-        private void GenerateVertices()
-        {
-            int c = Sprite.Vertices.Length;
-            vertices = new SpriteVertex[c];
-
-            Array.Copy(Sprite.Vertices, vertices, c);
-        }
+        /// <summary>
+        /// The sprite rotation around z-axis in radians
+        /// </summary>
+        public float Rotation { get; set; }
     }
 }

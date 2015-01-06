@@ -612,7 +612,7 @@ namespace HatzapTestApplication
 
             if (aMesh != null)
             {
-                mesh.AssimpMesh = aMesh;
+                //mesh.AssimpMesh = aMesh;
             }
             else
             {

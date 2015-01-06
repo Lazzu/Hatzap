@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Diagnostics;
 using Hatzap.Utilities;
+using System.Runtime.InteropServices;
 
 namespace Hatzap.Textures
 {
@@ -42,12 +43,13 @@ namespace Hatzap.Textures
                         PixelType = PixelType.UnsignedByte,
                         Height = Height,
                         Width = Width,
+                        Depth = 0,
                         PixelInternalFormat = PixelInternalFormat,
                         Quality = Quality
                     };
                 }
 
-                return savedMeta.Copy;
+                return savedMeta;
             }
         }
 
@@ -58,10 +60,20 @@ namespace Hatzap.Textures
             PixelInternalFormat = PixelInternalFormat.Rgba;
         }
 
-        public Texture(int width, int height) : this()
+        public Texture(int width, int height)
+            : this()
         {
             Width = width;
             Height = height;
+        }
+
+        public Texture(TextureMeta meta)
+            : this(meta.Width, meta.Height)
+        {
+            // TODO: Complete member initialization
+            savedMeta = meta;
+            PixelInternalFormat = meta.PixelInternalFormat;
+            Quality = meta.Quality;
         }
 
         public void Bind()
@@ -133,12 +145,11 @@ namespace Hatzap.Textures
             Time.StopTimer("Texture.Generate()");
         }
 
-        void Load(Bitmap bmp, OpenTK.Graphics.OpenGL.PixelFormat format, PixelType type)
+        public void Load(Bitmap bmp, PixelInternalFormat format)
         {
             var meta = this.Metadata;
 
-            meta.PixelType = type;
-            meta.PixelFormat = format;
+            PixelInternalFormat = format;
 
             // Get last bound texture
             Texture last = null;
@@ -158,7 +169,7 @@ namespace Hatzap.Textures
             meta.Height = Height;
             
             // Push image data to the gpu
-            GL.TexImage2D(TextureTarget, 0, this.PixelInternalFormat, Width, Height, 0, format, type, bitmapData.Scan0);
+            GL.TexImage2D(TextureTarget, 0, this.PixelInternalFormat, Width, Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, bitmapData.Scan0);
 
             bmp.UnlockBits(bitmapData);
 
@@ -167,68 +178,71 @@ namespace Hatzap.Textures
             else UnBind();
         }
 
-        /// <summary>
-        /// Loads compressed data in to the texture. Untested code.
-        /// </summary>
-        /// <param name="data">Byte array containing the bytes of the texture</param>
-        /// <param name="width">Width of the texture</param>
-        /// <param name="height">Height of the texture</param>
-        void LoadCompressed(byte[] data, int width, int height)
+        public virtual void Load(byte[] rawBytes, TextureMeta meta)
         {
-            // Get last bound texture
-            Texture last = null;
-            Bound.TryGetValue(TextureTarget, out last);
+            if (meta.Type != TextureType.Texture2D)
+            {
+                throw new ArgumentException("Texture type must be Texture2D. Texture class does not support loading other types.");
+            }
 
-            // Bind current texture
-            Bind();
-
-            Width = width;
-            Height = height;
-            
-            // Push image data to the gpu
-            GL.CompressedTexImage2D(TextureTarget, 0, this.PixelInternalFormat, Width, Height, 0, data.Length, data);
-            
-            // Restore previous state
-            if (last != null) last.Bind();
-            else UnBind();
-        }
-
-        /// <summary>
-        /// Load a texture to the GPU memory.
-        /// </summary>
-        /// <param name="meta">Texture metadata</param>
-        public void Load(TextureMeta meta)
-        {
             savedMeta = meta;
-
-            Quality = meta.Quality;
-
+            Width = meta.Width;
+            Height = meta.Height;
             PixelInternalFormat = meta.PixelInternalFormat;
 
-            if(meta.Precompressed)
+            int levels = 1;
+
+            if(meta.PreMipmapped)
             {
-                Time.StartTimer("Texture.LoadCompressed()", "Loading");
-
-                var bytes = File.ReadAllBytes(meta.FileName);
-                LoadCompressed(bytes, meta.Width, meta.Height);
-
-                Time.StopTimer("Texture.LoadCompressed()");
+                int size = Math.Max(Width, Height);
+                levels += (int)Math.Floor(Math.Log(size, 2));
             }
-            else
+
+            Bind();
+
+            int bpp = 0;
+            int w = Width;
+            int h = Height;
+
+            if (!meta.Precompressed)
             {
-                Time.StartTimer("Texture.Load()", "Loading");
+                bpp = GetBpp(meta.PixelFormat);
 
-                var path = Path.GetFullPath(meta.FileName);
+                if (bpp == 0) throw new NotImplementedException("The selected PixelFormat used for loading texture to file not yet supported.");
+            }
 
-                using (var bmp = new Bitmap(path))
+            int srcOffset = 0;
+
+            GL.TexParameter(TextureTarget, TextureParameterName.TextureMaxLevel, levels - 1);
+
+            for(int i = 0; i < levels; i++)
+            {
+                // How many bytes on this level?
+                int amount = w * h * bpp;
+
+                // Copy bytes to separate buffer
+                var levelBytes = new byte[amount];
+                Array.Copy(rawBytes, srcOffset, levelBytes, 0, amount);
+                //Buffer.BlockCopy(rawBytes, srcOffset, levelBytes, 0, amount);
+
+                // Upload bytes to the GPU
+
+                if(meta.Precompressed)
                 {
-                    Load(bmp, meta.PixelFormat, meta.PixelType);
+                    GL.CompressedTexImage2D(TextureTarget, i, this.PixelInternalFormat, w, h, 0, levelBytes.Length, levelBytes);
+                }
+                else
+                {
+                    GL.TexImage2D(TextureTarget, i, this.PixelInternalFormat, w, h, 0, meta.PixelFormat, meta.PixelType, levelBytes);
                 }
 
-                Time.StopTimer("Texture.Load()");
+                // Move offset and calculate next level size
+                srcOffset += amount;
+                w = w > 1 ? w / 2 : 1;
+                h = h > 1 ? h / 2 : 1;
             }
 
-            //UpdateQuality();
+            Quality.PregeneratedMipmaps = true;
         }
 
         /// <summary>
@@ -237,12 +251,12 @@ namespace Hatzap.Textures
         /// data will be saved if the texture is compressed in memory.
         /// </summary>
         /// <param name="meta">The texture metadata object</param>
-        public void Save(TextureMeta meta)
+        public byte[] GetPixels(TextureMeta meta)
         {
             meta.Quality = Quality;
             meta.PixelType = PixelType.UnsignedByte;
 
-            Time.StartTimer("Texture.Save()", "Disk Write");
+            Time.StartTimer("Texture.GetBytes()", "GPU Data Transfer");
 
             // Get last bound texture
             Texture last = null;
@@ -251,64 +265,116 @@ namespace Hatzap.Textures
             // Bind current texture
             Bind();
 
-            var dataSize = Width * Height;
+            int w = Width;  // Width of the image
+            int h = Height; // Height of the image
+            int bpp = 0;    // Bytes per pixel for uncompressed textures
+            int levels = 1; // Mipmap levels, default = no mipmaps, just one texture level
 
-            // Find out if the texture is compressed in the memory
-            int compression;
-            GL.GetTexLevelParameter(TextureTarget, 0, GetTextureParameter.TextureCompressed, out compression);
+            // Get the internal format
+            int format;
+            GL.GetTexLevelParameter(TextureTarget, 0, GetTextureParameter.TextureInternalFormat, out format);
+            meta.PixelInternalFormat = (OpenTK.Graphics.OpenGL.PixelInternalFormat)format;
 
-            // Find out the correct byte array size for each type of different textures
-            if(meta.Precompressed && compression == 1)
-            {
-                GL.GetTexLevelParameter(TextureTarget, 0, GetTextureParameter.TextureCompressedImageSize, out dataSize);
-                int format;
-                GL.GetTexLevelParameter(TextureTarget, 0, GetTextureParameter.TextureInternalFormat, out format);
-                meta.PixelInternalFormat = (OpenTK.Graphics.OpenGL.PixelInternalFormat)format;
-            }
-            else
-            {
-                switch (meta.PixelFormat)
-                {
-                    case OpenTK.Graphics.OpenGL.PixelFormat.Bgra:
-                    case OpenTK.Graphics.OpenGL.PixelFormat.Rgba:
-                        dataSize *= 4;
-                        break;
-                    case OpenTK.Graphics.OpenGL.PixelFormat.Bgr:
-                    case OpenTK.Graphics.OpenGL.PixelFormat.Rgb:
-                        dataSize *= 3;
-                        break;
-                    case OpenTK.Graphics.OpenGL.PixelFormat.Rg:
-                        dataSize *= 2;
-                        break;
-                    case OpenTK.Graphics.OpenGL.PixelFormat.Red:
-                    case OpenTK.Graphics.OpenGL.PixelFormat.Green:
-                    case OpenTK.Graphics.OpenGL.PixelFormat.Blue:
-                        break;
-                    default:
-                        throw new NotImplementedException("The selected PixelFormat used for saving texture to file not yet supported.");
-                }
-            }
-
-            // Allocate the data array
-            var data = new byte[dataSize];
-
-            // Get the texture bytes from the GPU
+            // Check for texture compression
             if(meta.Precompressed)
             {
-                GL.GetCompressedTexImage(TextureTarget, 0, data);
-            }
-            else
-            {
-                GL.GetTexImage(TextureTarget, 0, meta.PixelFormat, meta.PixelType, data);
+                // Find out if the texture is actually compressed in memory so we can save the compressed bytes
+                int compression = 0;
+                GL.GetTexLevelParameter(TextureTarget, 0, GetTextureParameter.TextureCompressed, out compression);
+                if (compression == 0)
+                    meta.Precompressed = false;
             }
 
-            File.WriteAllBytes(meta.FileName, data);
+            // If texture is not compressed, get correct amount of bytes per pixel
+            if(!meta.Precompressed)
+            {
+                bpp = GetBpp(meta.PixelFormat);
+
+                if(bpp == 0)
+                    throw new NotImplementedException("The selected PixelFormat used for saving texture to file not yet supported.");
+            }
+
+            // Check if mipmaps are enabled
+            if (meta.PreMipmapped)
+            {
+                meta.PreMipmapped = Quality.Mipmaps;
+            }
+
+            // If mipmap saving is enabled, get how many levels there are in the texture
+            if (meta.PreMipmapped)
+            {
+                int size = Math.Max(Width, Height);
+                levels += (int)Math.Floor(Math.Log(size, 2));
+            }
+            
+            var levelBytes = new byte[levels][];
+            int rawDataSize = 0;
+
+            for(int i = 0; i < levels; i++)
+            {
+                // Get the non-compressed byte array size
+                var levelSize = w * h * bpp;
+
+                // Find out the correct byte array size for compressed texture
+                if (meta.Precompressed)
+                {
+                    GL.GetTexLevelParameter(TextureTarget, i, GetTextureParameter.TextureCompressedImageSize, out levelSize);
+                }
+
+                // Allocate the byte array
+                var data = new byte[levelSize];
+
+                // Get the texture bytes from the GPU
+                if (meta.Precompressed)
+                {
+                    GL.GetCompressedTexImage(TextureTarget, i, data);
+                }
+                else
+                {
+                    GL.GetTexImage(TextureTarget, i, meta.PixelFormat, meta.PixelType, data);
+                }
+
+                levelBytes[i] = data;
+                rawDataSize += levelSize;
+
+                // Calculate next level size
+                w = w > 1 ? w / 2 : 1;
+                h = h > 1 ? h / 2 : 1;
+            }
+
+            var rawdata = new byte[rawDataSize];
+            int offset = 0;
+
+            for (int i = 0; i < levels; i++)
+            {
+                int blocksize = levelBytes[i].Length;
+                Array.Copy(levelBytes[i], 0, rawdata, offset, blocksize);
+                offset += blocksize;
+            }
 
             // Restore previous state
             if (last != null) last.Bind();
             else UnBind();
 
-            Time.StopTimer("Texture.Save()");
+            Time.StopTimer("Texture.GetBytes()");
+
+            return rawdata;
+        }
+
+        public void SaveAs(string filename, ImageFormat format)
+        {
+            TextureMeta meta = new TextureMeta();
+            meta.Quality = Quality;
+            meta.PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Bgra;
+            meta.PixelType = PixelType.UnsignedByte;
+            meta.PreMipmapped = false;
+            meta.Precompressed = false;
+
+            var bytes = GetPixels(meta);
+
+            var bmp = new Bitmap(Width, Height, Width * 4, System.Drawing.Imaging.PixelFormat.Format32bppArgb, Marshal.UnsafeAddrOfPinnedArrayElement(bytes, 0));
+
+            bmp.Save(filename, format);
         }
 
         /// <summary>
@@ -368,6 +434,34 @@ namespace Hatzap.Textures
                 }
             }
             return false;
+        }
+
+        public static int GetBpp(OpenTK.Graphics.OpenGL.PixelFormat format)
+        {
+            int bpp = 0;
+
+            switch (format)
+            {
+                case OpenTK.Graphics.OpenGL.PixelFormat.Bgra:
+                case OpenTK.Graphics.OpenGL.PixelFormat.Rgba:
+                    bpp = 4;
+                    break;
+                case OpenTK.Graphics.OpenGL.PixelFormat.Bgr:
+                case OpenTK.Graphics.OpenGL.PixelFormat.Rgb:
+                    bpp = 3;
+                    break;
+                case OpenTK.Graphics.OpenGL.PixelFormat.Rg:
+                    bpp = 2;
+                    break;
+                case OpenTK.Graphics.OpenGL.PixelFormat.Red:
+                case OpenTK.Graphics.OpenGL.PixelFormat.Green:
+                case OpenTK.Graphics.OpenGL.PixelFormat.Blue:
+                case OpenTK.Graphics.OpenGL.PixelFormat.Alpha:
+                    bpp = 1;
+                    break;
+            }
+
+            return bpp;
         }
 
         public static Dictionary<TextureTarget, Texture> Bound = new Dictionary<TextureTarget,Texture>();
