@@ -56,7 +56,7 @@ namespace SpriteExample
 
             // Temporary example until editor gets sprite support
             // Uncomment to regenerate sprite file
-            GenerateSpriteFile();
+            //GenerateSpriteFile();
 
             // Get the sprite atlas
             spaceShips = sam.Get("Sprites/SpaceShips.spr", true);
