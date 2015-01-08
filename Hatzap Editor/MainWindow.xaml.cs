@@ -222,6 +222,7 @@ namespace Hatzap_Editor
 
                 //bw.ReportProgress(33);
 
+                settingsDialog = new TextureSettingsWindow();
                 settingsDialog.TextureWidth = bmp.Width;
                 settingsDialog.TextureHeight = bmp.Height;
 
