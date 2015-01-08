@@ -209,5 +209,13 @@ namespace Hatzap.Models
             }
 
         }
+
+        public override void ReleaseAll()
+        {
+            foreach (var item in loadedAssets)
+            {
+                item.Value.Release();
+            }
+        }
     }
 }

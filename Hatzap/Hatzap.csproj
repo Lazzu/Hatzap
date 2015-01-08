@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="Assets\AssetCollection.cs" />
     <Compile Include="Assets\AssetDataCompressionProcessor.cs" />
+    <Compile Include="Assets\IAssetManager.cs" />
     <Compile Include="Assets\PackageManager.cs" />
     <Compile Include="Assets\AssetManagerBase.cs" />
     <Compile Include="Assets\AssetMeta.cs" />
@@ -125,6 +126,7 @@
     <Compile Include="Shaders\ShaderProgram.cs" />
     <Compile Include="Sprites\Sprite.cs" />
     <Compile Include="Sprites\SpriteAtlas.cs" />
+    <Compile Include="Sprites\SpriteAtlasManager.cs" />
     <Compile Include="Sprites\SpriteRenderData.cs" />
     <Compile Include="Sprites\SpriteBatch.cs" />
     <Compile Include="Textures\CubeTexture.cs" />

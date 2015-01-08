@@ -28,6 +28,13 @@ namespace UniformDataExample
         TextureManager textures;
         MaterialManager materials;
 
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        {
+            base.OnClosing(e);
+
+            AssetManagerBase.CleanupManagers();
+        }
+
         protected override void OnLoad(EventArgs e)
         {
             // Initialize GL settings

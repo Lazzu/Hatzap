@@ -12,30 +12,46 @@ namespace Hatzap.Sprites
         public string TextureName { get; set; }
 
         [XmlIgnore]
-        Texture atlas = null;
-
-        [XmlIgnore]
-        public Texture Atlas { 
-            get
-            {
-                if (atlas == null)
-                    Prepare();
-
-                return atlas;
-            }
-        }
+        public Texture Atlas { get; set; }
 
         public List<Sprite> Sprites { get; set; }
 
-        public void Prepare()
+        public bool PremultipliedAlpha { get; set; }
+
+        /// <summary>
+        /// Get a sprite by it's name. This is slow operation, use only on loading and cache the results.
+        /// </summary>
+        /// <param name="key">Sprite name</param>
+        /// <returns>A sprite if found by it's name. Null otherwise.</returns>
+        public Sprite this[string key]
         {
-            if (TextureName == string.Empty)
-                return;
+            get
+            {
+                if (Sprites == null)
+                    return null;
 
-            
+                for(int i = 0; i < Sprites.Count; i++)
+                {
+                    if (Sprites[i].Name == key)
+                        return Sprites[i];
+                }
 
-            /*atlas = new Texture();
-            atlas.Load(meta);*/
+                return null;
+            }
+        }
+
+        public void Release()
+        {
+            if(Atlas != null)
+            {
+                Atlas.Release();
+            }
+            Atlas = null;
+        }
+        ~SpriteAtlas()
+        {
+            if (Atlas != null)
+                throw new Exception("SpriteAtlas leaked! Release unneeded atlases with SpriteAtlas.Release()");
         }
     }
 }

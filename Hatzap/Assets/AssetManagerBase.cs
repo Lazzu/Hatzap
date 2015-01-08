@@ -8,11 +8,41 @@ using System.Threading.Tasks;
 
 namespace Hatzap.Assets
 {
+    public abstract class AssetManagerBase : IAssetManager
+    {
+        static List<IAssetManager> Managers = new List<IAssetManager>();
+
+        public static void AddManager(IAssetManager manager)
+        {
+            Managers.Add(manager);
+        }
+
+        public static void RemoveManager(IAssetManager manager)
+        {
+            Managers.Remove(manager);
+        }
+
+        public static void CleanupManagers()
+        {
+            foreach (var item in Managers)
+            {
+                item.ReleaseAll();
+            }
+        }
+
+        public AssetManagerBase()
+        {
+            AssetManagerBase.AddManager(this);
+        }
+
+        public abstract void ReleaseAll();
+    }
+
     /// <summary>
     /// The base class for asset managers.
     /// </summary>
     /// <typeparam name="T">The asset type the derived class is managing. Must be a reference type.</typeparam>
-    public abstract class AssetManagerBase<T> where T : new()
+    public abstract class AssetManagerBase<T> : AssetManagerBase where T : new()
     {
         protected Dictionary<string, T> loadedAssets = new Dictionary<string, T>();
 
@@ -97,7 +127,7 @@ namespace Hatzap.Assets
                 }
             }
 
-            T asset = new T();
+            T asset;
             loadedAssets.TryGetValue(path, out asset);
 
             return asset;

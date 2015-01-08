@@ -18,7 +18,7 @@ namespace Hatzap.Assets
 
         static string appPath = string.Empty;
         static string basePath = "Assets/";
-        
+
         /// <summary>
         /// The relative base path for all assets
         /// </summary>

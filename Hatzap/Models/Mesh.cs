@@ -410,5 +410,21 @@ namespace Hatzap.Models
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
             GL.VertexAttribPointer(attrib, elements, type, false, stride, 0);
         }
+
+        internal void Release()
+        {
+            int[] buffers = {
+                                binormalsVbo,
+                                colorsVbo,
+                                normVbo,
+                                tangentsVbo,
+                                uvVbo,
+                                vertVbo,
+                                ebo
+                            };
+
+            GL.DeleteBuffers(buffers.Length, buffers);
+            GL.DeleteVertexArray(vao);
+        }
     }
 }

@@ -36,5 +36,12 @@
         <Shader Type="FragmentShader" Path="../../Assets/Shaders/hellotriangle.frag" />
       </Shaders>
     </ShaderProgram>
+    <ShaderProgram>
+      <Name>sprite.shader</Name>
+      <Shaders>
+        <Shader Type="VertexShader" Path="../../Assets/Shaders/sprite.vert" />
+        <Shader Type="FragmentShader" Path="../../Assets/Shaders/sprite.frag" />
+      </Shaders>
+    </ShaderProgram>
   </ShaderPrograms>
 </ShaderCollection>

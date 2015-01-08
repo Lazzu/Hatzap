@@ -27,6 +27,13 @@ namespace TransparencyExample
         RenderQueue renderQueue;
         TextureManager textures;
 
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        {
+            base.OnClosing(e);
+
+            AssetManagerBase.CleanupManagers();
+        }
+
         protected override void OnLoad(EventArgs e)
         {
             // Initialize GL settings

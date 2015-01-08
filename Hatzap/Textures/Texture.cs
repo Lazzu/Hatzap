@@ -20,7 +20,7 @@ namespace Hatzap.Textures
 
         public int Width { get; protected set; }
         public int Height { get; protected set; }
-
+        
         // TODO: Populate this property automatically when texture is loaded
         public bool HasAlpha { get; set; }
 
@@ -58,6 +58,7 @@ namespace Hatzap.Textures
             ID = GL.GenTexture();
             TextureTarget = TextureTarget.Texture2D;
             PixelInternalFormat = PixelInternalFormat.Rgba;
+            Debug.WriteLine("Allocated texture with ID " + ID + "\n" + new System.Diagnostics.StackTrace());
         }
 
         public Texture(int width, int height)
@@ -434,6 +435,12 @@ namespace Hatzap.Textures
                 }
             }
             return false;
+        }
+
+        ~Texture()
+        {
+            if (ID > 0)
+                throw new Exception("Texture leaked! Release unneeded textures with Texture.Release()");
         }
 
         public static int GetBpp(OpenTK.Graphics.OpenGL.PixelFormat format)

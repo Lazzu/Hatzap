@@ -10,10 +10,14 @@ namespace Hatzap.Sprites
 {
     public class Sprite
     {
+        public string Name { get; set; }
+
         public SpriteAtlas Atlas { get; set; }
 
-        public Vector3 Vertices { get; set; }
+        public Vector2 Size { get; set; }
 
-        public Vector2 TextureCoordinates { get; set; }
+        public Vector3[] Vertices { get; set; }
+
+        public Vector2[] TextureCoordinates { get; set; }
     }
 }

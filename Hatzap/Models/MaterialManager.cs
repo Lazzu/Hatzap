@@ -28,5 +28,10 @@ namespace Hatzap.Models
         {
             throw new NotImplementedException();
         }
+
+        public override void ReleaseAll()
+        {
+            // Nothing to release
+        }
     }
 }
