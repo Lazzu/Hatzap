@@ -149,37 +149,34 @@ namespace Hatzap.Sprites
             current.Atlas.UnBind();
         }
 
-        public void Draw(Sprite spaceShip, Vector2 position, Vector2 size, float rotation, Vector4 color)
+        public void Draw(Sprite sprite, Vector2 position, Vector2 size, float rotation, Vector4 color)
         {
-            uint[] index = new uint[spaceShip.Vertices.Length];
-            
-            if(current.PremultipliedAlpha)
+            /*if(current.PremultipliedAlpha)
             {
                 color.X *= color.W;
                 color.Y *= color.W;
                 color.Z *= color.W;
-            }
+            }*/
 
-            for (int i = 0; i < spaceShip.Vertices.Length; i++)
+            uint baseIndex = (uint)queue.Count;
+
+            for (int i = 0; i < sprite.Vertices.Length; i++)
             {
-                index[i] = (uint)queue.Count;
                 queue.Add(new SpriteRenderData()
                 {
-                    Vertex = spaceShip.Vertices[i],
-                    UV = spaceShip.TextureCoordinates[i],
+                    Vertex = sprite.Vertices[i],
+                    UV = sprite.TextureCoordinates[i],
                     Position = new Vector3(position),
-                    Size = size * spaceShip.Size,
+                    Size = size * sprite.Size,
                     Rotation = rotation,
                     Color = color
                 });
             }
 
-            indices.Add(index[0]);
-            indices.Add(index[1]);
-            indices.Add(index[2]);
-            indices.Add(index[2]);
-            indices.Add(index[1]);
-            indices.Add(index[3]);
+            for (int i = 0; i < sprite.Indices.Length; i++)
+            {
+                indices.Add(baseIndex + sprite.Indices[i]);
+            }
         }
     }
 }

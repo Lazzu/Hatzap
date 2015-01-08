@@ -1,54 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<SpriteAtlas xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <TextureName>Textures/spaceships.tex</TextureName>
+<SpriteAtlas xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Texture="Textures/spaceships.tex" PremultipliedAlpha="false">
   <Sprites>
-    <Sprite>
-      <Name>ship1</Name>
+    <Sprite ID="PlayerBlue1">
       <Size>
         <X>99</X>
         <Y>75</Y>
       </Size>
       <Vertices>
-        <Vector3>
+        <Pos>
           <X>-0.5</X>
           <Y>-0.5</Y>
           <Z>0</Z>
-        </Vector3>
-        <Vector3>
+        </Pos>
+        <Pos>
           <X>0.5</X>
           <Y>-0.5</Y>
           <Z>0</Z>
-        </Vector3>
-        <Vector3>
+        </Pos>
+        <Pos>
           <X>-0.5</X>
           <Y>0.5</Y>
           <Z>0</Z>
-        </Vector3>
-        <Vector3>
+        </Pos>
+        <Pos>
           <X>0.5</X>
           <Y>0.5</Y>
           <Z>0</Z>
-        </Vector3>
+        </Pos>
       </Vertices>
       <TextureCoordinates>
-        <Vector2>
+        <UV>
           <X>0.206054688</X>
           <Y>0.9921875</Y>
-        </Vector2>
-        <Vector2>
+        </UV>
+        <UV>
           <X>0.302734375</X>
           <Y>0.9921875</Y>
-        </Vector2>
-        <Vector2>
+        </UV>
+        <UV>
           <X>0.206054688</X>
           <Y>0.9189453</Y>
-        </Vector2>
-        <Vector2>
+        </UV>
+        <UV>
           <X>0.302734375</X>
           <Y>0.9189453</Y>
-        </Vector2>
+        </UV>
       </TextureCoordinates>
+      <Indices>
+        <Index>0</Index>
+        <Index>1</Index>
+        <Index>2</Index>
+        <Index>2</Index>
+        <Index>1</Index>
+        <Index>3</Index>
+      </Indices>
     </Sprite>
   </Sprites>
-  <PremultipliedAlpha>false</PremultipliedAlpha>
 </SpriteAtlas>

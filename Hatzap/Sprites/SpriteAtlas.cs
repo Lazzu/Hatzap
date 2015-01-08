@@ -9,6 +9,7 @@ namespace Hatzap.Sprites
 {
     public class SpriteAtlas
     {
+        [XmlAttribute("Texture")]
         public string TextureName { get; set; }
 
         [XmlIgnore]
@@ -16,6 +17,7 @@ namespace Hatzap.Sprites
 
         public List<Sprite> Sprites { get; set; }
 
+        [XmlAttribute]
         public bool PremultipliedAlpha { get; set; }
 
         /// <summary>

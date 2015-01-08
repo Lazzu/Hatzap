@@ -56,13 +56,13 @@ namespace SpriteExample
 
             // Temporary example until editor gets sprite support
             // Uncomment to regenerate sprite file
-            //GenerateSpriteFile();
+            GenerateSpriteFile();
 
             // Get the sprite atlas
             spaceShips = sam.Get("Sprites/SpaceShips.spr", true);
 
             // Get sprite by ID (slow operation, cache result on load)
-            spaceShip = spaceShips["ship1"];
+            spaceShip = spaceShips["PlayerBlue1"];
         }
 
         protected override void OnResize(EventArgs e)
@@ -95,7 +95,7 @@ namespace SpriteExample
             var color2 = new Vector4(0.5f, 0.5f, 1f, 1f);
             // Third sprite
             var position3 = new Vector2((float)Math.Sin(totalTime + Math.PI * 4 / 3) * 100f, (float)Math.Cos(totalTime + Math.PI * 4 / 3) * 100f);
-            var rotation3 = (float)(totalTime * Math.PI / 10f); // over 10 seconds
+            var rotation3 = (float)(totalTime * Math.PI / 3f); // over 3 seconds (fastest)
             var color3 = new Vector4(0.5f, 1f, 0.5f, 1f);
 
             // Draw sprites
@@ -129,18 +129,21 @@ namespace SpriteExample
                 Sprites = new List<Sprite>()
                 {
                     new Sprite() {
-                        Name = "ship1", // Sprite ID in this atlas
-                        Vertices = new Vector3[4] {         // A sprite can have more vertices,
+                        Name = "PlayerBlue1", // Sprite ID in this atlas
+                        Vertices = new Vector3[] {          // A sprite can have more vertices,
                             new Vector3(-0.5f, -0.5f, 0),   // useful for fill-rate optimization.
                             new Vector3(0.5f, -0.5f, 0),    // vertex position count and uv count
                             new Vector3(-0.5f, 0.5f, 0),    // must be equal. 4 vert -> 4 uv
                             new Vector3(0.5f, 0.5f, 0),
                         },
-                        TextureCoordinates = new Vector2[4] {
+                        TextureCoordinates = new Vector2[] {
                             new Vector2(left, bottom),
                             new Vector2(right, bottom),
                             new Vector2(left, top),
                             new Vector2(right, top),
+                        },
+                        Indices = new uint[] {
+                            0,1,2,2,1,3
                         },
                         Size = new Vector2(99f, 75f)
                     }
