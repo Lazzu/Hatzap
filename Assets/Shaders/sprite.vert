@@ -5,8 +5,10 @@ layout(location = 1) in vec2 uv;
 layout(location = 2) in vec3 position;
 layout(location = 3) in vec2 size;
 layout(location = 4) in float rotation;
+layout(location = 5) in vec4 color;
 
 out vec2 tcoord;
+out vec4 fcolor;
 
 uniform mat4 projection;
 
@@ -40,7 +42,7 @@ mat4 ConstructModelMatrix(vec3 position, vec2 size, float rotation)
 void main()
 {
   mat4 mM = ConstructModelMatrix(position, size, rotation);
-  
+  fcolor = color;
 	tcoord = uv;
 	gl_Position = projection * mM * vec4(vertex, 1);
 }

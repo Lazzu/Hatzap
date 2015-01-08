@@ -29,11 +29,14 @@ namespace Hatzap.Sprites
         /// </summary>
         public float Rotation;
 
-        
+        /// <summary>
+        /// Vertex color
+        /// </summary>
+        public Vector4 Color;
 
         public static int SizeInBytes
         {
-            get { return Vector3.SizeInBytes * 2 + Vector2.SizeInBytes * 2 + sizeof(float); }
+            get { return Vector3.SizeInBytes * 2 + Vector2.SizeInBytes * 2 + sizeof(float) + Vector4.SizeInBytes; }
         }
     }
 }

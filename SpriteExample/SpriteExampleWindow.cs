@@ -85,16 +85,23 @@ namespace SpriteExample
 
             // Calculate sprite drawing parameters
             // First sprite
-            var position = new Vector2((float)Math.Sin(totalTime + Math.PI) * 100f, (float)Math.Cos(totalTime + Math.PI) * 100f);
+            var position = new Vector2((float)Math.Sin(totalTime + Math.PI * 2 / 3) * 100f, (float)Math.Cos(totalTime + Math.PI * 2 / 3) * 100f);
             var scale = new Vector2(0.5f, 0.5f);
             var rotation = (float)(totalTime * Math.PI / 10f); // over 10 seconds
+            var color = new Vector4(1f, 0.5f, 0.5f, 1f);
             // Second sprite
             var position2 = new Vector2((float)Math.Sin(totalTime) * 100f, (float)Math.Cos(totalTime) * 100f);
             var rotation2 = (float)(totalTime * Math.PI / -5f); // over 5 seconds (faster) opposite direction
+            var color2 = new Vector4(0.5f, 0.5f, 1f, 1f);
+            // Third sprite
+            var position3 = new Vector2((float)Math.Sin(totalTime + Math.PI * 4 / 3) * 100f, (float)Math.Cos(totalTime + Math.PI * 4 / 3) * 100f);
+            var rotation3 = (float)(totalTime * Math.PI / 10f); // over 10 seconds
+            var color3 = new Vector4(0.5f, 1f, 0.5f, 1f);
 
             // Draw sprites
-            spriteBatch.Draw(spaceShip, position, scale, rotation);
-            spriteBatch.Draw(spaceShip, position2, scale, rotation2);
+            spriteBatch.Draw(spaceShip, position, scale, rotation, color);
+            spriteBatch.Draw(spaceShip, position2, scale, rotation2, color2);
+            spriteBatch.Draw(spaceShip, position3, scale, rotation3, color3);
 
             // End batch. The end result will be shown on active framebuffer at this point.
             spriteBatch.EndBatch();

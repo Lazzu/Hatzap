@@ -42,6 +42,7 @@ namespace Hatzap.Sprites
                 int position = program.GetAttribLocation("position");
                 int size = program.GetAttribLocation("size");
                 int rotation = program.GetAttribLocation("rotation");
+                int color = program.GetAttribLocation("color");
 
                 int stride = BlittableValueType.StrideOf(new SpriteRenderData());
 
@@ -83,6 +84,14 @@ namespace Hatzap.Sprites
                 }
 
                 offset += sizeof(float);
+
+                if (color != -1)
+                {
+                    GL.EnableVertexAttribArray(color);
+                    GL.VertexAttribPointer(color, 4, VertexAttribPointerType.Float, false, stride, offset);
+                }
+
+                offset += Vector4.SizeInBytes;
                 
 
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, vbo[1]);
@@ -140,9 +149,16 @@ namespace Hatzap.Sprites
             current.Atlas.UnBind();
         }
 
-        public void Draw(Sprite spaceShip, Vector2 position, Vector2 size, float rotation)
+        public void Draw(Sprite spaceShip, Vector2 position, Vector2 size, float rotation, Vector4 color)
         {
             uint[] index = new uint[spaceShip.Vertices.Length];
+            
+            if(current.PremultipliedAlpha)
+            {
+                color.X *= color.W;
+                color.Y *= color.W;
+                color.Z *= color.W;
+            }
 
             for (int i = 0; i < spaceShip.Vertices.Length; i++)
             {
@@ -153,7 +169,8 @@ namespace Hatzap.Sprites
                     UV = spaceShip.TextureCoordinates[i],
                     Position = new Vector3(position),
                     Size = size * spaceShip.Size,
-                    Rotation = rotation
+                    Rotation = rotation,
+                    Color = color
                 });
             }
 
