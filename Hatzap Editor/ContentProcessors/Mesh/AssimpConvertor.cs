@@ -93,7 +93,8 @@ namespace Hatzap_Editor.ContentProcessors.Mesh
             }
             else
             {
-                colors = null;
+                colors = new Vector4[1][];
+                colors[0] = new Vector4[v.Count];
             }
 
             for (int i = 0; i < v.Count; i++)
@@ -111,10 +112,18 @@ namespace Hatzap_Editor.ContentProcessors.Mesh
                 }
                 if (colors != null)
                 {
-                    for (int j = 0; j < amesh.VertexColorChannelCount; j++)
+                    if (amesh.HasVertexColors(0))
                     {
-                        colors[j][i] = new Vector4(c[j][i].R, c[j][i].G, c[j][i].B, c[j][i].A);
+                        for (int j = 0; j < amesh.VertexColorChannelCount; j++)
+                        {
+                            colors[j][i] = new Vector4(c[j][i].R, c[j][i].G, c[j][i].B, c[j][i].A);
+                        }
                     }
+                    else
+                    {
+                        colors[0][i] = new Vector4(1, 1, 1, 1);
+                    }
+                    
                 }
             }
 

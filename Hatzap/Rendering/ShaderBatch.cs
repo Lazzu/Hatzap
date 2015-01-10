@@ -14,6 +14,7 @@ namespace Hatzap.Rendering
         public ShaderProgram Program { get; set; }
         public RenderQueue RenderQueue { get; set; }
 
+        TextureBatch textureless;
         public Dictionary<Texture, TextureBatch> TextureBatches = new Dictionary<Texture, TextureBatch>();
 
         // Statics to improve performance a little bit
@@ -25,11 +26,24 @@ namespace Hatzap.Rendering
             Program = data.Shader;
             texture = data.Texture;
 
-            if (!TextureBatches.TryGetValue(texture, out batchQueue))
+            if(texture == null)
             {
-                batchQueue = new TextureBatch();
-                batchQueue.RenderQueue = RenderQueue;
-                TextureBatches.Add(texture, batchQueue);
+                if(textureless == null)
+                {
+                    textureless = new TextureBatch();
+                    textureless.RenderQueue = RenderQueue;
+                }
+
+                batchQueue = textureless;
+            }
+            else
+            {
+                if (!TextureBatches.TryGetValue(texture, out batchQueue))
+                {
+                    batchQueue = new TextureBatch();
+                    batchQueue.RenderQueue = RenderQueue;
+                    TextureBatches.Add(texture, batchQueue);
+                }
             }
 
             batchQueue.Insert(data);
@@ -43,7 +57,12 @@ namespace Hatzap.Rendering
             Program.SendUniform("mViewProjection", ref Camera.Current.VPMatrix);
             Program.SendUniform("mNormal", ref Camera.Current.NormalMatrix);
             Program.SendUniform("EyeDirection", ref Camera.Current.Direction);
-            
+
+            if(textureless != null)
+            {
+                triangles += textureless.Render();
+            }
+
             foreach (var textureBatch in TextureBatches)
             {
                 triangles += textureBatch.Value.Render();

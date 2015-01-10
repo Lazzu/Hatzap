@@ -15,6 +15,13 @@
         <Shader Type="FragmentShader" Path="../../Assets/Shaders/simplemodel.frag" />
       </Shaders>
     </ShaderProgram>
+    <ShaderProgram>
+      <Name>instancedmodel</Name>
+      <Shaders>
+        <Shader Type="VertexShader" Path="../../Assets/Shaders/instancedmodel.vert" />
+        <Shader Type="FragmentShader" Path="../../Assets/Shaders/texturelessmodel.frag" />
+      </Shaders>
+    </ShaderProgram>
 	<ShaderProgram>
       <Name>uniformexamplemodel</Name>
       <Shaders>

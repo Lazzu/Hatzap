@@ -9,6 +9,7 @@ using Hatzap.Models;
 using Hatzap.Textures;
 using Hatzap.Utilities;
 using OpenTK;
+using OpenTK.Graphics.OpenGL;
 
 namespace Hatzap.Rendering
 {
@@ -74,8 +75,11 @@ namespace Hatzap.Rendering
         {
             int triangles = 0;
 
-            Texture.Bind();
-            Texture.UpdateQuality();
+            if(Texture != null)
+            {
+                Texture.Bind();
+                Texture.UpdateQuality();
+            }
 
             if(Instanced != null)
             {
@@ -117,7 +121,13 @@ namespace Hatzap.Rendering
                 }
                 count = 0;
             }
+
+            if (Texture != null)
+            {
+                Texture.UnBind();
+            }
             
+
             return triangles;
         }
     }

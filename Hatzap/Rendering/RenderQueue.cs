@@ -32,7 +32,6 @@ namespace Hatzap.Rendering
             Time.StartTimer("RenderQueue.Insert()", "Render");
 
             if (data.Shader == null) throw new ArgumentNullException("data.Shader", "Renderable's shader must not be null!");
-            if (data.Texture == null) throw new ArgumentNullException("data.Texture", "Renderable's texture must not be null!");
 
             var shader = data.Shader;
 
@@ -69,7 +68,7 @@ namespace Hatzap.Rendering
             }
             
             GLState.AlphaBleding = true;
-            GLState.DepthTest = false;
+            //GLState.DepthTest = false;
 
             foreach (var shaderBatch in TransparentShaderBatches)
             {
