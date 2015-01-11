@@ -56,9 +56,7 @@ namespace Hatzap.Rendering
             matrix.Add(obj.Transform.Matrix);
             Count++;
         }
-
-        bool first = true;
-
+        
         public int Draw()
         {
             Time.StartTimer("InstancedBatch.Draw()", "Render");
@@ -80,45 +78,17 @@ namespace Hatzap.Rendering
                 matrix = materialGroup.Value;
 
                 GL.BindBuffer(BufferTarget.ArrayBuffer, mbo[material]);
-                GL.VertexAttribPointer(pos1, 4, VertexAttribPointerType.Float, false, stride, Vector4.SizeInBytes * 0);
-                GL.VertexAttribPointer(pos2, 4, VertexAttribPointerType.Float, false, stride, Vector4.SizeInBytes * 1);
-                GL.VertexAttribPointer(pos3, 4, VertexAttribPointerType.Float, false, stride, Vector4.SizeInBytes * 2);
-                GL.VertexAttribPointer(pos4, 4, VertexAttribPointerType.Float, false, stride, Vector4.SizeInBytes * 3);
-                GL.EnableVertexAttribArray(pos1);
-                GL.EnableVertexAttribArray(pos2);
-                GL.EnableVertexAttribArray(pos3);
-                GL.EnableVertexAttribArray(pos4);
-                GL.VertexAttribDivisor(pos1, 1);
-                GL.VertexAttribDivisor(pos2, 1);
-                GL.VertexAttribDivisor(pos3, 1);
-                GL.VertexAttribDivisor(pos4, 1);
+
+                for (int i = 0; i < 4; i++)
+                {
+                    GL.VertexAttribPointer(attribPos + i, 4, VertexAttribPointerType.Float, false, stride, Vector4.SizeInBytes * i);
+                    GL.EnableVertexAttribArray(attribPos + i);
+                    GL.VertexAttribDivisor(attribPos + i, 1);
+                }
 
                 byteSize = matrix.Count * Vector4.SizeInBytes * 4;
 
                 GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(byteSize), matrix.ToArray(), BufferUsageHint.StreamDraw);
-
-                /*GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(byteSize), IntPtr.Zero, BufferUsageHint.StreamDraw);
-
-                try
-                {
-                    var buffer = GL.MapBuffer(BufferTarget.ArrayBuffer, BufferAccess.WriteOnly);
-
-                    unsafe
-                    {
-                        var ptr = (Matrix4*)buffer.ToPointer();
-
-                        for (int i = 0; i < matrix.Count; i++)
-                        {
-                            ptr[i] = matrix[i];
-                        }
-                    }
-                    GL.UnmapBuffer(BufferTarget.ArrayBuffer);
-                }
-                catch(Exception e) 
-                {
-                    GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(byteSize), matrix.ToArray(), BufferUsageHint.StreamDraw);
-                    Debug.WriteLine(e);
-                }*/
 
                 foreach (var uniform in material.Uniforms)
                 {
@@ -132,11 +102,7 @@ namespace Hatzap.Rendering
                 matrix.Clear();
             }
 
-            
-
             Mesh.UnBind();
-
-            
 
             //matrices.Clear();
             Count = 0;

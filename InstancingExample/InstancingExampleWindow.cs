@@ -39,8 +39,7 @@ namespace InstancingExample
 
             GPUCapabilities.Initialize();
             GLState.DepthTest = true;
-            GLState.AlphaBleding = true;
-            GLState.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+            GLState.CullFace = true;
             GL.ClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 
             ShaderManager.LoadCollection("Shaders/collection.xml");
@@ -65,7 +64,8 @@ namespace InstancingExample
             int n = 8;
             float sizeScale = 10.0f;
 
-            Hatzap.Models.Material material = new Hatzap.Models.Material();
+            // All objects will have the same material
+            Material material = new Material();
 
             for (int x = -n; x <= n; x++)
             {
@@ -81,8 +81,14 @@ namespace InstancingExample
                         instancedObject.Material = material;
 
                         // Set transform
-                        instancedObject.Transform.Position = new Vector3((x + (float)(rand.NextDouble() - 0.5)) * sizeScale, (y + (float)(rand.NextDouble() - 0.5)) * sizeScale, (z + (float)(rand.NextDouble() - 0.5)) * sizeScale);
-                        instancedObject.Transform.Rotation = Quaternion.FromEulerAngles(x * 360.0f / n / (float)Math.PI, y * 360.0f / n / (float)Math.PI, z * 360.0f / n / (float)Math.PI);
+                        instancedObject.Transform.Position = new Vector3(
+                            (x + (float)(rand.NextDouble() - 0.5)) * sizeScale, 
+                            (y + (float)(rand.NextDouble() - 0.5)) * sizeScale, 
+                            (z + (float)(rand.NextDouble() - 0.5)) * sizeScale);
+                        instancedObject.Transform.Rotation = Quaternion.FromEulerAngles(
+                            x * 360.0f / n / (float)Math.PI, 
+                            y * 360.0f / n / (float)Math.PI, 
+                            z * 360.0f / n / (float)Math.PI);
                         
                         // Don't calculate matrices on every frame
                         instancedObject.Transform.Static = true;
@@ -109,7 +115,7 @@ namespace InstancingExample
             camera.Position = new Vector3((float)Math.Sin(totalTime * 0.1) * 40, 10, (float)Math.Cos(totalTime * 0.1) * 40);
             camera.Update((float)e.Time);
 
-            // Update scene and queue objects culled by camera
+            // Update scene (i.e. calculate non-static objects' matrices every frame) and queue objects culled by camera
             SceneManager.Update();
             SceneManager.QueueForRendering(camera, renderQueue);
 
