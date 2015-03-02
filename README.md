@@ -17,3 +17,5 @@ What currently is needed urgently:
 * Documentation. API docs are probably 20% there if they get generated from xml comments in the code, but any other documentation is nonexistent since I've been the only programmer so far.
 
 So yeah. I'm being honest, it's nowhere perfect or ready to use. Some basic stuff can be done as shown in the example projects in the repo, but I'd be lying if I said that games can already be built with it.
+
+If you're wondering about the name, it was chosen by random name generator at about 03:00 am in Assembly Summer 2014 right before I started the project.
