@@ -7,7 +7,7 @@ I've been following few principles during the development of the engine and fram
 * Toolset should be as comprehensive as possible. For example the editor should handle sprite atlasing, megatexturing, material managing, light map baking, and so on.
 * Lightweight
 
-The current situation is that the editor is basically nonexistent, 3d rendering features are about 50% done, and 2d rendering features are, well, I'm not sure if they are 70% done or just a placeholder. Basic game engine features (scripting, entities, etc) are about 15 - 20% complete. If someone knows if some stuff can be done better, I will not shed a tear if any of the code changes. 
+The current situation is that the editor is basically nonexistent, 3d rendering features are about 30% done, and 2d rendering features are, well, I'm not sure if they are 70% done or just a placeholder. Basic game engine features (scripting, entities, etc) are about 15 - 20% complete. If someone knows if some stuff can be done better, I will not shed a tear if any of the code changes. 
 
 What currently is needed urgently:
 
