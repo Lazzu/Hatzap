@@ -1,7 +1,5 @@
 This repo is in bitbucket because it offers free private repos, but I'm planning to switch to github when I decide to go public with the project. I'm planning to go public "soonish" or "when the code is polished enough" or something like that, which will probably be in very near future if we get the editor rolling good.
 
-Now I shall ramble a bit about the engine itself.
-
 I've been following few principles during the development of the engine and framework:
 
 * Released game runtime must require as few external libraries as possible, and preferably no native binary libraries at all. This is the main reason why I rolled with my own file format for 3d assets and textures and basically everything. Currently only things required is the engine dll and OpenTK dll.
@@ -12,6 +10,7 @@ I've been following few principles during the development of the engine and fram
 The current situation is that the editor is basically nonexistent, 3d rendering features are about 50% done, and 2d rendering features are, well, I'm not sure if they are 70% done or just a placeholder. Basic game engine features (scripting, entities, etc) are about 15 - 20% complete. If someone knows if some stuff can be done better, I will not shed a tear if any of the code changes. 
 
 What currently is needed urgently:
+
 * Proper project planning, feature list, roadmap, loose time plan. I'm going to go into this when I'm 100% sure I get help with the engine.
 * Editor should be at least planned properly before publishing
 * Helping hands. I've basically done everything alone and in the evening after first making some games at work, so at times the development speed has been very slow at best. I've had a small break from the project for the past 1.5 months to get some other stuff done, but I will get more active soon.
