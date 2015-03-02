@@ -3,6 +3,7 @@ This repo is in bitbucket because it offers free private repos, but I'm planning
 Now I shall ramble a bit about the engine itself.
 
 I've been following few principles during the development of the engine and framework:
+
 * Released game runtime must require as few external libraries as possible, and preferably no native binary libraries at all. This is the main reason why I rolled with my own file format for 3d assets and textures and basically everything. Currently only things required is the engine dll and OpenTK dll.
 * The engine must be allowed to be used the way the programmer wants it to be used. This means the programmer may want to ditch the scene tree and just fill the rendering queue by hand. The programmer might not want to use ECS, or wants to use his own ECS. Maybe he implemented his own camera. The programmer might also just want to push some vertices to the GPU and render them instantly with some shader. Some people also want to load their own png files run-time. The opposite extreme is that the programmer does not even want to write his own asset loading and just want to give the engine a list of scenes to be loaded, like in Unity.
 * Toolset should be as comprehensive as possible. For example the editor should handle sprite atlasing, megatexturing, material managing, light map baking, and so on.
