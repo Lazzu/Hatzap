@@ -16,9 +16,9 @@ const float gamma = 1.0 / 2.2;
 
 vec2 calculateLighting(vec3 normal, vec3 lightdir, vec3 eyedir)
 {
-	vec3 half = normalize(lightdir + eyedir);
+	vec3 halve = normalize(lightdir + eyedir);
 	float nDotL = dot(normal, lightdir);
-	float nDotH = dot(normal, half);
+	float nDotH = dot(normal, halve);
 	float light = nDotL;
 	float specular = pow( max(0.0, nDotH), 64 );
 	return vec2(light, specular);
