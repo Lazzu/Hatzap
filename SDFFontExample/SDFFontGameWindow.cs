@@ -46,9 +46,14 @@ namespace SDFFontExample
             text = new GuiText();
             text.Font = font;
             
-            text.Text = "This is rendered with SDF technology!<br>(now you should say ooooooooh!)";
+            text.Text = "This is rendered with SDF technology! (now you should say ooooooooh!)";
 
             text.HorizontalAlignment = HorizontalAlignment.Centered;
+        }
+
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        {
+            textures.ReleaseAll();
         }
 
         double totalTime;
@@ -65,6 +70,7 @@ namespace SDFFontExample
 
             GLState.DepthTest = false;
             GLState.AlphaBleding = true;
+            GLState.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
 
             Matrix4 projection = Matrix4.CreateOrthographicOffCenter(-Width/2.0f, Width/2.0f, Height, -Height/2.0f, -1, 1);
             Matrix4 view = Matrix4.Identity;
