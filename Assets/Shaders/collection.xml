@@ -50,5 +50,19 @@
         <Shader Type="FragmentShader" Path="../../Assets/Shaders/sprite.frag" />
       </Shaders>
     </ShaderProgram>
+    <ShaderProgram>
+      <Name>cubemappedmodel</Name>
+      <Shaders>
+        <Shader Type="VertexShader" Path="../../Assets/Shaders/simplemodel.vert" />
+        <Shader Type="FragmentShader" Path="../../Assets/Shaders/cubemappedmodel.frag" />
+      </Shaders>
+    </ShaderProgram>
+	 <ShaderProgram>
+      <Name>Text</Name>
+      <Shaders>
+        <Shader Type="VertexShader" Path="../../Assets/Shaders/Text.vert" />
+        <Shader Type="FragmentShader" Path="../../Assets/Shaders/Text.frag" />
+      </Shaders>
+    </ShaderProgram>
   </ShaderPrograms>
 </ShaderCollection>

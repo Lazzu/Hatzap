@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Hatzap.Assets;
 using OpenTK;
 
 namespace Hatzap.Gui.Fonts
@@ -147,10 +148,7 @@ namespace Hatzap.Gui.Fonts
 
         static public Dictionary<char, Glyph> GetGlyphsFromFile(string file, out string FontFace)
         {
-            using(FileStream s = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.None))
-            {
-                return GetGlyphs(s, out FontFace);
-            }
+            return GetGlyphs(PackageManager.GetStream(file), out FontFace);
         }
 
 
