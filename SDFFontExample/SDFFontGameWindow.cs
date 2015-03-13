@@ -66,29 +66,31 @@ namespace SDFFontExample
 
             totalTime += e.Time;
 
+            // This stuff should be abstracted away
             shader.Enable();
-
             GLState.DepthTest = false;
             GLState.AlphaBleding = true;
             GLState.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-
             Matrix4 projection = Matrix4.CreateOrthographicOffCenter(-Width/2.0f, Width/2.0f, Height, -Height/2.0f, -1, 1);
             Matrix4 view = Matrix4.Identity;
             var textureSize = new Vector2(text.Font.Texture.Width, text.Font.Texture.Height);
-
             view = Matrix4.CreateTranslation(0, 10, 0);
             var mvp = view * projection;
             shader.SendUniform("MVP", ref mvp);
             shader.SendUniform("textureSize", ref textureSize);
             GL.ActiveTexture(TextureUnit.Texture0);
 
+            // This is horrible, but here for demonstration. When text color changes, the whole 
+            // mesh gets regenerated which is slow if done too much or with too long texts
             float r = (float)((Math.Sin(totalTime * 3.2398457) + 1) / 2);
             float g = (float)((Math.Sin(totalTime * 2.5547642) + 1) / 2);
             float b = (float)((Math.Sin(totalTime * 4.2567432) + 1) / 2);
-
             text.Color = new Vector4(r, g, b, 1);
 
+            // Set font size
             text.FontSize = (float)(Math.Sin(totalTime) * 20.0 + 10.0);
+
+            // Draw the text
             text.Draw(shader);
 
             shader.Disable();
