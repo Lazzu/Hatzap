@@ -25,16 +25,16 @@ namespace Hatzap.Gui
 
 
         float weight, border, smooth, glyphSpacing, lineheight, fontsize;
-        Vector4 borderColor;
+        Vector4 borderColor, color;
         HorizontalAlignment horizontalAlignment;
         VerticalAlignment verticalAlignment;
 
         public Font Font { get; set; }
         public float FontSize { get { return fontsize; } set { fontsize = value; } }
-        public Vector4 Color { get; set; }
-        public float Weight { get { return weight; } set { weight = value; } }
-        public float Border { get { return border; } set { border = value; } }
-        public float Smooth { get { return smooth; } set { smooth = value; } }
+        public Vector4 Color { get { return color; } set { color = value; dirty = true; } }
+        public float Weight { get { return weight; } set { weight = value; dirty = true; } }
+        public float Border { get { return border; } set { border = value; dirty = true; } }
+        public float Smooth { get { return smooth; } set { smooth = value; dirty = true; } }
         public float LetterSpacing { get { return glyphSpacing; } set { glyphSpacing = value; dirty = true; } }
         public float LineHeight { get { return lineheight; } set { lineheight = value; dirty = true; } }
         public Vector4 BorderColor { get { return borderColor; } set { borderColor = value; dirty = true; } }
