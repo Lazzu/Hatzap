@@ -64,23 +64,8 @@ namespace Hatzap.Utilities
                 MaxAnisotrophyLevel = maxAniso;
             }
 
+            n = 0; // Reset to 0 so it's the default value if the GetInteger fails.
             GL.GetInteger(GetPName.MaxSamples, out n);
-
-            switch(n)
-            {
-                case 0:
-                case 8:
-                case 16:
-                case 24:
-                case 32:
-                case 64:
-                case 128:   // Quaddro supports this far.
-                    break;
-                default:
-                    n = 0;
-                    break;
-            }
-
             MaxMSAA = n;
 
         }
