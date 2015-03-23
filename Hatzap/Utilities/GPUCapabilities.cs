@@ -64,6 +64,9 @@ namespace Hatzap.Utilities
                 MaxAnisotrophyLevel = maxAniso;
             }
 
+            GL.GetInteger(GetPName.MaxSamples, out n);
+            MaxMSAA = n;
+
         }
         
         public static bool IsExtensionAvailable(string extension)
@@ -79,5 +82,6 @@ namespace Hatzap.Utilities
         public static bool SeamlessCubemaps { get; private set; }
         public static bool AnisotrophicFiltering { get; set; }
         public static float MaxAnisotrophyLevel { get; private set; }
+        public static int MaxMSAA { get; private set; }
     }
 }
