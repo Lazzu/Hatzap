@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Hatzap.Textures;
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 namespace Hatzap.Rendering
@@ -11,113 +12,79 @@ namespace Hatzap.Rendering
     public class Framebuffer
     {
         int fbo = 0;
+        Texture texture;
+        VertexBatch batch;
 
-        public bool HasDepth { get; set; }
-
-        public Framebuffer(int depth, int stencil, Texture[] renderTargets)
+        public Framebuffer(int width, int height)
         {
-            fbo = GL.GenFramebuffer();
+            texture = new Texture();
+            texture.Quality = new TextureQuality();
+            texture.Quality.TextureWrapMode = TextureWrapMode.ClampToEdge;
+            texture.Quality.Filtering = TextureFiltering.Trilinear;
+            texture.Generate(PixelFormat.Rgba, PixelType.UnsignedByte);
 
-            /*GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
+            texture.Bind();
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, 1); // automatic mipmap
+            texture.UnBind();
 
-            if(depth > 0)
-            {
-                // Depth buffer
-                GL.GenRenderbuffers(1, out depthBuffer);
-            }
-            
+            // create a renderbuffer object to store depth info
+            int rboId;
+            GL.GenRenderbuffers(1, out rboId);
+            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, rboId);
+            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, width, height);
+            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
 
-            // Generate textures to render to
-            GL.GenTextures(textures.Length, textures);
+            // create a framebuffer object
+            GL.GenFramebuffers(1, out fbo);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
 
-            // Create new textures and buffers
-            ResizeTextures(size);
+            // attach the texture to FBO color attachment point
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer,        // 1. fbo target: GL_FRAMEBUFFER 
+                                   FramebufferAttachment.ColorAttachment0,  // 2. attachment point
+                                   TextureTarget.Texture2D,         // 3. tex target: GL_TEXTURE_2D
+                                   texture.ID,             // 4. tex ID
+                                   0);                    // 5. mipmap level: 0(base)
 
-            // Create orthogonal projection
-            ResizeOrtho(size);
+            // attach the renderbuffer to depth attachment point
+            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer,      // 1. fbo target: GL_FRAMEBUFFER
+                                      FramebufferAttachment.DepthAttachment, // 2. attachment point
+                                      RenderbufferTarget.Renderbuffer,     // 3. rbo target: GL_RENDERBUFFER
+                                      rboId);              // 4. rbo ID
 
-            // Draw buffer types list
-            DrawBuffersEnum[] list = new DrawBuffersEnum[textures.Length];
-
-            // Attach textures to the framebuffer and set the type in the list
-            for (int i = 0; i < textures.Length; i++)
-            {
-                GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + i, textures[i], 0);
-                list[i] = DrawBuffersEnum.ColorAttachment0 + i;
-            }
-
-            // Attach the depth buffer to the framebuffer
-            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer,
-                FramebufferAttachment.DepthAttachment,
-                RenderbufferTarget.Renderbuffer,
-                depthBuffer);
-
-            // Set the list of draw buffers.
-            GL.DrawBuffers(textures.Length, list);
-
-            // Get error code
-            FramebufferErrorCode status = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
-
-            // Check for errors
+            // check FBO status
+            var status = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
             if (status != FramebufferErrorCode.FramebufferComplete)
-                throw new Exception("Error creating frame buffer! Status: " + status);
+                Console.WriteLine("ERROR: Can not create framebuffer because " + status.ToString());
 
-            // Unbind the framebuffer
+            // switch back to window-system-provided framebuffer
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
-            // Vertex buffer object
-            GL.GenBuffers(1, out vbo);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertex.Length * Vector3.SizeInBytes), vertex, BufferUsageHint.DynamicDraw);
+            batch = new VertexBatch();
+            batch.StartBatch(PrimitiveType.Triangles);
+            batch.Add(new Vector3(-1, -1, 0)); // Bottom left
+            batch.Add(new Vector3(1, -1, 0));  // Bottom right
+            batch.Add(new Vector3(-1, 1, 0));  // Top left
+            batch.Add(new Vector3(1, -1, 0));  // Bottom right
+            batch.Add(new Vector3(-1, 1, 0));  // Top left
+            batch.Add(new Vector3(1, 1, 0)); // Top right
+            batch.EndBatch();
+        }
 
-            // Element array object (indices)
-            GL.GenBuffers(1, out ebo);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ebo);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(index.Length * sizeof(ushort)), index, BufferUsageHint.StaticDraw);
+        public void Enable()
+        {
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
+        }
 
-            // Vertex array object (store vertex buffer and incides in same place)
-            GL.GenVertexArrays(1, out vao);
+        public void Disable()
+        {
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+        }
 
-            // bind the vao
-            GL.BindVertexArray(vao);
-
-            // Set the vbo settings in the vao
-            GL.EnableVertexAttribArray(0);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, BlittableValueType.StrideOf(vertex), 0);
-
-            // Bind the ebo to the vao
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ebo);
-
-            // Unbind the vao
-            GL.BindVertexArray(0);
-
-            ResizeVertices(size);
-
-
-            // Make the shader
-            shader = new ShaderProgram();
-            shader.ProcessShaderFile("Content/Shaders/Deferred/deferred.vert", ShaderType.VertexShader);
-            shader.ProcessShaderFile("Content/Shaders/Deferred/deferred.frag", ShaderType.FragmentShader);
-            shader.Link();
-
-
-            // Make the debug shader
-            debugShader = new ShaderProgram();
-            debugShader.ProcessShaderFile("Content/Shaders/texture.vert", ShaderType.VertexShader);
-            debugShader.ProcessShaderFile("Content/Shaders/texture.frag", ShaderType.FragmentShader);
-            debugShader.Link();
-
-            // Texture locations for deferred rendering
-            shader.FindUniforms(textureLocations);
-
-            shader.FindUniforms(new string[] {
-				"mP", "DiffLightTexture", "SpecLightTexture", "brightness"
-			});
-
-            debugShader.FindUniforms(new string[]{
-				"mP", "textureSampler"
-			});*/
+        public void RenderOnScreen()
+        {
+            texture.Bind();
+            batch.Render();
+            texture.UnBind();
         }
     }
 }
