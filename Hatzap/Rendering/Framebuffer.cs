@@ -13,6 +13,7 @@ namespace Hatzap.Rendering
     public class Framebuffer
     {
         int fbo = 0;
+        int rboId;
         Texture texture;
         VertexBatch batch;
 
@@ -32,7 +33,6 @@ namespace Hatzap.Rendering
             texture.UnBind();*/
 
             // create a renderbuffer object to store depth info
-            int rboId;
             GL.GenRenderbuffers(1, out rboId);
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, rboId);
             GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent32, width, height);
@@ -96,7 +96,9 @@ namespace Hatzap.Rendering
         public void Release()
         {
             GL.DeleteFramebuffer(fbo);
+            GL.DeleteRenderbuffer(rboId);
             texture.Release();
+            texture = null;
         }
     }
 }
