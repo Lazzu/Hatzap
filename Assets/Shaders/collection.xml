@@ -64,5 +64,12 @@
         <Shader Type="FragmentShader" Path="../../Assets/Shaders/Text.frag" />
       </Shaders>
     </ShaderProgram>
+	<ShaderProgram>
+      <Name>framebufferexample</Name>
+      <Shaders>
+        <Shader Type="VertexShader" Path="../../Assets/Shaders/framebufferexample.vert" />
+        <Shader Type="FragmentShader" Path="../../Assets/Shaders/framebufferexample.frag" />
+      </Shaders>
+    </ShaderProgram>
   </ShaderPrograms>
 </ShaderCollection>

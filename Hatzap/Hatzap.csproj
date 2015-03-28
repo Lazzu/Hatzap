@@ -112,6 +112,7 @@
     <Compile Include="Rendering\RenderData.cs" />
     <Compile Include="Rendering\RenderDataPool.cs" />
     <Compile Include="Rendering\RenderQueue.cs" />
+    <Compile Include="Rendering\RenderTarget.cs" />
     <Compile Include="Rendering\ShaderBatch.cs" />
     <Compile Include="Rendering\TextureBatch.cs" />
     <Compile Include="Rendering\UniformData.cs" />
@@ -150,10 +151,12 @@
     <Compile Include="Utilities\GLThreadHelper.cs" />
     <Compile Include="Utilities\GPUCapabilities.cs" />
     <Compile Include="Utilities\IBounder.cs" />
+    <Compile Include="Utilities\IRandomProvider.cs" />
     <Compile Include="Utilities\MathHelper.cs" />
     <Compile Include="Utilities\OctTree.cs" />
     <Compile Include="Utilities\Plane.cs" />
     <Compile Include="Utilities\PlaneIntersectionType.cs" />
+    <Compile Include="Utilities\Random.cs" />
     <Compile Include="Utilities\Ray.cs" />
     <Compile Include="Utilities\ScreenFiller.cs" />
     <Compile Include="Utilities\SkyRenderer.cs" />

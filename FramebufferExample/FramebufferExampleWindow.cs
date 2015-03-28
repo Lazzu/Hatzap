@@ -149,6 +149,7 @@ namespace FramebufferExample
             base.OnClosing(e);
 
             AssetManagerBase.CleanupManagers();
+            fbo.Release();
         }
     }
 }
