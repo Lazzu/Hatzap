@@ -518,7 +518,7 @@ namespace HatzapTestApplication
                 btn3.Text = "Button 3";
                 btn3.OnClick += (m) =>
                 {
-                    Random r = new Random();
+                    var r = new Hatzap.Utilities.Random();
                     btn3.Color = new Vector4((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble(), 1);
                     //btn3.Z = btn4.Z + 1;
                 };
@@ -657,7 +657,7 @@ namespace HatzapTestApplication
             int n = 5;
             int sizeScale = 7;
 
-            Random rand = new Random();
+            var rand = new Hatzap.Utilities.Random();
 
             for (int x = -n; x <= n; x++)
             {

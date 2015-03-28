@@ -27,6 +27,50 @@ namespace Hatzap.Assets
             get { return basePath; }
             set { basePath = value; }
         }
+        public static string AppPath
+        {
+            get { return appPath; }
+            set { appPath = value; }
+        }
+
+        public static IEnumerable<string> AvailableAssets
+        {
+            get
+            {
+                foreach (var item in assetPaths)
+                {
+                    yield return item.Key;
+                }
+
+                if (appPath == string.Empty)
+                {
+                    appPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                }
+
+                var path = Path.Combine(appPath, basePath);
+
+                foreach (var item in GetFilesInDir(path))
+                {
+                    yield return item.Replace(path, "");
+                }
+            }
+        }
+
+        private static IEnumerable<string> GetFilesInDir(string path)
+        {
+            foreach (var dir in Directory.GetDirectories(path))
+            {
+                foreach (var file in GetFilesInDir(dir))
+                {
+                    yield return file;
+                }
+            }
+
+            foreach (var file in Directory.GetFiles(path))
+            {
+                yield return file;
+            }
+        }
 
         /// <summary>
         /// Inserts a package processor to process the whole packages with.
@@ -77,6 +121,30 @@ namespace Hatzap.Assets
             {
                 assetPaths.Add(asset.Path, asset);
             }
+        }
+
+        /// <summary>
+        /// Returns true if given path exists in current packages or file system.
+        /// </summary>
+        /// <param name="path">The path to query</param>
+        /// <returns>True if path exists. False otherwise.</returns>
+        public static bool AssetExists(string path)
+        {
+            var yes = assetPaths.ContainsKey(path);
+
+            if(!yes)
+            {
+                if (appPath == string.Empty)
+                {
+                    appPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                }
+
+                path = Path.Combine(appPath, basePath, path);
+
+                yes = File.Exists(path);
+            }
+
+            return yes;
         }
 
         /// <summary>

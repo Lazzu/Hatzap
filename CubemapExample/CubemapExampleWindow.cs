@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
+using System.Linq;
+using System.Text;
 using Hatzap;
 using Hatzap.Assets;
 using Hatzap.Models;
@@ -13,12 +13,12 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
-namespace ModelExample
+namespace CubemapExample
 {
-    class ModelExampleWindow : GameWindow
+    public class CubemapExampleWindow : GameWindow
     {
-        public ModelExampleWindow()
-            : base(1280, 720, new GraphicsMode(new ColorFormat(32), 24, 8, 16, 0, 2, false), "Hatzap Model Example", GameWindowFlags.Default,
+        
+        public CubemapExampleWindow()  : base(1280, 720, new GraphicsMode(new ColorFormat(32), 24, 8, 16, 0, 2, false), "Hatzap Instancing Example", GameWindowFlags.Default,
                 DisplayDevice.GetDisplay(DisplayIndex.Default), 3, 3, GraphicsContextFlags.Default)
         { }
 
@@ -32,6 +32,12 @@ namespace ModelExample
             base.OnClosing(e);
 
             AssetManagerBase.CleanupManagers();
+        }
+
+        protected override void OnResize(EventArgs e)
+        {
+            GL.Viewport(0, 0, Width, Height);
+            camera.Perspective(Width, Height, (float)Math.PI / 2.0f, 10, 1000);
         }
 
         protected override void OnLoad(EventArgs e)
@@ -55,16 +61,16 @@ namespace ModelExample
 
             // Load shaders
             ShaderManager.LoadCollection("Shaders/collection.xml");
-            var shader = ShaderManager.Get("simplemodel");
+            var shader = ShaderManager.Get("cubemappedmodel");
 
             // Load texture
             textures = new TextureManager();
-            var texture = textures.Get("Textures/lucymetal.tex", true);
+            var texture = textures.Get("Textures/cubemap.tex", true);
             texture.Quality.Mipmaps = true;
 
             // Load up a mesh
             MeshManager meshManager = new MeshManager();
-            var mesh = meshManager.Get("Meshes/lucy_highpoly.mesh", true);
+            var mesh = meshManager.Get("Meshes/sphere.mesh", true);
 
             // Construct a model from shader, texture and mesh, with default material
             model = new Model()
@@ -74,17 +80,10 @@ namespace ModelExample
                 Mesh = mesh,
                 Material = new Material()
             };
-            
+
             // set up rendering queue
             renderQueue = new RenderQueue();
             renderQueue.AllowInstancing = false;
-        }
-
-        protected override void OnResize(EventArgs e)
-        {
-            // Update viewport and camera settings
-            GL.Viewport(0, 0, Width, Height);
-            camera.Perspective(Width, Height, (float)Math.PI / 4, 1f, 1000);
         }
 
         double totalTime = 0;
@@ -101,7 +100,7 @@ namespace ModelExample
 
             // Rotate model around Y axis
             model.Transform.Rotation *= new Quaternion(0, (float)e.Time * 0.2f, 0);
-            
+
             // Render model
             renderQueue.Insert(model);
             renderQueue.Render();

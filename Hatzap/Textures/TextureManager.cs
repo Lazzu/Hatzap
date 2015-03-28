@@ -65,8 +65,7 @@ namespace Hatzap.Textures
                     //texture = new TextureArray(meta);
                     break;
                 case TextureType.TextureCubemap:
-                    throw new NotImplementedException();
-                    //texture = new CubeTexture(meta);
+                    texture = new CubeTexture(meta);
                     break;
                 case TextureType.Texture3D:
                     throw new NotImplementedException();

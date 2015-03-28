@@ -59,7 +59,7 @@ namespace InstancingExample
             camera.Update(0);
             camera.Rotate(new Vector2(-(float)Math.PI / 2.5f, 0));
 
-            Random rand = new Random();
+            var rand = new Hatzap.Utilities.Random();
 
             int n = 8;
             float sizeScale = 10.0f;

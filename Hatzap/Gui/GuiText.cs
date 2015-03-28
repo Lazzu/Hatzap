@@ -41,6 +41,9 @@ namespace Hatzap.Gui
         public HorizontalAlignment HorizontalAlignment { get { return horizontalAlignment; } set { horizontalAlignment = value; dirty = true; } }
         public VerticalAlignment VerticalAlignment { get { return verticalAlignment; } set { verticalAlignment = value; dirty = true; } }
 
+        public float Width { get; protected set; }
+        public float Height { get; protected set; }
+
         public string Text
         {
             get { return text; }
@@ -153,7 +156,7 @@ namespace Hatzap.Gui
                 mustDescribe = false;
             }
 
-            float smooth = (1f - (fontsize / 150f)) * 0.5f * this.weight * this.smooth;
+            //float smooth = (1f - (fontsize / 150f)) * 0.5f * this.weight * this.smooth;
 
             if (smooth < 0f)
                 smooth = 0f;
@@ -161,10 +164,10 @@ namespace Hatzap.Gui
                 smooth = 0.5f;
 
             //float weight = Hatzap.Utilities.MathHelper.Lerp(0f, 2f, 1f - (fontsize / 100f * this.weight));
-            float weight = (float)Math.Pow(1.5f - (fontsize / 150f), this.weight) * this.weight * 0.75f;
+            //float weight = (float)Math.Pow(1.5f - (fontsize / 150f), this.weight) * this.weight * 0.75f;
 
-            if (weight < 0.75f)
-                weight = 0.75f;
+            /*if (weight < 0.75f)
+                weight = 0.75f;*/
 
             CalculatedWeight = weight;
 
@@ -200,6 +203,11 @@ namespace Hatzap.Gui
 
             List<int> tmp = new List<int>();
 
+            Width = 0;
+            Height = 0;
+
+            float minw = 0f, minh = 0f;
+
             for (int i = 0; i < vertices.Length / 4; i++)
             {
                 // 1st triangle
@@ -210,8 +218,55 @@ namespace Hatzap.Gui
                 tmp.Add(i * 4 + 2);
                 tmp.Add(i * 4 + 1);
                 tmp.Add(i * 4 + 3);
+
+                for (int o = 0; o < 4; o++ )
+                {
+                    if (vertices[i * 4 + o].Vertex.X > Width)
+                    {
+                        Width = vertices[i * 4 + o].Vertex.X;
+                    }
+
+                    if (vertices[i * 4 + o].Vertex.Y > Height)
+                    {
+                        Height = vertices[i * 4 + o].Vertex.Y;
+                    }
+
+                    if (vertices[i * 4 + o].Vertex.X < minw)
+                    {
+                        minw = vertices[i * 4 + o].Vertex.X;
+                    }
+
+                    if (vertices[i * 4 + o].Vertex.Y < minh)
+                    {
+                        minh = vertices[i * 4 + o].Vertex.Y;
+                    }
+                }
+
+                    
+
             }
 
+            if(horizontalAlignment == Fonts.HorizontalAlignment.Centered)
+            {
+                Width *= 2;
+            }
+            else if(horizontalAlignment == Fonts.HorizontalAlignment.Right)
+            {
+                Width = -minw;
+            }
+
+            if(verticalAlignment == Fonts.VerticalAlignment.Middle)
+            {
+                Height *= -2;
+            }
+            else if(verticalAlignment == Fonts.VerticalAlignment.Bottom)
+            {
+                Height = minh;
+            }
+
+            Width *= fontsize;
+            Height *= fontsize;
+            
             indices = tmp.ToArray();
             
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);

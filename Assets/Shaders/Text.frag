@@ -27,7 +27,7 @@ void main( void )
  
 	// do some anti-aliasing
 	basecolor.a *= smoothstep(0.5 - smoothness, 0.5 + smoothness, sdf);
-	basecolor.a = pow(basecolor.a, 1.0/gamma);
+	//basecolor.a = pow(basecolor.a, 1.0/gamma);
 
 
 

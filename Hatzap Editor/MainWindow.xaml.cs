@@ -60,34 +60,6 @@ namespace Hatzap_Editor
             textures = new TextureManager();
         }
 
-        private void LoadTexture_Click(object sender, RoutedEventArgs e)
-        {
-            /*
-
-            TextureMeta textureMeta = new TextureMeta()
-            {
-                FileName = "EditorAssets/Textures/test.png",
-                PixelInternalFormat = PixelInternalFormat.Rgba,
-                PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Bgra,
-                PixelType = PixelType.UnsignedByte,
-                Quality = new TextureQuality()
-                {
-                    Filtering = TextureFiltering.Trilinear,
-                    Anisotrophy = 16,
-                    Mipmaps = true,
-                    TextureWrapMode = OpenTK.Graphics.OpenGL.TextureWrapMode.Clamp
-                }
-            };
-
-            var t = new Texture();
-            t.Load(textureMeta);
-
-            RenderableTexture texture = new RenderableTexture(t);
-            renderer.Asset = texture;
-
-            renderer.Redraw();*/
-        }
-
         void OpenTab(string header, RenderableAsset asset)
         {
             gl = new GLControl(new GraphicsMode(new ColorFormat(32), 24, 8, 16, new ColorFormat(0), 2, false), 3, 3, GraphicsContextFlags.Default);

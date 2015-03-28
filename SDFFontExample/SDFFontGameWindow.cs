@@ -74,7 +74,6 @@ namespace SDFFontExample
             Matrix4 projection = Matrix4.CreateOrthographicOffCenter(-Width/2.0f, Width/2.0f, Height, -Height/2.0f, -1, 1);
             Matrix4 view = Matrix4.Identity;
             var textureSize = new Vector2(text.Font.Texture.Width, text.Font.Texture.Height);
-            view = Matrix4.CreateTranslation(0, 10, 0);
             var mvp = view * projection;
             shader.SendUniform("MVP", ref mvp);
             shader.SendUniform("textureSize", ref textureSize);
@@ -88,8 +87,11 @@ namespace SDFFontExample
             text.Color = new Vector4(r, g, b, 1);
 
             // Set font size
-            text.FontSize = (float)(Math.Sin(totalTime) * 20.0 + 10.0);
+            //text.FontSize = (float)(((Math.Sin(totalTime) + 2.0f / 2.0f)) * 200.0 + 10.0);
+            text.FontSize = 20.0f;
 
+            text.Smooth = .0f;
+            text.Weight = 1.0f;
             // Draw the text
             text.Draw(shader);
 

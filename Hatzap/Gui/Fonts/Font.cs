@@ -20,6 +20,7 @@ namespace Hatzap.Gui.Fonts
 
         public void LoadBMFont(string file)
         {
+            
             string face;
             Glyphs = BMFont.GetGlyphsFromFile(file, out face);
             Face = face;
