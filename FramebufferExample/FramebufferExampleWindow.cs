@@ -23,12 +23,15 @@ namespace FramebufferExample
         { }
 
         VertexBatch batch;
-        ShaderProgram fboShader;
+        ShaderProgram fboShader, blurShader;
         Framebuffer fbo;
         Model model;
         private Camera camera;
         private TextureManager textures;
         private RenderQueue renderQueue;
+
+        // Blur effect toggle
+        bool blur = false;
 
         protected override void OnLoad(EventArgs e)
         {
@@ -43,6 +46,7 @@ namespace FramebufferExample
             // Load shaders
             ShaderManager.LoadCollection("Shaders/collection.xml");
             fboShader = ShaderManager.Get("framebufferexample");
+            blurShader = ShaderManager.Get("framebufferexample.blur");
 
             // Initialize framebuffer
             fbo = new Framebuffer(Width, Height);
@@ -113,6 +117,16 @@ namespace FramebufferExample
             camera.Update((float)e.Time);
         }
 
+        protected override void OnKeyPress(KeyPressEventArgs e)
+        {
+            base.OnKeyPress(e);
+
+            if(e.KeyChar == 'b')
+            {
+                blur = !blur;
+            }
+        }
+
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             // Clear the screen, just the color since we don't have depth in the OS framebuffer
@@ -137,8 +151,15 @@ namespace FramebufferExample
             // No depth testing is needed at this moment (it may have been activated at some point when rendering to the fbo)
             GLState.DepthTest = false;
 
+            // Set active shader for drawing
+            ShaderProgram activeShader = fboShader;
+            if(blur)
+            {
+                activeShader = blurShader;
+            }
+
             // Fill screen with FBO using some shader.
-            fbo.RenderOnScreen(fboShader);
+            fbo.RenderOnScreen(activeShader);
 
             // Display rendered frame
             SwapBuffers();

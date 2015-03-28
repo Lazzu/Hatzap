@@ -16,9 +16,12 @@ namespace Hatzap.Rendering
         int rboId;
         Texture texture;
         VertexBatch batch;
+        private Vector2 size;
 
         public Framebuffer(int width, int height)
         {
+            size = new Vector2(width, height);
+
             texture = new Texture(width, height);
             texture.Quality = new TextureQuality();
             texture.Quality.TextureWrapMode = TextureWrapMode.ClampToEdge;
@@ -87,6 +90,7 @@ namespace Hatzap.Rendering
         public void RenderOnScreen(ShaderProgram shader)
         {
             shader.Enable();
+            shader.SendUniform("ScreenSize", ref size);
             texture.Bind();
             batch.Render();
             texture.UnBind();
