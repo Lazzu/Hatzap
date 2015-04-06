@@ -27,6 +27,8 @@ namespace Hatzap.Rendering
 
         public int MSAACoverage { get; protected set; }
 
+        public bool Complete { get; protected set; }
+
         public Framebuffer(int width, int height, int msaa)
         {
             if (width < 1) throw new ArgumentException("Width can not be zero or less.");
@@ -64,6 +66,7 @@ namespace Hatzap.Rendering
 
             switch(MSAA)
             {
+                case 1:
                 case 2:
                 case 4:
                 case 8:
@@ -135,10 +138,21 @@ namespace Hatzap.Rendering
             // check FBO status
             var status = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
             if (status != FramebufferErrorCode.FramebufferComplete)
+            {
+                Complete = false;
                 Console.WriteLine("ERROR: Can not create framebuffer because " + status.ToString());
+            }
+            else
+            {
+                Complete = true;
+            }
+                
 
             // switch back to window-system-provided framebuffer
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+            if (!Complete)
+                return;
 
             var error = GL.GetError();
 
