@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,6 +29,12 @@ namespace Hatzap.Rendering
 
         public Framebuffer(int width, int height, int msaa)
         {
+            if (width < 1) throw new ArgumentException("Width can not be zero or less.");
+            if (height < 1) throw new ArgumentException("Height can not be zero or less.");
+
+            if (msaa < 0)
+                msaa = 0;
+
             Width = width;
             Height = height;
             MSAA = msaa;
@@ -47,7 +54,6 @@ namespace Hatzap.Rendering
             TextureTarget target;
 
             int texID = GL.GenTexture();
-
             var msaa = GL.GetInteger(GetPName.MaxSamples);
 
             if (MSAA < 0)
@@ -134,6 +140,14 @@ namespace Hatzap.Rendering
             // switch back to window-system-provided framebuffer
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
+            var error = GL.GetError();
+
+            while(error != ErrorCode.NoError)
+            {
+                Debug.WriteLine("Error creating FBO: " + error.ToString());
+                error = GL.GetError();
+            }
+            
             batch = new VertexBatch();
             batch.StartBatch(PrimitiveType.Triangles);
             batch.Add(new Vector3(-1, -1, 0)); // Bottom left

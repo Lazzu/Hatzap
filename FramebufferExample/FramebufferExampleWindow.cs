@@ -20,7 +20,9 @@ namespace FramebufferExample
         public FramebufferExampleWindow()
             : base(1280, 720, new GraphicsMode(new ColorFormat(32), 0, 0, 0, 0, 2, false), "Hatzap Framebuffer Example", GameWindowFlags.Default,
                 DisplayDevice.GetDisplay(DisplayIndex.Default), 3, 3, GraphicsContextFlags.Default)
-        { }
+        {
+            VSync = VSyncMode.Adaptive;
+        }
 
         VertexBatch batch;
         ShaderProgram fboShader, blurShader, msaaShader;
@@ -116,7 +118,14 @@ namespace FramebufferExample
 
             // Release old and generate new framebuffer
             fbo.Release();
-            fbo = new Framebuffer(Width, Height, 0);
+            if (msaa)
+            {
+                fbo = new Framebuffer(Width, Height, 32);
+            }
+            else
+            {
+                fbo = new Framebuffer(Width, Height, 0);
+            }
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
