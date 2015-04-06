@@ -72,6 +72,13 @@
       </Shaders>
     </ShaderProgram>
 	<ShaderProgram>
+      <Name>framebufferexample.msaa</Name>
+      <Shaders>
+        <Shader Type="VertexShader" Path="../../Assets/Shaders/framebufferexample.vert" />
+        <Shader Type="FragmentShader" Path="../../Assets/Shaders/framebufferexample_msaa.frag" />
+      </Shaders>
+    </ShaderProgram>
+	<ShaderProgram>
       <Name>framebufferexample.blur</Name>
       <Shaders>
         <Shader Type="VertexShader" Path="../../Assets/Shaders/framebufferexample.vert" />

@@ -14,22 +14,80 @@ namespace Hatzap.Rendering
     {
         int fbo = 0;
         int rboId;
-        Texture texture;
+        public Texture Texture { get; protected set; }
         VertexBatch batch;
         private Vector2 size;
 
-        public Framebuffer(int width, int height)
+        public int Width { get; protected set; }
+
+        public int Height { get; protected set; }
+
+        public int MSAA { get; protected set; }
+
+        public int MSAACoverage { get; protected set; }
+
+        public Framebuffer(int width, int height, int msaa)
         {
+            Width = width;
+            Height = height;
+            MSAA = msaa;
             size = new Vector2(width, height);
 
-            texture = new Texture(width, height);
-            texture.Quality = new TextureQuality();
-            texture.Quality.TextureWrapMode = TextureWrapMode.ClampToEdge;
-            texture.Quality.Filtering = TextureFiltering.Trilinear;
-            texture.Generate(PixelFormat.Rgba, PixelType.UnsignedByte);
-            texture.Bind();
-            texture.UpdateQuality();
-            texture.UnBind();
+            Initialize();
+        }
+
+        void Initialize()
+        {
+            var textureQuality = new TextureQuality()
+            {
+                TextureWrapMode = TextureWrapMode.ClampToEdge,
+                Filtering = TextureFiltering.Nearest,
+            };
+
+            TextureTarget target;
+
+            int texID = GL.GenTexture();
+
+            var msaa = GL.GetInteger(GetPName.MaxSamples);
+
+            if (MSAA < 0)
+                MSAA = 0;
+
+            if (MSAA > msaa)
+                MSAA = msaa;
+
+            switch(MSAA)
+            {
+                case 2:
+                case 4:
+                case 8:
+                case 16:
+                case 32:
+                case 64:
+                case 128:
+                    target = TextureTarget.Texture2DMultisample;
+
+                    GL.BindTexture(target, texID);
+                    GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, MSAA, PixelInternalFormat.Rgba, Width, Height, true);
+
+                    break;
+                default:
+                    target = TextureTarget.Texture2D;
+
+                    GL.BindTexture(target, texID);
+                    GL.TexImage2D(target, 0, PixelInternalFormat.Rgba, Width, Height, 0, PixelFormat.Rgba, PixelType.Byte, IntPtr.Zero);
+
+                    break;
+            }
+
+            GL.BindTexture(target, 0);
+
+            Texture = new Texture(texID, Width, Height, target, PixelInternalFormat.Rgba);
+            Texture.Quality = textureQuality;
+
+            Texture.Bind();
+            Texture.UpdateQuality();
+            Texture.UnBind();
 
             /*texture.Bind();
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, 1); // automatic mipmap
@@ -38,7 +96,17 @@ namespace Hatzap.Rendering
             // create a renderbuffer object to store depth info
             GL.GenRenderbuffers(1, out rboId);
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, rboId);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent32, width, height);
+
+            if(MSAA > 0)
+            {
+                GL.RenderbufferStorageMultisample(RenderbufferTarget.Renderbuffer, MSAA, RenderbufferStorage.DepthComponent32, Width, Height);
+            }
+            else
+            {
+                GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent32, Width, Height);
+            }
+
+            
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
 
             // create a framebuffer object
@@ -48,8 +116,8 @@ namespace Hatzap.Rendering
             // attach the texture to FBO color attachment point
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer,        // 1. fbo target: GL_FRAMEBUFFER 
                                    FramebufferAttachment.ColorAttachment0,  // 2. attachment point
-                                   TextureTarget.Texture2D,         // 3. tex target: GL_TEXTURE_2D
-                                   texture.ID,             // 4. tex ID
+                                   Texture.TextureTarget,         // 3. tex target: GL_TEXTURE_2D
+                                   Texture.ID,             // 4. tex ID
                                    0);                    // 5. mipmap level: 0(base)
 
             // attach the renderbuffer to depth attachment point
@@ -91,9 +159,10 @@ namespace Hatzap.Rendering
         {
             shader.Enable();
             shader.SendUniform("ScreenSize", ref size);
-            texture.Bind();
+            shader.SendUniform("MSAA_Samples", MSAA);
+            Texture.Bind();
             batch.Render();
-            texture.UnBind();
+            Texture.UnBind();
             shader.Disable();
         }
 
@@ -101,8 +170,8 @@ namespace Hatzap.Rendering
         {
             GL.DeleteFramebuffer(fbo);
             GL.DeleteRenderbuffer(rboId);
-            texture.Release();
-            texture = null;
+            if(Texture != null) Texture.Release();
+            Texture = null;
         }
     }
 }

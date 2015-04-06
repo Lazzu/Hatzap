@@ -258,52 +258,55 @@ namespace Hatzap.Textures
             if(textureFilteringDirty)
             {
 
-                switch(textureFiltering)
+                if(target == TextureTarget.Texture2D || target == TextureTarget.TextureCubeMap)
                 {
-                    case TextureFiltering.Nearest:
+                    switch (textureFiltering)
+                    {
+                        case TextureFiltering.Nearest:
 
-                        GL.TexParameter(target, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+                            GL.TexParameter(target, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
 
-                        if(mipmaps)
-                        {
-                            GL.TexParameter(target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.NearestMipmapNearest);
-                        }
-                        else
-                        {
-                            GL.TexParameter(target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-                        }
+                            if (mipmaps)
+                            {
+                                GL.TexParameter(target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.NearestMipmapNearest);
+                            }
+                            else
+                            {
+                                GL.TexParameter(target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+                            }
 
-                        break;
+                            break;
 
-                    case TextureFiltering.Bilinear:
+                        case TextureFiltering.Bilinear:
 
-                        GL.TexParameter(target, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+                            GL.TexParameter(target, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
 
-                        if (mipmaps)
-                        {
-                            GL.TexParameter(target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapNearest);
-                        }
-                        else
-                        {
-                            GL.TexParameter(target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-                        }
+                            if (mipmaps)
+                            {
+                                GL.TexParameter(target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapNearest);
+                            }
+                            else
+                            {
+                                GL.TexParameter(target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+                            }
 
-                        break;
+                            break;
 
-                    case TextureFiltering.Trilinear:
+                        case TextureFiltering.Trilinear:
 
-                        GL.TexParameter(target, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+                            GL.TexParameter(target, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
 
-                        if (mipmaps)
-                        {
-                            GL.TexParameter(target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
-                        }
-                        else
-                        {
-                            GL.TexParameter(target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-                        }
+                            if (mipmaps)
+                            {
+                                GL.TexParameter(target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
+                            }
+                            else
+                            {
+                                GL.TexParameter(target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+                            }
 
-                        break;
+                            break;
+                    }
                 }
 
                 textureFilteringDirty = false;
@@ -311,7 +314,7 @@ namespace Hatzap.Textures
             
             if (anisotrophyDirty)
             {
-                if (GPUCapabilities.AnisotrophicFiltering)
+                if (GPUCapabilities.AnisotrophicFiltering && (target == TextureTarget.TextureCubeMap || target == TextureTarget.Texture2D))
                 {
                     if (GPUCapabilities.MaxAnisotrophyLevel < anisotrophy)
                         anisotrophy = GPUCapabilities.MaxAnisotrophyLevel;
@@ -327,13 +330,20 @@ namespace Hatzap.Textures
 
             if(textureWrapMode_SDirty)
             {
-                GL.TexParameter(target, TextureParameterName.TextureWrapS, (int)textureWrapMode_S);
+                if (target == TextureTarget.TextureCubeMap || target == TextureTarget.Texture2D)
+                {
+                    GL.TexParameter(target, TextureParameterName.TextureWrapS, (int)textureWrapMode_S);
+                }
                 textureWrapMode_SDirty = false;
             }
 
             if (textureWrapMode_TDirty)
             {
-                GL.TexParameter(target, TextureParameterName.TextureWrapT, (int)textureWrapMode_T);
+                if (target == TextureTarget.TextureCubeMap || target == TextureTarget.Texture2D)
+                {
+                    GL.TexParameter(target, TextureParameterName.TextureWrapT, (int)textureWrapMode_T);
+                }
+                
                 textureWrapMode_TDirty = false;
             }
         }

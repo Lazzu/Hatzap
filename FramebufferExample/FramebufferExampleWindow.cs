@@ -23,15 +23,16 @@ namespace FramebufferExample
         { }
 
         VertexBatch batch;
-        ShaderProgram fboShader, blurShader;
+        ShaderProgram fboShader, blurShader, msaaShader;
         Framebuffer fbo;
         Model model;
         private Camera camera;
         private TextureManager textures;
         private RenderQueue renderQueue;
 
-        // Blur effect toggle
-        bool blur = false;
+        // Effect toggles
+        private bool blur = false;
+        private bool msaa = false;
 
         protected override void OnLoad(EventArgs e)
         {
@@ -47,9 +48,19 @@ namespace FramebufferExample
             ShaderManager.LoadCollection("Shaders/collection.xml");
             fboShader = ShaderManager.Get("framebufferexample");
             blurShader = ShaderManager.Get("framebufferexample.blur");
+            msaaShader = ShaderManager.Get("framebufferexample.msaa");
 
             // Initialize framebuffer
-            fbo = new Framebuffer(Width, Height);
+            if(msaa)
+            {
+                fbo = new Framebuffer(Width, Height, 32);
+            }
+            else
+            {
+                fbo = new Framebuffer(Width, Height, 0);
+            }
+
+            
 
             // Load other stuff
             LoadMeshStuff();
@@ -91,8 +102,10 @@ namespace FramebufferExample
             };
 
             // set up rendering queue
-            renderQueue = new RenderQueue();
-            renderQueue.AllowInstancing = false;
+            renderQueue = new RenderQueue()
+            {
+                AllowInstancing = false
+            };
         }
 
         protected override void OnResize(EventArgs e)
@@ -103,7 +116,7 @@ namespace FramebufferExample
 
             // Release old and generate new framebuffer
             fbo.Release();
-            fbo = new Framebuffer(Width, Height);
+            fbo = new Framebuffer(Width, Height, 0);
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -121,9 +134,35 @@ namespace FramebufferExample
         {
             base.OnKeyPress(e);
 
+            if (e.KeyChar == 'r')
+            {
+                if(msaa)
+                {
+                    fbo.Release();
+                    fbo = new Framebuffer(Width, Height, 0);
+                }
+                blur = false;
+                msaa = false;
+            }
             if(e.KeyChar == 'b')
             {
-                blur = !blur;
+                if (msaa)
+                {
+                    fbo.Release();
+                    fbo = new Framebuffer(Width, Height, 0);
+                }
+                blur = true;
+                msaa = false;
+            }
+            if (e.KeyChar == 'm')
+            {
+                if (!msaa)
+                {
+                    fbo.Release();
+                    fbo = new Framebuffer(Width, Height, 32);
+                }
+                blur = false;
+                msaa = true;
             }
         }
 
@@ -156,6 +195,10 @@ namespace FramebufferExample
             if(blur)
             {
                 activeShader = blurShader;
+            }
+            if (msaa)
+            {
+                activeShader = msaaShader;
             }
 
             // Fill screen with FBO using some shader.

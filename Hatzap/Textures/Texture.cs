@@ -15,7 +15,7 @@ namespace Hatzap.Textures
     {
         public int ID { get; protected set; }
         
-        public TextureTarget TextureTarget { get; protected set; }
+        public TextureTarget TextureTarget { get; set; }
         public PixelInternalFormat PixelInternalFormat { get; set; }
 
         public int Width { get; protected set; }
@@ -59,6 +59,15 @@ namespace Hatzap.Textures
             TextureTarget = TextureTarget.Texture2D;
             PixelInternalFormat = PixelInternalFormat.Rgba;
             Debug.WriteLine("Allocated texture with ID " + ID + "\n" + new System.Diagnostics.StackTrace());
+        }
+
+        public Texture(int id, int width, int height, TextureTarget target, PixelInternalFormat format)
+        {
+            Width = width;
+            Height = height;
+            ID = id;
+            TextureTarget = target;
+            PixelInternalFormat = format;
         }
 
         public Texture(int width, int height)
