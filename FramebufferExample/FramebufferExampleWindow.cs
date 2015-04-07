@@ -173,6 +173,39 @@ namespace FramebufferExample
                 blur = false;
                 msaa = true;
             }
+            if(msaa)
+            {
+                if (e.KeyChar == '0')
+                {
+                    fbo.Release();
+                    fbo = new Framebuffer(Width, Height, 1);
+                }
+                if (e.KeyChar == '1')
+                {
+                    fbo.Release();
+                    fbo = new Framebuffer(Width, Height, 2);
+                }
+                if (e.KeyChar == '2')
+                {
+                    fbo.Release();
+                    fbo = new Framebuffer(Width, Height, 4);
+                }
+                if (e.KeyChar == '3')
+                {
+                    fbo.Release();
+                    fbo = new Framebuffer(Width, Height, 8);
+                }
+                if (e.KeyChar == '4')
+                {
+                    fbo.Release();
+                    fbo = new Framebuffer(Width, Height, 16);
+                }
+                if (e.KeyChar == '5')
+                {
+                    fbo.Release();
+                    fbo = new Framebuffer(Width, Height, 32);
+                }
+            }
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)

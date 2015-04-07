@@ -146,7 +146,6 @@ namespace Hatzap.Rendering
             {
                 Complete = true;
             }
-                
 
             // switch back to window-system-provided framebuffer
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
