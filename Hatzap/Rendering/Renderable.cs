@@ -77,17 +77,13 @@ namespace Hatzap.Rendering
             }
         }
 
-
+        /// <summary>
+        /// Gets or sets if the object should be visible or not
+        /// </summary>
         public bool Visible
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
+            get;
+            set;
         }
     }
 }
