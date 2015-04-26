@@ -26,6 +26,7 @@ namespace Hatzap.Models
         public Model()
         {
             Material = new Material();
+            Visible = true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

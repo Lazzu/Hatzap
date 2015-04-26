@@ -32,6 +32,12 @@ namespace Hatzap.Rendering
         int Triangles { get; }
 
         /// <summary>
+        /// If object should be hidden or not
+        /// </summary>
+        bool Visible { get; set; }
+
+
+        /// <summary>
         /// The render method issues a render call of the current object.
         /// </summary>
         void Render();

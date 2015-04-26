@@ -76,5 +76,18 @@ namespace Hatzap.Rendering
                 if(comparer(children[i])) yield return children[i];
             }
         }
+
+
+        public bool Visible
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
     }
 }

@@ -21,6 +21,7 @@ namespace Hatzap.Models
             set
             {
                 uniforms = value;
+                uniformIndex.Clear();
                 uniformDictionary.Clear();
                 for (int i = 0; i < uniforms.Count; i++)
                 {

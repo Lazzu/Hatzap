@@ -68,7 +68,6 @@ namespace Hatzap.Rendering
             }
             
             GLState.AlphaBleding = true;
-            //GLState.DepthTest = false;
 
             foreach (var shaderBatch in TransparentShaderBatches)
             {

@@ -82,7 +82,7 @@ namespace Hatzap.Scenes
             {
                 var tmp = item as Renderable;
 
-                if(tmp != null)
+                if(tmp != null && tmp.Visible)
                 {
                     renderQueue.Insert(tmp);
                 }
