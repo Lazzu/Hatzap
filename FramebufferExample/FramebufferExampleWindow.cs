@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using Hatzap;
 using Hatzap.Assets;
+using Hatzap.Gui;
+using Hatzap.Gui.Fonts;
 using Hatzap.Models;
 using Hatzap.Rendering;
 using Hatzap.Shaders;
@@ -35,6 +37,12 @@ namespace FramebufferExample
         // Effect toggles
         private bool blur = false;
         private bool msaa = false;
+        private bool fxaa = false;
+        private int msaaLevel = 32;
+        private ShaderProgram textShader;
+        private Font font;
+        private GuiText text;
+        private ShaderProgram fxaaShader;
 
         protected override void OnLoad(EventArgs e)
         {
@@ -51,6 +59,7 @@ namespace FramebufferExample
             fboShader = ShaderManager.Get("framebufferexample");
             blurShader = ShaderManager.Get("framebufferexample.blur");
             msaaShader = ShaderManager.Get("framebufferexample.msaa");
+            fxaaShader = ShaderManager.Get("framebufferexample.fxaa");
 
             // Initialize framebuffer
             if(msaa)
@@ -67,7 +76,21 @@ namespace FramebufferExample
             // Load other stuff
             LoadMeshStuff();
 
-            
+            textShader = ShaderManager.Get("Text");
+
+            font = new Font();
+            font.LoadBMFont("Fonts/OpenSans-Regular.ttf_sdf.txt");
+            font.Texture = textures.Get("Textures/OpenSans-Regular.ttf_sdf.tex", true);
+
+            text = new GuiText();
+            text.Font = font;
+            text.Text = GenerateInfoText();
+        }
+
+        private string GenerateInfoText()
+        {
+            return string.Format("Options:\n(R)eset\n(B)lur: {0}\n(M)SAA: {1}\nMSAA Level: {2} (change with 1,2,3,4,5,6,7,8,9)\n(F)XAA: {3}\nFPS: {4}\nMS per frame: {5}", 
+                blur, msaa, msaaLevel, fxaa, fps, msPerFrame);
         }
 
         void LoadMeshStuff()
@@ -120,7 +143,7 @@ namespace FramebufferExample
             fbo.Release();
             if (msaa)
             {
-                fbo = new Framebuffer(Width, Height, 32);
+                fbo = new Framebuffer(Width, Height, msaaLevel);
             }
             else
             {
@@ -152,6 +175,7 @@ namespace FramebufferExample
                 }
                 blur = false;
                 msaa = false;
+                fxaa = false;
             }
             if(e.KeyChar == 'b')
             {
@@ -162,56 +186,112 @@ namespace FramebufferExample
                 }
                 blur = true;
                 msaa = false;
+                fxaa = false;
+            }
+            if (e.KeyChar == 'f')
+            {
+                if (msaa)
+                {
+                    fbo.Release();
+                    fbo = new Framebuffer(Width, Height, 0);
+                }
+                blur = false;
+                msaa = false;
+                fxaa = true;
             }
             if (e.KeyChar == 'm')
             {
                 if (!msaa)
                 {
                     fbo.Release();
-                    fbo = new Framebuffer(Width, Height, 32);
+                    fbo = new Framebuffer(Width, Height, msaaLevel);
                 }
                 blur = false;
                 msaa = true;
+                fxaa = false;
             }
             if(msaa)
             {
-                if (e.KeyChar == '0')
-                {
-                    fbo.Release();
-                    fbo = new Framebuffer(Width, Height, 1);
-                }
                 if (e.KeyChar == '1')
                 {
                     fbo.Release();
-                    fbo = new Framebuffer(Width, Height, 2);
+                    msaaLevel = 1;
+                    fbo = new Framebuffer(Width, Height, msaaLevel);
+                    msaaLevel = fbo.MSAA;
                 }
                 if (e.KeyChar == '2')
                 {
                     fbo.Release();
-                    fbo = new Framebuffer(Width, Height, 4);
+                    msaaLevel = 2;
+                    fbo = new Framebuffer(Width, Height, msaaLevel);
+                    msaaLevel = fbo.MSAA;
                 }
                 if (e.KeyChar == '3')
                 {
                     fbo.Release();
-                    fbo = new Framebuffer(Width, Height, 8);
+                    msaaLevel = 4;
+                    fbo = new Framebuffer(Width, Height, msaaLevel);
+                    msaaLevel = fbo.MSAA;
                 }
                 if (e.KeyChar == '4')
                 {
                     fbo.Release();
-                    fbo = new Framebuffer(Width, Height, 16);
+                    msaaLevel = 8;
+                    fbo = new Framebuffer(Width, Height, msaaLevel);
+                    msaaLevel = fbo.MSAA;
                 }
                 if (e.KeyChar == '5')
                 {
                     fbo.Release();
-                    fbo = new Framebuffer(Width, Height, 32);
+                    msaaLevel = 16;
+                    fbo = new Framebuffer(Width, Height, msaaLevel);
+                    msaaLevel = fbo.MSAA;
+                }
+                if (e.KeyChar == '6')
+                {
+                    fbo.Release();
+                    msaaLevel = 32;
+                    fbo = new Framebuffer(Width, Height, msaaLevel);
+                    msaaLevel = fbo.MSAA;
+                }
+                if (e.KeyChar == '7')
+                {
+                    fbo.Release();
+                    msaaLevel = 64;
+                    fbo = new Framebuffer(Width, Height, msaaLevel);
+                    msaaLevel = fbo.MSAA;
+                }
+                if (e.KeyChar == '8')
+                {
+                    fbo.Release();
+                    msaaLevel = 128;
+                    fbo = new Framebuffer(Width, Height, msaaLevel);
+                    msaaLevel = fbo.MSAA;
+                }
+                if (e.KeyChar == '9')
+                {
+                    fbo.Release();
+                    msaaLevel = 256;
+                    fbo = new Framebuffer(Width, Height, msaaLevel);
+                    msaaLevel = fbo.MSAA;
                 }
             }
+            
         }
+
+        double fps;
+        double msPerFrame;
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
+            msPerFrame = Math.Round(1000.0 * e.Time, 2);
+            fps = Math.Round(1.0 / e.Time, 2);
+
             // Clear the screen, just the color since we don't have depth in the OS framebuffer
             GL.Clear(ClearBufferMask.ColorBufferBit);
+
+            GLState.DepthTest = true;
+            GLState.AlphaBleding = false;
 
             // Start rendering to framebuffer
             fbo.Enable();
@@ -231,23 +311,66 @@ namespace FramebufferExample
 
             // No depth testing is needed at this moment (it may have been activated at some point when rendering to the fbo)
             GLState.DepthTest = false;
+            GLState.AlphaBleding = false;
 
             // Set active shader for drawing
             ShaderProgram activeShader = fboShader;
             if(blur)
             {
                 activeShader = blurShader;
+                //activeShader.Enable();
             }
-            if (msaa)
+            else if (msaa)
             {
                 activeShader = msaaShader;
+                //activeShader.Enable();
+            } 
+            else if(fxaa)
+            {
+                activeShader = fxaaShader;
+                activeShader.Enable();
+                activeShader.SendUniform("R_inverseFilterTextureSize", new Vector3(1.0f / Width, 1.0f / Height, 0));
+                activeShader.SendUniform("R_fxaaSpanMax", 8.0f);
+                activeShader.SendUniform("R_fxaaReduceMin", 1.0f / 128.0f );
+                activeShader.SendUniform("R_fxaaReduceMul", 1.0f / 8.0f );
             }
 
             // Fill screen with FBO using some shader.
             fbo.RenderOnScreen(activeShader);
 
+            DrawText();
+
             // Display rendered frame
             SwapBuffers();
+        }
+
+        private void DrawText()
+        {
+            text.Text = GenerateInfoText();
+            textShader.Enable();
+            GLState.DepthTest = false;
+            GLState.AlphaBleding = true;
+            GLState.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+            Matrix4 projection = Matrix4.CreateOrthographicOffCenter(0, Width, Height, 0, -1, 1);
+            Matrix4 view = Matrix4.CreateTranslation(0, 20, 0);
+            var textureSize = new Vector2(text.Font.Texture.Width, text.Font.Texture.Height);
+            var mvp = view * projection;
+            textShader.SendUniform("MVP", ref mvp);
+            textShader.SendUniform("textureSize", ref textureSize);
+            GL.ActiveTexture(TextureUnit.Texture0);
+
+            text.Color = new Vector4(1, 1, 1, 1);
+
+            // Set font size
+            text.FontSize = 10.0f;
+
+            text.Smooth = .9f;
+            text.Weight = 1.5f;
+            text.LineHeight = 100f;
+            // Draw the text
+            text.Draw(textShader);
+
+            textShader.Disable();
         }
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)

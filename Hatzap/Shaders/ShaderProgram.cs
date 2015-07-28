@@ -105,7 +105,17 @@ namespace Hatzap.Shaders
             GL.Uniform2(GetUniformLocation(name), ref value);
         }
 
+        public void SendUniform(string name, Vector2 value)
+        {
+            GL.Uniform2(GetUniformLocation(name), ref value);
+        }
+
         public void SendUniform(string name, ref Vector3 value)
+        {
+            GL.Uniform3(GetUniformLocation(name), ref value);
+        }
+
+        public void SendUniform(string name, Vector3 value)
         {
             GL.Uniform3(GetUniformLocation(name), ref value);
         }
@@ -115,7 +125,17 @@ namespace Hatzap.Shaders
             GL.Uniform4(GetUniformLocation(name), ref value);
         }
 
+        public void SendUniform(string name, Vector4 value)
+        {
+            GL.Uniform4(GetUniformLocation(name), ref value);
+        }
+
         public void SendUniform(string name, ref Matrix2 value)
+        {
+            GL.UniformMatrix2(GetUniformLocation(name), false, ref value);
+        }
+
+        public void SendUniform(string name, Matrix2 value)
         {
             GL.UniformMatrix2(GetUniformLocation(name), false, ref value);
         }
@@ -125,7 +145,17 @@ namespace Hatzap.Shaders
             GL.UniformMatrix3(GetUniformLocation(name), false, ref value);
         }
 
+        public void SendUniform(string name, Matrix3 value)
+        {
+            GL.UniformMatrix3(GetUniformLocation(name), false, ref value);
+        }
+
         public void SendUniform(string name, ref Matrix4 value)
+        {
+            GL.UniformMatrix4(GetUniformLocation(name), false, ref value);
+        }
+
+        public void SendUniform(string name, Matrix4 value)
         {
             GL.UniformMatrix4(GetUniformLocation(name), false, ref value);
         }

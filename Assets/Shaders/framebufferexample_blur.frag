@@ -7,6 +7,8 @@ uniform sampler2D textureSampler;
 
 layout(location = 0) out vec4 RGBA;
 
+float invCount = 1.0 / 49.0;
+
 void main( void )
 {
 	vec4 outcolor = vec4(0,0,0,0);
@@ -18,6 +20,6 @@ void main( void )
 	{
 		outcolor += texture2D(textureSampler, tcoord + (vec2(x,y) * screenMultiplier));
 	}
-	RGBA = outcolor / 49.0;
+	RGBA = outcolor * invCount;
 }
 

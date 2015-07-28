@@ -85,5 +85,12 @@
         <Shader Type="FragmentShader" Path="../../Assets/Shaders/framebufferexample_blur.frag" />
       </Shaders>
     </ShaderProgram>
+	<ShaderProgram>
+      <Name>framebufferexample.fxaa</Name>
+      <Shaders>
+        <Shader Type="VertexShader" Path="../../Assets/Shaders/framebufferexample.vert" />
+        <Shader Type="FragmentShader" Path="../../Assets/Shaders/framebufferexample_fxaa.frag" />
+      </Shaders>
+    </ShaderProgram>
   </ShaderPrograms>
 </ShaderCollection>
