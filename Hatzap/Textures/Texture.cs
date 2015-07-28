@@ -261,7 +261,7 @@ namespace Hatzap.Textures
         /// data will be saved if the texture is compressed in memory.
         /// </summary>
         /// <param name="meta">The texture metadata object</param>
-        public byte[] GetPixels(TextureMeta meta)
+        public virtual byte[] GetPixels(TextureMeta meta)
         {
             meta.Quality = Quality;
             meta.PixelType = PixelType.UnsignedByte;
@@ -371,7 +371,7 @@ namespace Hatzap.Textures
             return rawdata;
         }
 
-        public void SaveAs(string filename, ImageFormat format)
+        public virtual void SaveAs(string filename, ImageFormat format)
         {
             TextureMeta meta = new TextureMeta();
             meta.Quality = Quality;
