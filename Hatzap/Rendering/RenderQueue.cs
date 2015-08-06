@@ -31,9 +31,9 @@ namespace Hatzap.Rendering
         {
             Time.StartTimer("RenderQueue.Insert()", "Render");
 
-            if (data.Shader == null) throw new ArgumentNullException("data.Shader", "Renderable's shader must not be null!");
+            if (data.Material.ShaderProgram == null) throw new ArgumentNullException("data.Shader", "Renderable's shader must not be null!");
 
-            var shader = data.Shader;
+            var shader = data.Material.ShaderProgram;
 
             // Check if the object needs to be added in solid or transparent batch
             var dict = data.Material.Transparent ? TransparentShaderBatches : SolidShaderBatches;

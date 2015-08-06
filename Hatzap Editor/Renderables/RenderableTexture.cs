@@ -36,10 +36,10 @@ namespace Hatzap_Editor.Renderables
                         Name = "textureSampler",
                         Data = 0
                     }
-                }
+                },
+                ShaderProgram = ShaderManager.Get("TexturedQuad")
             };
-            model.Texture = texture;
-            model.Shader = ShaderManager.Get("TexturedQuad");
+            model.Material.Textures.Add("default", texture);
             var mesh = new Mesh();
             mesh.Type = PrimitiveType.TriangleStrip;
             /*mesh.Vertices = new Vector3[]{

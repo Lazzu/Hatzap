@@ -15,13 +15,15 @@ namespace Hatzap.Rendering
 {
     public class TextureBatch
     {
-        public Texture Texture { get; set; }
+        public Dictionary<string, Texture> Textures { get; set; }
         public List<Renderable> BatchQueue;
         public Dictionary<Mesh, InstancedBatch> Instanced;
 
         int count = 0;
 
         public RenderQueue RenderQueue { get; set; }
+
+        Dictionary<string, int> locations = new Dictionary<string, int>();
 
         public void Insert(Renderable data)
         {
@@ -68,17 +70,42 @@ namespace Hatzap.Rendering
                 count++;
             }
 
-            Texture = data.Texture;
+            Textures = data.Material.Textures;
+
+            if(locations.Count == 0)
+            {
+                foreach (var texture in Textures)
+                {
+                    var uniform = texture.Key;
+                    var location = GL.GetUniformLocation(data.Material.ShaderProgram.ID, uniform);
+                    locations.Add(uniform, location);
+                }
+            }
+            
+
+            
         }
 
         internal int Render()
         {
             int triangles = 0;
 
-            if(Texture != null)
+            if(Textures != null || Textures.Count != 0)
             {
-                Texture.Bind();
-                Texture.UpdateQuality();
+                int i = 0;
+                foreach (var texture in Textures)
+                {
+                    var name = texture.Key;
+                    var t = texture.Value;
+
+                    GL.Uniform1(locations[name], i);
+                    GL.ActiveTexture(TextureUnit.Texture0 + i);
+
+                    t.Bind();
+                    t.UpdateQuality();
+
+                    i++;
+                }
             }
 
             if(Instanced != null)
@@ -100,16 +127,16 @@ namespace Hatzap.Rendering
 
                     if (model != null)
                     {
-                        model.Mesh.VertexAttribLocation = model.Shader.GetAttribLocation("vertex");
-                        model.Mesh.NormalAttribLocation = model.Shader.GetAttribLocation("normal");
-                        model.Mesh.TangentAttribLocation = model.Shader.GetAttribLocation("tangent");
-                        model.Mesh.BinormalAttribLocation = model.Shader.GetAttribLocation("binormal");
-                        model.Mesh.UVAttribLocation = model.Shader.GetAttribLocation("uv");
-                        model.Mesh.ColorAttribLocation = model.Shader.GetAttribLocation("color");
+                        model.Mesh.VertexAttribLocation = model.Material.ShaderProgram.GetAttribLocation("vertex");
+                        model.Mesh.NormalAttribLocation = model.Material.ShaderProgram.GetAttribLocation("normal");
+                        model.Mesh.TangentAttribLocation = model.Material.ShaderProgram.GetAttribLocation("tangent");
+                        model.Mesh.BinormalAttribLocation = model.Material.ShaderProgram.GetAttribLocation("binormal");
+                        model.Mesh.UVAttribLocation = model.Material.ShaderProgram.GetAttribLocation("uv");
+                        model.Mesh.ColorAttribLocation = model.Material.ShaderProgram.GetAttribLocation("color");
                     }
 
                     model.Transform.CalculateMatrix();
-                    model.Shader.SendUniform("mModel", ref model.Transform.Matrix);
+                    model.Material.ShaderProgram.SendUniform("mModel", ref model.Transform.Matrix);
 
                     // Put a null back
                     BatchQueue[i] = null;
@@ -122,11 +149,14 @@ namespace Hatzap.Rendering
                 count = 0;
             }
 
-            if (Texture != null)
+            if (Textures != null || Textures.Count != 0)
             {
-                Texture.UnBind();
-            }
-            
+                foreach (var texture in Textures)
+                {
+                    var t = texture.Value;
+                    t.UnBind();
+                }
+            }            
 
             return triangles;
         }

@@ -32,7 +32,7 @@ namespace Hatzap.Rendering
         public InstancedBatch(Model model)
         {
             Mesh = model.Mesh;
-            Shader = model.Shader;
+            Shader = model.Material.ShaderProgram;
             Vector4[] tmp = null;
             stride = BlittableValueType.StrideOf(tmp) * 4;
             attribPos = Shader.GetAttribLocation("mInstancedModelMatrix");

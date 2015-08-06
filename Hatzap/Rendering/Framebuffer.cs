@@ -74,6 +74,7 @@ namespace Hatzap.Rendering
                 case 32:
                 case 64:
                 case 128:
+                case 256:
                     target = TextureTarget.Texture2DMultisample;
 
                     GL.BindTexture(target, texID);

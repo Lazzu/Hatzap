@@ -117,13 +117,16 @@ namespace FramebufferExample
             MeshManager meshManager = new MeshManager();
             var mesh = meshManager.Get("Meshes/lucy.mesh", true);
 
+            var lucyMaterial = new Material();
+
+            lucyMaterial.Textures.Add("textureSampler", texture);
+            lucyMaterial.ShaderProgram = modelshader;
+
             // Construct a model from shader, texture and mesh, with default material
             model = new Model()
             {
-                Shader = modelshader,
-                Texture = texture,
                 Mesh = mesh,
-                Material = new Material()
+                Material = lucyMaterial
             };
 
             // set up rendering queue
@@ -284,8 +287,8 @@ namespace FramebufferExample
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            msPerFrame = Math.Round(1000.0 * e.Time, 2);
-            fps = Math.Round(1.0 / e.Time, 2);
+            msPerFrame = Math.Round(1000.0 * e.Time, 4);
+            fps = Math.Round(1.0 / e.Time, 0);
 
             // Clear the screen, just the color since we don't have depth in the OS framebuffer
             GL.Clear(ClearBufferMask.ColorBufferBit);

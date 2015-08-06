@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Hatzap.Rendering;
+using Hatzap.Textures;
+using Hatzap.Shaders;
 
 namespace Hatzap.Models
 {
@@ -12,6 +14,11 @@ namespace Hatzap.Models
         List<IUniformData> uniforms = new List<IUniformData>();
         Dictionary<string, IUniformData> uniformDictionary = new Dictionary<string, IUniformData>();
         Dictionary<string, int> uniformIndex = new Dictionary<string, int>();
+
+        Dictionary<string, Texture> textures = new Dictionary<string,Texture>();
+
+        public Dictionary<string, Texture> Textures { get { return textures; } }
+        public ShaderProgram ShaderProgram { get; set; }
 
         public List<IUniformData> UniformData {
             get
@@ -187,7 +194,69 @@ namespace Hatzap.Models
             {
                 m.Add(data.Copy());
             }
+
+            foreach (var texture in textures)
+            {
+                m.textures.Add(texture.Key, texture.Value);
+            }
+
+            m.ShaderProgram = ShaderProgram;
+
             return m;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var m = obj as Material;
+
+            if (m == null)
+                return false;
+
+            foreach (var item in uniforms)
+            {
+                if(!m.Contains(item) || !m[item.Name].Equals(item))
+                {
+                    return false;
+                }
+            }
+
+            foreach (var item in m.uniforms)
+            {
+                if (!Contains(item) || !uniformDictionary[item.Name].Equals(item))
+                {
+                    return false;
+                }
+            }
+
+
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            var hash = 17;
+
+            unchecked
+            {
+                foreach (var uniform in uniforms)
+                {
+                    hash = hash * 23 + uniform.GetHashCode();
+                }
+
+                foreach (var texture in textures)
+                {
+                    hash = hash * 23 + texture.Key.GetHashCode();
+                    hash = hash * 23 + texture.Value.GetHashCode();
+                }
+
+                if(ShaderProgram != null)
+                {
+                    hash = hash * 23 + ShaderProgram.GetHashCode();
+                }
+            }
+
+            return hash;
         }
     }
 }

@@ -15,10 +15,6 @@ namespace Hatzap.Models
 {
     public class Model : Renderable
     {
-        public override ShaderProgram Shader { get; set; }
-
-        public override Texture Texture { get; set; }
-
         public override Material Material { get; set; }
 
         public Mesh Mesh { get; set; }
@@ -37,11 +33,11 @@ namespace Hatzap.Models
 
             Time.StartTimer("Model.Render()", "Rendering");
 
-            Shader.SendUniform("mModel", ref Transform.Matrix);
+            Material.ShaderProgram.SendUniform("mModel", ref Transform.Matrix);
 
             foreach (var item in Material.Uniforms)
             {
-                item.SendData(Shader);
+                item.SendData(Material.ShaderProgram);
             }
 
             Mesh.Draw();

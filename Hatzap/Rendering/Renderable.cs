@@ -18,18 +18,6 @@ namespace Hatzap.Rendering
         /// </summary>
         public Transform Transform { get { return transform; } }
 
-        public virtual ShaderProgram Shader
-        {
-            get { throw new NotImplementedException(); }
-            set { throw new NotImplementedException(); }
-        }
-
-        public virtual Texture Texture
-        {
-            get { throw new NotImplementedException(); }
-            set { throw new NotImplementedException(); }
-        }
-
         public virtual Material Material
         {
             get { throw new NotImplementedException(); }

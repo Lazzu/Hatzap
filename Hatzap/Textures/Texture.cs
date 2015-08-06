@@ -452,6 +452,19 @@ namespace Hatzap.Textures
                 throw new Exception("Texture leaked! Release unneeded textures with Texture.Release()");
         }
 
+        public override bool Equals(object obj)
+        {
+            var t = obj as Texture;
+            if (t == null)
+                return false;
+            return t.ID == ID;
+        }
+
+        public override int GetHashCode()
+        {
+            return ID.GetHashCode();
+        }
+
         public static int GetBpp(OpenTK.Graphics.OpenGL.PixelFormat format)
         {
             int bpp = 0;

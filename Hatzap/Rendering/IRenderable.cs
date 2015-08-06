@@ -12,16 +12,6 @@ namespace Hatzap.Rendering
     public interface IRenderable : ITransformable
     {
         /// <summary>
-        /// The ShaderProgram of the object.
-        /// </summary>
-        ShaderProgram Shader { get; set; }
-
-        /// <summary>
-        /// The Texture of the object.
-        /// </summary>
-        Texture Texture { get; set; }
-
-        /// <summary>
         /// The material data of the renderable object.
         /// </summary>
         Material Material { get; set; }

@@ -15,18 +15,16 @@ namespace Hatzap.Rendering
         public RenderQueue RenderQueue { get; set; }
 
         TextureBatch textureless;
-        public Dictionary<Texture, TextureBatch> TextureBatches = new Dictionary<Texture, TextureBatch>();
-
-        // Statics to improve performance a little bit
-        static Texture texture;
-        static TextureBatch batchQueue;
-
+        public Dictionary<Dictionary<string, Texture>, TextureBatch> TextureBatches = new Dictionary<Dictionary<string, Texture>, TextureBatch>();
+        
         public void Insert(Renderable data)
         {
-            Program = data.Shader;
-            texture = data.Texture;
+            Program = data.Material.ShaderProgram;
+            var textures = data.Material.Textures;
 
-            if(texture == null)
+            TextureBatch batchQueue;
+
+            if (textures == null || textures.Count == 0)
             {
                 if(textureless == null)
                 {
@@ -38,11 +36,11 @@ namespace Hatzap.Rendering
             }
             else
             {
-                if (!TextureBatches.TryGetValue(texture, out batchQueue))
+                if (!TextureBatches.TryGetValue(textures, out batchQueue))
                 {
                     batchQueue = new TextureBatch();
                     batchQueue.RenderQueue = RenderQueue;
-                    TextureBatches.Add(texture, batchQueue);
+                    TextureBatches.Add(textures, batchQueue);
                 }
             }
 

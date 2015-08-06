@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Hatzap;
+﻿using Hatzap;
 using Hatzap.Assets;
 using Hatzap.Models;
 using Hatzap.Rendering;
@@ -12,17 +8,22 @@ using Hatzap.Utilities;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace TransparencyExample
+namespace MultitexturingExample
 {
-    class TransparencyExampleWindow : GameWindow
+    class MultitexturingExampleWindow : GameWindow
     {
-        public TransparencyExampleWindow()
-            : base(1280, 720, new GraphicsMode(new ColorFormat(32), 24, 8, 16, 0, 2, false), "Hatzap Model Example", GameWindowFlags.Default,
+        public MultitexturingExampleWindow()
+            : base(1280, 720, new GraphicsMode(new ColorFormat(32), 24, 8, 16, 0, 2, false), "Hatzap Multitexturing Example", GameWindowFlags.Default,
                 DisplayDevice.GetDisplay(DisplayIndex.Default), 3, 3, GraphicsContextFlags.Default)
         { }
 
-        Model groundplane, model, model2;
+        Model groundplane, model;
         Camera camera;
         RenderQueue renderQueue;
         TextureManager textures;
@@ -65,6 +66,10 @@ namespace TransparencyExample
             groundtexture.Quality.Mipmaps = true;
             groundtexture.Quality.TextureWrapMode = TextureWrapMode.Repeat;
 
+            var grasstexture = textures.Get("Textures/grass.tex", true);
+            grasstexture.Quality.Mipmaps = true;
+            grasstexture.Quality.TextureWrapMode = TextureWrapMode.Repeat;
+
             // Load up a mesh
             MeshManager meshManager = new MeshManager();
             var mesh = meshManager.Get("Meshes/lucy.mesh", true);
@@ -96,28 +101,21 @@ namespace TransparencyExample
                 Material = modelMaterial
             };
 
-            var modelMaterial2 = modelMaterial.Copy();
-            modelMaterial2.Transparent = true;
+            var groundMaterial = new Material()
+                {
+                    ShaderProgram = ShaderManager.Get("multitexturedGround"),
+                };
+            groundMaterial.Textures.Add("stoneTexture", groundtexture);
+            groundMaterial.Textures.Add("grassTexture", grasstexture);
+            //groundMaterial.Textures.Add("splatTexture", groundtexture);
 
-            // Construct a model from shader, texture and mesh, with default material
-            model2 = new Model()
-            {
-                Mesh = mesh,
-                Material = modelMaterial2
-            };
-
-            var groundMaterial = modelMaterial.Copy();
-            groundMaterial.Textures["textureSampler"] = groundtexture;
-
-            // Construct a model from shader, texture and mesh, with default material
             groundplane = new Model()
             {
                 Mesh = groundmesh,
                 Material = groundMaterial
             };
 
-            model.Transform.Position += new Vector3(1, 0, 0);
-            model2.Transform.Position += new Vector3(-1, 0, 0);
+            model.Transform.Position += new Vector3(0, 0, 0);
             groundplane.Transform.Position += new Vector3(0, -1, 0);
 
             // set up rendering queue
@@ -150,7 +148,6 @@ namespace TransparencyExample
 
             // Render model
             renderQueue.Insert(model);
-            renderQueue.Insert(model2);
             renderQueue.Insert(groundplane);
             renderQueue.Render();
 

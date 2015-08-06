@@ -21,7 +21,7 @@ void main( void )
 	float lumaBL = dot(luma, texture2D(textureSampler, tcoord.xy + (vec2(-1.0, 1.0) * texCoordOffset)).xyz);
 	float lumaBR = dot(luma, texture2D(textureSampler, tcoord.xy + (vec2(1.0, 1.0) * texCoordOffset)).xyz);
 	float lumaM  = dot(luma, texture2D(textureSampler, tcoord.xy).xyz);
-
+	
 	vec2 dir;
 	dir.x = -((lumaTL + lumaTR) - (lumaBL + lumaBR));
 	dir.y = ((lumaTL + lumaBL) - (lumaTR + lumaBR));
@@ -37,8 +37,8 @@ void main( void )
 		texture2D(textureSampler, tcoord.xy + (dir * vec2(2.0/3.0 - 0.5))).xyz);
 
 	vec3 result2 = result1 * (1.0/2.0) + (1.0/4.0) * (
-		texture2D(textureSampler, tcoord.xy + (dir * vec2(-0.5))).xyz +
-		texture2D(textureSampler, tcoord.xy + (dir * vec2(0.5))).xyz);
+		texture2D(textureSampler, tcoord.xy + (dir * vec2(0.0/3.0 - 0.5))).xyz +
+		texture2D(textureSampler, tcoord.xy + (dir * vec2(3.0/3.0 - 0.5))).xyz);
 
 	float lumaMin = min(lumaM, min(min(lumaTL, lumaTR), min(lumaBL, lumaBR)));
 	float lumaMax = max(lumaM, max(max(lumaTL, lumaTR), max(lumaBL, lumaBR)));

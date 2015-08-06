@@ -36,6 +36,13 @@
         <Shader Type="FragmentShader" Path="../../Assets/Shaders/transparentmodel.frag" />
       </Shaders>
     </ShaderProgram>
+	<ShaderProgram>
+      <Name>multitexturedGround</Name>
+      <Shaders>
+        <Shader Type="VertexShader" Path="../../Assets/Shaders/simplemodel.vert" />
+        <Shader Type="FragmentShader" Path="../../Assets/Shaders/multitexturedGround.frag" />
+      </Shaders>
+    </ShaderProgram>
     <ShaderProgram>
       <Name>hellotriangle</Name>
       <Shaders>
