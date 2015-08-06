@@ -40,7 +40,9 @@ void main( void )
 	vec3 stone = texture2D(stoneTexture, tcoord).rgb;
 	vec3 grass = texture2D(grassTexture, tcoord).rgb;
 	
-	vec3 texel = clamp(stone * tcoord.x, vec3(0), vec3(1)) + clamp(grass * (1 - tcoord.x), vec3(0), vec3(1));
+	float coord = clamp(tcoord.x, 0, 1);
+	
+	vec3 texel = stone * coord + grass * (1 - coord);
 	
 	vec3 finalColor = pow(texel, vec3(gamma)) * finalLight.x * color.rgb + finalLight.y * specularIntensity;
 
