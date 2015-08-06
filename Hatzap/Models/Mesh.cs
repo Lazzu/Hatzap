@@ -315,12 +315,14 @@ namespace Hatzap.Models
         /// </summary>
         public void Draw()
         {
-            Time.StartTimer("Mesh.Draw()", "Render");
+            
             if (verts == null)
             {
                 Debug.WriteLine("Mesh being drawn has no vertices.");
                 return;
-            }   
+            }
+
+            Time.StartTimer("Mesh.Draw()", "Render");
 
             if(indices != null)
             {
@@ -334,6 +336,7 @@ namespace Hatzap.Models
             {
                 throw new NotSupportedException("Drawing non-indexed meshes not yet supported.");
             }
+
             Time.StopTimer("Mesh.Draw()");
         }
 

@@ -9,6 +9,7 @@ layout(location = 5) in mat4 mInstancedModelMatrix;
 
 out vec2 tcoord;
 out vec3 norm;
+out vec4 fcolor;
 
 uniform mat4 mViewProjection;
 uniform mat4 mModel;
@@ -18,6 +19,7 @@ uniform float time;
 void main()
 {
 	tcoord = uv.xy;
+	fcolor = color;
 	norm = mNormal * mat3(mModel) * normal;
 	gl_Position = mViewProjection * mModel * vec4(vertex , 1);
 }

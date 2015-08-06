@@ -23,6 +23,20 @@ namespace Hatzap.Rendering
         public abstract void SendData(ShaderProgram program);
 
         public abstract IUniformData Copy();
+        public override bool Equals(object obj)
+        {
+            var d = obj as UniformData<T>;
+            if (d == null)
+                return false;
+            return Name == d.Name && Data.Equals(d.Data);
+        }
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return Data.GetHashCode() + Name.GetHashCode();
+            }
+        }
     }
 
     public class UniformDataFloat : UniformData<float>

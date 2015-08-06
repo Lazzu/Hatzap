@@ -16,8 +16,9 @@ namespace Hatzap.Rendering
     public class TextureBatch
     {
         public Dictionary<string, Texture> Textures { get; set; }
-        public List<Renderable> BatchQueue;
         public Dictionary<Mesh, InstancedBatch> Instanced;
+        public Dictionary<Material, List<Renderable>> Batched = new Dictionary<Material,List<Renderable>>();
+        public Dictionary<Material, int> BatchCount = new Dictionary<Material, int>();
 
         int count = 0;
 
@@ -27,9 +28,10 @@ namespace Hatzap.Rendering
 
         public void Insert(Renderable data)
         {
-            
+            if (data == null)
+                return;
 
-            if(Instanced == null && BatchQueue == null)
+            if (Instanced == null && !Batched.ContainsKey(data.Material))
             {
                 if (RenderQueue.AllowInstancing && GPUCapabilities.Instancing && data is Model)
                 {
@@ -38,7 +40,8 @@ namespace Hatzap.Rendering
                 }
                 else
                 {
-                    BatchQueue = new List<Renderable>();
+                    Batched.Add(data.Material, new List<Renderable>());
+                    BatchCount.Add(data.Material, 0);
                     Debug.WriteLine("Instantiated BatchQueue");
                 }
             }
@@ -59,15 +62,16 @@ namespace Hatzap.Rendering
             }
             else
             {
-                if (BatchQueue.Count > count)
+                var count = BatchCount[data.Material];
+                if (Batched[data.Material].Count > count)
                 {
-                    BatchQueue[count] = data;
+                    Batched[data.Material][count] = data;
                 }
                 else
                 {
-                    BatchQueue.Add(data);
+                    Batched[data.Material].Add(data);
                 }
-                count++;
+                BatchCount[data.Material] = 1 + count;
             }
 
             Textures = data.Material.Textures;
@@ -118,35 +122,48 @@ namespace Hatzap.Rendering
             }
             else
             {
-                for (int i = 0; i < count; i++)
+                foreach (var BatchQueue in Batched)
                 {
-                    // Take object from the batch queue
-                    var obj = BatchQueue[i];
+                    var batch = BatchQueue.Value;
+                    var count = BatchCount[BatchQueue.Key];
 
-                    var model = obj as Model;
-
-                    if (model != null)
+                    for (int i = 0; i < count; i++)
                     {
-                        model.Mesh.VertexAttribLocation = model.Material.ShaderProgram.GetAttribLocation("vertex");
-                        model.Mesh.NormalAttribLocation = model.Material.ShaderProgram.GetAttribLocation("normal");
-                        model.Mesh.TangentAttribLocation = model.Material.ShaderProgram.GetAttribLocation("tangent");
-                        model.Mesh.BinormalAttribLocation = model.Material.ShaderProgram.GetAttribLocation("binormal");
-                        model.Mesh.UVAttribLocation = model.Material.ShaderProgram.GetAttribLocation("uv");
-                        model.Mesh.ColorAttribLocation = model.Material.ShaderProgram.GetAttribLocation("color");
+
+                        // Take object from the batch queue
+                        var obj = batch[i];
+
+                        if (obj == null)
+                            continue;
+
+                        var model = obj as Model;
+
+                        // Ugly, refactor this somehow. :(
+                        if (model != null)
+                        {
+                            model.Mesh.VertexAttribLocation = model.Material.ShaderProgram.GetAttribLocation("vertex");
+                            model.Mesh.NormalAttribLocation = model.Material.ShaderProgram.GetAttribLocation("normal");
+                            model.Mesh.TangentAttribLocation = model.Material.ShaderProgram.GetAttribLocation("tangent");
+                            model.Mesh.BinormalAttribLocation = model.Material.ShaderProgram.GetAttribLocation("binormal");
+                            model.Mesh.UVAttribLocation = model.Material.ShaderProgram.GetAttribLocation("uv");
+                            model.Mesh.ColorAttribLocation = model.Material.ShaderProgram.GetAttribLocation("color");
+                        }
+
+                        //model.Transform.CalculateMatrix();
+                        //model.Material.ShaderProgram.SendUniform("mModel", ref model.Transform.Matrix);
+
+                        // Put a null back
+                        batch[i] = null;
+
+                        // Call render
+                        obj.Render();
+
+                        triangles += obj.Triangles;
                     }
 
-                    model.Transform.CalculateMatrix();
-                    model.Material.ShaderProgram.SendUniform("mModel", ref model.Transform.Matrix);
-
-                    // Put a null back
-                    BatchQueue[i] = null;
-
-                    // Call render
-                    obj.Render();
-
-                    triangles += obj.Triangles;
+                    BatchCount[BatchQueue.Key] = 0;
                 }
-                count = 0;
+                
             }
 
             if (Textures != null || Textures.Count != 0)

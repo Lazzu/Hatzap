@@ -67,6 +67,13 @@ namespace InstancingExample
             // All objects will have the same material
             Material material = new Material();
 
+            material.ShaderProgram = ShaderManager.Get("instancedmodel");
+
+            // To disable instancing, use these:
+            //material.ShaderProgram = ShaderManager.Get("simplemodel");
+            //renderQueue.AllowInstancing = false;
+
+
             for (int x = -n; x <= n; x++)
             {
                 for (int y = -n; y <= n; y++)
@@ -76,9 +83,8 @@ namespace InstancingExample
                         var instancedObject = new Model();
 
                         // Set shader, mesh and material (no texture)
-                        instancedObject.Shader = ShaderManager.Get("instancedmodel");
                         instancedObject.Mesh = meshes.Get("Meshes/suzanne.mesh", true);
-                        instancedObject.Material = material;
+                        instancedObject.Material = material.Copy();
 
                         // Set transform
                         instancedObject.Transform.Position = new Vector3(
@@ -89,7 +95,15 @@ namespace InstancingExample
                             x * 360.0f / n / (float)Math.PI, 
                             y * 360.0f / n / (float)Math.PI, 
                             z * 360.0f / n / (float)Math.PI);
-                        
+
+                        float color = 1f;
+                        color = color - ((y + n) / (n * 2.0f));
+
+                        instancedObject.Material.Add(new UniformDataVector4(){
+                            Data = new Vector4(color, color, color, 1),
+                            Name = "Color",
+                        });
+
                         // Don't calculate matrices on every frame
                         instancedObject.Transform.Static = true;
 

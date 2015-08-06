@@ -19,7 +19,7 @@
       <Name>instancedmodel</Name>
       <Shaders>
         <Shader Type="VertexShader" Path="../../Assets/Shaders/instancedmodel.vert" />
-        <Shader Type="FragmentShader" Path="../../Assets/Shaders/texturelessmodel.frag" />
+        <Shader Type="FragmentShader" Path="../../Assets/Shaders/instancedmodel.frag" />
       </Shaders>
     </ShaderProgram>
 	<ShaderProgram>

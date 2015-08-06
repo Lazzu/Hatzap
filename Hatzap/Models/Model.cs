@@ -25,7 +25,7 @@ namespace Hatzap.Models
             Visible = true;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void Render()
         {
             if (Mesh == null)
